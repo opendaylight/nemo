@@ -1,0 +1,18 @@
+# NEMO
+.classpath
+.project
+.settings
+.metadata
+*/.classpath
+*/.project
+*/.settings
+*/.metadata
+
+# OS
+*~
+
+# Maven
+target/
+
+# ODL
+yang-gen-*/

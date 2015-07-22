@@ -1,0 +1,331 @@
+/*
+ * Copyright (c) 2015  Huawei Technologies Co., Ltd. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+module nemo-object{
+	yang-version 1;		
+	namespace "urn:opendaylight:params:xml:ns:yang:nemo:object";	
+	prefix "nemo-object";
+	
+	import nemo-common {prefix nemo-common;}
+	
+	revision "2015-06-29" {
+        description
+            "Initial revision.";
+    }
+		
+	grouping property-definition {	
+		list property {
+            description "";
+            key "name";
+            leaf name {
+                description "A user-visible name for the property";
+                type nemo-common:property-name;
+                mandatory true;
+            }
+            leaf value-type {
+                description "The type of the property";
+                default string;
+                type enumeration {
+                    enum string {
+                        description "A string-valued property";
+                    }
+                    enum int {
+                        description "An integer-valued property";
+                    }
+                    enum range {
+                        description "An integer-range property";
+                    }
+                }
+            }
+            leaf is-required {
+                description "Specify whether the property is
+                             required for object.";
+                default optional;
+                type enumeration {
+                    enum required {
+                        description "The property is required";
+                    }
+                    enum optional {
+                        description "The property is optional";
+                    }
+                }
+            }
+        }				
+	}				
+	container node-definitions{
+		list node-definition{
+			description "";
+			key "id";
+			leaf id {
+				description "A unique ID for a kind of node definition";
+			    type nemo-common:node-definition-id;
+				mandatory true;
+		    } 
+			leaf node-type{
+				description "A user-readable description";
+				type nemo-common:node-definition-type;
+				mandatory true;						
+			}
+			uses property-definition;				
+		}		
+	}		
+	container connection-definitions{
+		list connection-definition{
+			key "id";
+			leaf id {
+				description "A unique ID for a kind of connection definition";
+			    type nemo-common:connection-definition-id;
+				mandatory true;
+		    } 
+			leaf connection-type{
+				description "A user-readable description";
+				type nemo-common:connection-definition-type;
+				mandatory true;						
+			}
+			uses property-definition;			
+		}	
+	}
+	
+	
+	grouping match-item-definition{
+	
+		list match-item {
+            description "";
+            key "name";
+            leaf name {
+                description "A user-visible name for the match-item";
+                type nemo-common:match-item-name;
+                mandatory true;
+            }
+            leaf value-type {
+                description "The type of the match item";
+                default string;
+                type enumeration {
+                    enum string {
+                        description "A string-valued match item";
+                    }
+                    enum int {
+                        description "An integer-valued match item";
+                    }
+                    enum range {
+                        description "An integer-range match item";
+                    }
+                }
+            }
+            leaf is-required {
+                description "Specify whether the match item is required 
+				             for the flow.";
+                default optional;
+                type enumeration {
+                    enum required {
+                        description "The  match item is required";
+                    }
+                    enum optional {
+                        description "The  match item is optional";
+                    }
+                }
+            }
+        }				
+	}	
+    container flow-definitions{
+		list flow-definition{
+			key "id";
+			leaf id {
+				description "A unique ID for a kind of flow definition";
+			    type nemo-common:flow-definition-id;
+				mandatory true;
+		    } 
+			leaf flow-type{
+				description "A user-readable description";
+				type nemo-common:flow-definition-type;
+				mandatory true;						
+			}
+			uses match-item-definition;				
+		}	
+	}
+	
+	grouping node-property-instance{
+		list property {
+            key "name";
+            leaf name {
+				type nemo-common:node-property-name;
+                mandatory true;
+            }
+            leaf string-value {
+                type string;
+            }
+            leaf int-value {
+                type int64;
+            }
+            container range-value {
+                leaf min {
+                    type int64;
+                    mandatory true;
+                }
+                leaf max {
+                    type int64;
+                    mandatory true;
+                }
+            }
+        }	
+	}			
+	grouping node-instance{
+		description "";
+		leaf node-id {
+			description "A unique ID for the node instance";
+			type nemo-common:node-instance-id;
+			mandatory true;
+		}
+		leaf node-name {
+			description
+				"A user-visible name for the node definition";
+			type nemo-common:node-instance-name;
+		}
+		leaf node-type {
+			type nemo-common:node-instance-type;
+			mandatory true;			
+		}
+		container subnodes{				
+			leaf-list  subnode-id{
+				type nemo-common:node-instance-id;				
+			}			
+		}
+		container property{
+			uses node-property-instance;			
+		}		
+	}
+	
+	grouping connection-property-instance{
+		list property {
+            key "name";
+            leaf name {
+				type nemo-common:connection-property-name;
+                mandatory true;
+            }
+            leaf string-value {
+                type string;
+            }
+            leaf int-value {
+                type int64;
+            }
+            container range-value {
+                leaf min {
+                    type int64;
+                    mandatory true;
+                }
+                leaf max {
+                    type int64;
+                    mandatory true;
+                }
+            }
+        }	
+	}			
+	grouping connection-instance {
+		description "";
+		leaf connection-id {
+			description "A unique ID for the connection instance";
+			type nemo-common:connection-instance-id;
+			mandatory true;
+		}
+		leaf connection-name {
+			description  "A user-visible name for the connection instance";
+			type nemo-common:connection-instance-name;
+			mandatory false;
+		}
+		leaf connection-type {
+			type nemo-common:connection-instance-type;
+			mandatory true;			
+		}
+		container endnodes{
+			list one-end{
+				key "node-id";
+				leaf node-id{
+					type nemo-common:node-instance-id;						
+				}
+				min-elements 1;
+			}			
+			list the-other-end{
+				key "node-id";
+				leaf node-id{
+					type nemo-common:node-instance-id;
+				}
+				min-elements 1;				
+			}			
+		}
+		container property{
+			uses connection-property-instance;			
+		}					
+	}
+		
+	grouping match-item-instance{
+		list match-item {
+            key "name";
+            leaf name {
+				type string;
+                mandatory true;
+            }
+            leaf string-value {
+                type string;
+            }
+            leaf int-value {
+                type int64;
+            }
+            container range-value {
+                leaf min {
+                    type int64;
+                    mandatory true;
+                }
+                leaf max {
+                    type int64;
+                    mandatory true;
+                }
+            }
+        }	
+	}
+	grouping has-direction {
+        description "Object that have a directionality.";	
+        leaf direction {
+            default bidirectional;
+            type enumeration {
+                enum in {
+                    description
+                        "Applies to flow into provider node";
+                }
+                enum out {
+                    description
+                        "Applies to flow out of provider node";
+                }
+                enum bidirectional {
+                    description
+                        "Applies to flow in both directions";
+                }
+            }
+        }
+    }	
+	grouping flow-instance{
+		leaf flow-id {
+			description "A unique ID for the flow instance";
+			type nemo-common:flow-instance-id;
+			mandatory true;
+		}
+		leaf flow-name {
+			description "A user-visible name for the flow instance";
+			type nemo-common:flow-instance-name;
+			mandatory false;
+		}
+		leaf flow-type {
+			type nemo-common:flow-instance-type;
+			mandatory true;			
+		}
+		container match {
+			uses has-direction;
+			uses match-item-instance;
+		}
+	}	
+	
+}

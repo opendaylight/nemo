@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2015 Huawei, Inc and others. All rights reserved.
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.opendaylight.controller</groupId>
+    <artifactId>releasepom</artifactId>
+    <version>0.3.0-SNAPSHOT</version>
+    <relativePath />
+  </parent>
+
+  <groupId>org.opendaylight.nemo</groupId>
+  <artifactId>nemo.project</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>nemo</name>
+  <description>OpenDaylight NEMO</description>
+
+  <prerequisites>
+    <maven>3.1.1</maven>
+  </prerequisites>
+
+  <modules>
+    <module>nemo-artifacts</module>
+    <module>nemo-api</module>
+    <module>nemo-impl</module>
+    <module>nemo-ui</module>
+    <module>nemo-features</module>
+    <module>nemo-karaf</module>
+    <module>nemo-renderers</module>
+  </modules>
+
+  <url>https://wiki.opendaylight.org/view/NEMO:Main</url>
+
+  <licenses>
+    <license>
+      <name>Eclipse Public License v1.0</name>
+      <url>http://www.eclipse.org/legal/epl-v10.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Zhigang Ji</name>
+      <email>jizhigang@huawei.com</email>
+      <organization>Huawei, Inc</organization>
+      <organizationUrl>http://www.huawei.com</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:ssh://git.opendaylight.org:29418/nemo.git</connection>
+    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/nemo.git</developerConnection>
+    <url>https://wiki.opendaylight.org/view/NEMO:Main</url>
+    <tag>HEAD</tag>
+  </scm>
+</project>

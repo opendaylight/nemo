@@ -1,0 +1,207 @@
+/*
+ * Copyright (c) 2015  Huawei Technologies Co., Ltd. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+module nemo-operation {
+
+	yang-version 1;	
+	namespace "urn:opendaylight:params:xml:ns:yang:nemo:operation";	
+	prefix "nemo-operation";
+	
+	import nemo-common {prefix nemo-common;}
+	
+	revision "2015-06-29" {
+        description
+            "Initial revision.";
+    }
+	
+	grouping parameter-definition {
+		leaf name {
+			description "A user-visible name for parameter";
+			type nemo-common:parameter-name;
+			mandatory true;
+		}	
+		leaf type {
+			description "The type of the parameter";
+			default string;
+			type enumeration {
+				enum string {
+					description "A string-valued parameter";
+				}
+				enum int {
+					description "An integer-valued parameter";
+				}
+				enum range {
+					description "An integer-range parameter";
+				}
+			}
+		}	
+		leaf is-required {
+			description "Specify whether the parameter is required ";
+			default optional;
+			type enumeration {
+				enum required {
+					description "The parameter is required";
+				}
+				enum optional {
+					description "The parameter is optional";
+				}
+			}
+		}	
+	}
+	
+	
+	container action-definitions {
+	    list action-definition {		
+			key "action-name";
+			leaf action-name {
+				description "A name for the action definition";
+				type nemo-common:action-definition-name;
+			    mandatory true;			
+		    }			
+	        list data {
+				description
+					"data for the action that can be passed in.";
+				key "name";			
+				uses parameter-definition;		
+		    }		
+	    }
+	}	
+	grouping action-parameter-instance{
+		leaf data-name {
+			type nemo-common:data-name;
+			mandatory true;
+		}
+		leaf string-value {
+			type string;
+		}
+		leaf int-value {
+			type int64;
+		}
+		container range-value {
+			leaf min {
+				type int64;
+				mandatory true;
+			}
+			leaf max {
+				type int64;
+				mandatory true;
+			}
+		}	
+	}	
+	grouping action-instance{
+		description " ";
+		leaf action-name{
+			type nemo-common:action-instance-name;
+			mandatory true;
+		}
+		list data {
+			key "data-name";
+			uses action-parameter-instance;			
+		}		
+	}
+		
+	container condition-definitions {
+		list condition-definition{
+			key "condition-name";
+			leaf condition-name{
+				type nemo-common:condition-definition-name;
+				mandatory true;		
+			}
+			list condition-parameter{
+				key "name";
+				uses parameter-definition;
+				min-elements 1;
+			}	
+		}
+	}
+	grouping conditon-parameter-instance{
+		leaf parameter-name {
+		    type nemo-common:condition-parameter-name;
+			mandatory true;
+		}
+		leaf string-value {
+			type string;
+		}
+		leaf int-value {
+			type int64;
+		}
+		container range-value {
+			leaf min {
+				type int64;
+				mandatory true;
+			}
+			leaf max {
+				type int64;
+				mandatory true;
+			}
+		}	
+	}	
+	grouping condition-instance {
+		description " ";
+		leaf condition-name{
+			type nemo-common:condition-instance-name;
+			mandatory true;				
+		}	
+		list condition-parameter{
+			key "parameter-name";
+			uses conditon-parameter-instance;
+			min-elements 1;
+		}
+	}
+	
+	
+	container constraint-definitions {
+		list constraint-definition{
+			key "constraint-name";
+			leaf constraint-name{
+				type nemo-common:constraint-definition-name;
+				mandatory true;		
+			}
+			list constraint-parameter{
+				key "name";
+				uses parameter-definition;
+				min-elements 1;
+			}	
+		}
+	}
+	grouping constraint-parameter-instance{
+		leaf parameter-name {
+			type nemo-common:constraint-parameter-name;
+			mandatory true;
+		}
+		leaf string-value {
+			type string;
+		}
+		leaf int-value {
+			type int64;
+		}
+		container range-value {
+			leaf min {
+				type int64;
+				mandatory true;
+			}
+			leaf max {
+				type int64;
+				mandatory true;
+			}
+		}	
+	}	
+	grouping constraint-instance {
+		description " ";
+		leaf constraint-name{
+			type nemo-common:constraint-instance-name;
+			mandatory true;				
+		}	
+		list constraint-parameter{
+			key "parameter-name";
+			uses constraint-parameter-instance;
+			min-elements 1;
+		}
+	}
+	
+}

@@ -1,0 +1,136 @@
+/*
+ * Copyright (c) 2015  Huawei Technologies Co., Ltd. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+ 
+module nemo-intent {
+	yang-version 1;	
+	namespace "urn:opendaylight:params:xml:ns:yang:nemo:intent";	
+	prefix "nemo-intent";
+	
+	import nemo-common {prefix nemo-common;}
+	import nemo-object {prefix nemo-object;}
+	import nemo-operation {prefix nemo-operation;}
+	import nemo-result {prefix nemo-result;}
+	
+	revision "2015-06-29" {
+        description
+            "Initial revision.";
+    }
+		
+	grouping intent-instance {
+		description "";
+		leaf intent-id {
+			description "A unique ID for the intent";
+			type nemo-common:intent-id;			
+			mandatory true;
+		}	
+		leaf intent-name {
+			description "A user-visible name for the intent";
+			type nemo-common:intent-name;
+		}	
+		container objects {
+			description "";
+			list node {
+				key "node-id";
+				uses nemo-object:node-instance;
+			}			
+			list connection {
+				key "connection-id";
+				uses nemo-object:connection-instance;
+			}				
+			list flow {
+				key "flow-id";
+				uses nemo-object:flow-instance;
+			}							
+		}
+		
+		container operation {
+			leaf apply-on-object {
+				type nemo-common:object-id;
+				mandatory true;
+			}		
+			leaf priority{
+				type int64;
+				default 1;
+			}
+			uses nemo-operation:condition-instance;
+			uses nemo-operation:action-instance;
+			uses nemo-operation:constraint-instance;			
+		}
+		
+		container result{
+			leaf result-to-object {
+				type nemo-common:object-id;
+				mandatory true;
+			}		
+			leaf priority{
+				type int64;
+				default 1;
+			}
+			choice result-mode {
+				mandatory true;
+				case expected-case {
+					uses nemo-result:expected-instance;
+				}
+				case avoid-case{
+					uses nemo-result:avoid-instance;
+				}		
+			}						
+		}	
+		container contexts{
+			list context {
+				key "context-id";
+				leaf context-id {
+					type nemo-common:context-id;
+					mandatory true;
+				}
+				leaf context-name{
+					type nemo-common:context-name;
+					mandatory true;
+				}
+			}			
+		}
+	}
+		
+	container users {
+		description "The list of all known users";
+		list user {
+            description "";
+            key "user-id";
+            leaf user-id {
+                description "A unique ID for the user";             
+                type nemo-common:user-id;
+				mandatory true;
+            }
+            leaf user-name {
+                description "A user-visible name for the user";
+                type nemo-common:user-name;
+				mandatory false;
+            }		
+			list intent{
+				key "intent-id";
+				uses intent-instance;
+				min-elements 1;
+			}
+		}		
+	}
+	
+	rpc register-node-instance {
+	    description "";
+		input {
+			uses nemo-object:node-instance;
+		}
+	}
+	
+	rpc unregister-node-instance {
+	    description "";
+		input {
+			uses nemo-object:node-instance;
+		}
+	}
+		
+}
