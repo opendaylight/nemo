@@ -8,23 +8,23 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 <features name="odl-nemo-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
-  <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/${mdsal.model.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-mdsal/${controller.mdsal.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-restconf/${controller.mdsal.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
   <feature name='odl-nemo-api' version='${project.version}' description='OpenDaylight :: NEMO :: API'>
-    <feature version='${yangtools.version}'>odl-yangtools-models</feature>
+    <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.nemo/nemo-api/${project.version}</bundle>
   </feature>
   <feature name='odl-nemo-engine' version='${project.version}' description='OpenDaylight :: NEMO :: Engine'>
-    <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+    <feature version='${controller.mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-nemo-api</feature>
     <bundle>mvn:org.opendaylight.nemo/nemo-impl/${project.version}</bundle>
   </feature>
   <feature name='odl-nemo-engine-rest' version='${project.version}' description='OpenDaylight :: NEMO :: Engine :: REST'>
-    <feature version='${mdsal.version}'>odl-restconf</feature>
-    <feature version='${mdsal.version}'>odl-mdsal-apidocs</feature>
-    <feature version='${mdsal.version}'>odl-mdsal-xsql</feature>
+    <feature version='${controller.mdsal.version}'>odl-restconf</feature>
+    <feature version='${controller.mdsal.version}'>odl-mdsal-apidocs</feature>
+    <feature version='${controller.mdsal.version}'>odl-mdsal-xsql</feature>
     <feature version='${project.version}'>odl-nemo-engine</feature>
   </feature>
   <feature name='odl-nemo-openflow-renderer' version='${project.version}' description='OpenDaylight :: NEMO :: OpenFlow Renderer'>
