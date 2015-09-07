@@ -10,7 +10,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
   <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
-  <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
   <feature name='odl-nemo-api' version='${project.version}' description='OpenDaylight :: NEMO :: API'>
     <feature version='${yangtools.version}'>odl-yangtools-models</feature>
@@ -22,8 +22,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <bundle>mvn:org.opendaylight.nemo/nemo-impl/${project.version}</bundle>
   </feature>
   <feature name='odl-nemo-engine-rest' version='${project.version}' description='OpenDaylight :: NEMO :: Engine :: REST'>
-    <feature version='${mdsal.version}'>odl-restconf</feature>
-    <feature version='${mdsal.version}'>odl-mdsal-apidocs</feature>
+    <feature version='${restconf.version}'>odl-restconf</feature>
+    <feature version='${restconf.version}'>odl-mdsal-apidocs</feature>
     <feature version='${mdsal.version}'>odl-mdsal-xsql</feature>
     <feature version='${project.version}'>odl-nemo-engine</feature>
   </feature>
