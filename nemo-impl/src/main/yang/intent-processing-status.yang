@@ -1,0 +1,164 @@
+/*
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+module intent-processing-status {
+    yang-version 1;
+
+    namespace "urn:opendaylight:params:xml:ns:yang:intent:processing:status";
+    prefix "intent-processing-status";
+
+    import nemo-common {prefix nemo-common;}
+
+    revision "2015-10-10" {
+        description
+            "Initial revision.";
+    }
+
+    grouping intent-status {
+        leaf status {
+            description
+                "Represents the current processing status of the user intent
+                 maintained by the NEMO engine or the user's transaction.";
+            type enumeration {
+                enum processing-succeeded {
+                    description
+                        "The user intent has been successfully processed by the
+                         NEMO engine and the underlying network has been configured
+                         by some renderer if necessary, or the user's transaction
+                         has been processed successfully.";
+                }
+                enum in-processing {
+                    description
+                        "The user intent is being processed by the NEMO engine, or
+                         some intents in the user's transaction are being processed.";
+                }
+                enum processing-failed {
+                    description
+                        "The processing for the user intent by the NEMO engine is
+                         failed, the reason might be syntax error, insufficient
+                         underlying network resources, etc, and is described in
+                         the message in detail. Or the processing for the user's
+                         transaction is failed.";
+                }
+            }
+            config false;
+            mandatory true;
+        }
+
+        leaf message {
+            description
+                "The human-readable and detailed message about the status.";
+            type string;
+            config false;
+        }
+    }
+
+    container intent-processing-statuses {
+        description
+            "Contains the intent processing statuses of all users
+             maintained by the NEMO engine.";
+
+        list user-intent-status {
+            description
+                "Represents the list of all users with their intent statuses.";
+
+            key "user-id";
+            leaf user-id {
+                description
+                    "The unique ID for the user.";
+                type nemo-common:user-id;
+            }
+
+            container transaction-status {
+                description
+                    "Contains the user's transaction status information.
+                     When all user intents in the transaction have been
+                     successfully processed, the transaction status will
+                     be set to processing-succeeded. If the processing for
+                     some user intents in the transaction is failed, the
+                     transaction status will be set to processing-failed.";
+
+                uses intent-status;
+            }
+
+            container object-statuses {
+                description
+                    "Contains all object intent statuses of the user.";
+
+                list node-status {
+                    description
+                        "The list of all node intent statuses of the user.";
+
+                    key "node-id";
+                    leaf node-id {
+                        description
+                            "The unique ID for the node.";
+                        type nemo-common:node-id;
+                    }
+
+                    uses intent-status;
+                    config false;
+                }
+
+                list connection-status {
+                    description
+                        "The list of all connection intent statuses of the user.";
+
+                    key "connection-id";
+                    leaf connection-id {
+                        description
+                            "The unique ID for the connection.";
+                        type nemo-common:connection-id;
+                    }
+
+                    uses intent-status;
+                    config false;
+                }
+
+                list flow-status {
+                    description
+                        "The list of all flow intent statuses of the user.";
+
+                    key "flow-id";
+                    leaf flow-id {
+                        description
+                            "The unique ID for the flow.";
+                        type nemo-common:flow-id;
+                    }
+
+                    uses intent-status;
+                    config false;
+                }
+            }
+
+            container operation-statuses {
+                description
+                    "Contains all operation intent statuses of the user.";
+
+                list operation-status {
+                    description
+                        "The list of all operation intent statuses of the user.";
+
+                    key "operation-id";
+                    leaf operation-id {
+                        description
+                            "The unique ID for the operation.";
+                        type nemo-common:operation-id;
+                    }
+
+                    uses intent-status;
+                    config false;
+                }
+            }
+
+            container result-statuses {
+                // TBD
+            }
+        }
+    }
+}

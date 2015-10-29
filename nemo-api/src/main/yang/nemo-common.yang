@@ -1,32 +1,37 @@
 /*
- * Copyright (c) 2015  Huawei Technologies Co., Ltd. and others.  All rights reserved.
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-module nemo-common{
-	yang-version 1;	
-	namespace "urn:opendaylight:params:xml:ns:yang:nemo:common";	
-	prefix "nemo-common";
-	
-	revision "2015-06-29" {
+module nemo-common {
+    yang-version 1;
+
+    namespace "urn:opendaylight:params:xml:ns:yang:nemo:common";
+    prefix "nemo-common";
+
+    description
+        "Common types and definitions for NEMO models";
+
+    revision "2015-10-10" {
         description
             "Initial revision.";
     }
-	
-	/**********************
-     * Base types
-    **********************/
-	typedef description {
-        description "A human-readable description for a object.";
+
+    // *********************
+    // * Base Types
+    // *********************
+    typedef description {
+        description
+            "A human-readable description for a object.";
         type string {
             length "1..4096";
         }
     }
-	
-	typedef name {
+
+    typedef name {
         description
             "A generic string name type. Must start with a letter";
         type string {
@@ -34,8 +39,8 @@ module nemo-common{
             length "1..256";
         }
     }
-	
-	// UUID type from ietf-yang-types@2013-07-15
+
+    // UUID type from ietf-yang-types@2013-07-15
     typedef uuid {
         type string {
             pattern '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'
@@ -43,8 +48,8 @@ module nemo-common{
         }
         description
             "A Universally Unique IDentifier in the string representation
-             defined in RFC 4122.  The canonical representation uses
-             lowercase characters.
+             defined in RFC 4122. The canonical representation uses
+             lower case characters.
 
              The following is an example of a UUID in string
              representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
@@ -54,265 +59,179 @@ module nemo-common{
     }
 
     typedef unique-id {
+        description
+            "A globally unique identifier.";
         type uuid;
-        description "A globally unique identifier";
     }
-	
-	/*********************
-     * Unique IDs
-     *********************/	
-	typedef object-id {
-        type unique-id;
-        description "A unique ID for a parameterized object";
-    }
-	
-	typedef node-definition-id {
-        type object-id;
-        description "A unique ID for a node definition.";
-    }
-	typedef node-instance-id {
-        type object-id;
-        description "A unique ID for a node instance.";
-    }		
-	
-	typedef connection-definition-id {
-        type object-id;
-        description "A unique ID for a connection definition.";
-    }
-	typedef connection-instance-id {
-        type object-id;
-        description "A unique ID for a connection instance.";
-    }		
-	
-	typedef flow-definition-id {
-        type object-id;
-        description "A unique ID for a flow definition.";
-    }
-	typedef flow-instance-id {
-        type object-id;
-        description "A unique ID for a flow instance.";
-    }
-	
-	typedef expected-definition-id {
-        type unique-id;
-        description "A unique ID for an expected definition.";
-    }
-	typedef expected-instance-id {
-        type unique-id;
-        description "A unique ID for an expected instance.";
-    }
-	
-	typedef avoid-definition-id {
-        type unique-id;
-        description "A unique ID for an avoid definition.";
-    }
-	typedef avoid-instance-id {
-        type unique-id;
-        description "A unique ID for an avoid instance.";
-    }
-	
-	typedef context-id {
-		type unique-id;
-        description "A unique ID for a context.";
-	}
-	
-	typedef intent-id {
-        type unique-id;
-        description "A unique ID for an intent.";
-    }
-	
-	typedef user-id {
-        type unique-id;
-        description "A unique ID for a user.";
-    }
-	
-	
-	
-	/*********************
-     * names
-     *********************/	
-	typedef object-name {
-        type name;
-        description "A name for a parameterized object";
-    }
-	
-	typedef node-instance-name {
-        type object-name;
-        description "A name for a node instance.";
-    } 
-	
-	typedef connection-instance-name {
-        type object-name;
-        description "A name for a connection instance.";
-    } 	
-		 
-	typedef flow-instance-name {
-        type object-name;
-        description "A name for a flow instance.";
-    } 
-	
-	typedef node-property-name {
-        type name;
-        description "A name for a node property.";
-    } 
-	
-	typedef connection-property-name {
-        type name;
-        description "A name for a connection property.";
-    } 
 
-	typedef  match-item-name {
-        type name;
-        description "A name for a flow match item.";
+    // *********************
+    // * Unique IDs
+    // *********************
+    typedef object-id {
+        description
+            "A unique ID for a parameterized object.";
+        type unique-id;
     }
-	
-	typedef property-name {
-        type name;
-        description "A name for a property.";
-    }
-	
-	typedef parameter-name {
-        type name;
-        description "A name for a parameter.";
-    }
-	
-	typedef action-definition-name {
-        type name;
-        description "A name for an action definition.";
-    }	
-	typedef action-instance-name {
-        type name;
-        description "A name for an action instance.";
-    }	
-	typedef condition-definition-name {
-        type name;
-        description "A name for a condition definition.";
-    }
-	typedef condition-instance-name {
-		type name;
-        description "A name for a condition instance.";
-	}
-	typedef condition-parameter-name {
-		type name;
-        description "A name for a condition parameter.";
-	}
-	typedef constraint-definition-name {
-        type name;
-        description "A name for a constraint definition.";
-    }
-	typedef constraint-instance-name {
-		type name;
-        description "A name for a constraint instance.";
-	}
-	typedef constraint-parameter-name {
-		type name;
-        description "A name for a constraint parameter.";
-	}
-	
 
-    typedef data-name {
-		type name;
-		description "A name for an action data.";
-	}
-	
-	typedef context-name {
-		type name;
-		description "A name for an context";
-	}
-	
-	typedef intent-name {
-        type name;
-        description "A name for an intent.";
+    typedef node-id {
+        description
+            "A unique ID for a node.";
+        type object-id;
     }
-	typedef user-name {
-        type name;
-        description "A name for a user.";
-    }
-	typedef expected-instance-name {
-        type name;
-        description "A name for an expected instance.";
-    }
-	typedef avoid-instance-name {
-        type name;
-        description "A name for an avoid instance.";
-    }
-	
-	
-	
-	/*********************
-     * types
-     *********************/	
-	typedef node-definition-type {
-		type name;
-	    description "A type for a node."; 
-	}
-	typedef connection-definition-type {
-		type name;
-	    description "A type for a connection."; 
-	}
-	typedef flow-definition-type {
-		type name;
-	    description "A type for a flow."; 
-	}	
-	typedef node-instance-type  {
-		type name;
-	    description "A type for a node instance."; 
-	}	
-	typedef connection-instance-type  {
-		type name;
-	    description "A type for a connection instance."; 
-	}
-	typedef flow-instance-type {
-		type name;
-		description "A type for a flow instance."; 
-	}
 
+    typedef connection-id {
+        description
+            "A unique ID for a connection.";
+        type object-id;
+    }
+
+    typedef flow-id {
+        description
+            "A unique ID for a flow.";
+        type object-id;
+    }
+
+    typedef intent-id {
+        description
+            "A unique ID for an intent.";
+        type unique-id;
+    }
+
+    typedef user-id {
+        description
+            "A unique ID for a user.";
+        type unique-id;
+    }
+
+    typedef operation-id {
+        description
+            "A unique ID for an operation.";
+        type unique-id;
+    }
+
+    typedef condition-segment-id {
+        description
+            "A unique ID for a segment of the condition in an operation.";
+        type unique-id;
+    }
+
+    typedef query-condition-id {
+        description
+            "A unique ID for a condition of the advanced query.";
+        type unique-id;
+    }
+
+    // *********************
+    // * Names
+    // *********************
+    typedef object-name {
+        description
+            "A name for a parameterized object";
+        type name;
+    }
+
+    typedef node-name {
+        description
+            "A name for a node instance.";
+        type object-name;
+    }
+
+    typedef connection-name {
+        description
+            "A name for a connection instance.";
+        type object-name;
+    }
+
+    typedef flow-name {
+        description
+            "A name for a flow instance.";
+        type object-name;
+    }
+
+    typedef  match-item-name {
+        description
+            "A name for a match item.";
+        type name;
+    }
+
+    typedef property-name {
+        description
+            "A name for a property.";
+        type name;
+    }
+
+    typedef parameter-name {
+        description
+            "A name for a parameter.";
+        type name;
+    }
+
+    typedef action-name {
+        description
+            "A name for an action.";
+        type name;
+    }
+
+    typedef condition-parameter-name {
+        description
+            "A name for a parameter of condition.";
+        type name;
+    }
+
+    typedef user-name {
+        description
+            "A name for a user.";
+        type name;
+    }
+
+    typedef user-password {
+        description
+            "A password for a user.";
+        type name;
+    }
+
+    typedef operation-name {
+        description
+            "A name for an operation.";
+        type name;
+    }
+
+    typedef query-condition-name {
+        description
+            "A name for a query with condition.";
+        type name;
+    }
+
+    typedef user-role-name {
+        description
+            "A role name for a user.";
+        type name;
+    }
+
+    typedef user-role-description {
+        description
+            "It describes the role characteristic and responsibility range.";
+        type string;
+    }
+
+    // *********************
+    // * Types
+    // *********************
+    typedef node-type {
+        description
+            "The type for a node.";
+        type name;
+    }
+
+    typedef connection-type {
+        description
+            "The type for a connection.";
+        type name;
+    }
+
+    typedef flow-type {
+        description
+            "The type for a flow.";
+        type name;
+    }
 }
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 

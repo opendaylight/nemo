@@ -1,0 +1,157 @@
+/*
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+module nemo-engine-common {
+    yang-version 1;
+
+    namespace "urn:opendaylight:params:xml:ns:yang:nemo:engine:common";
+    prefix "nemo-engine-common";
+
+    revision "2015-10-10" {
+        description
+            "Initial revision.";
+    }
+
+    // *********************
+    // * Base Types
+    // *********************
+    typedef name {
+        description
+            "A generic string name type. Must start with a letter";
+        type string {
+            pattern '[a-zA-Z]([a-zA-Z0-9\-_.])*';
+            length "1..256";
+        }
+    }
+
+    // UUID type from ietf-yang-types@2013-07-15
+    typedef uuid {
+        type string {
+            pattern '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'
+                + '[0-9a-fA-F]{4}-[0-9a-fA-F]{12}';
+        }
+        description
+            "A Universally Unique IDentifier in the string representation
+             defined in RFC 4122.  The canonical representation uses
+             lower case characters.
+
+             The following is an example of a UUID in string
+             representation: f81d4fae-7dec-11d0-a765-00a0c91e6bf6";
+        reference
+            "RFC 4122: A Universally Unique IDentifier (UUID) URN
+             Namespace";
+    }
+
+    typedef unique-id {
+        description
+            "A globally unique identifier.";
+        type uuid;
+    }
+
+    // *********************
+    // * Unique IDs
+    // *********************
+    typedef physical-port-id {
+        description
+            "A unique ID for a physical port.";
+        type string;
+    }
+
+    typedef physical-node-id {
+        description
+            "A unique ID for a physical node.";
+        type string;
+    }
+
+    typedef physical-link-id {
+        description
+            "A unique ID for a physical link.";
+        type string;
+    }
+
+    typedef physical-host-id {
+        description
+            "A unique ID for a physical host.";
+        type unique-id;
+    }
+
+    typedef physical-path-id {
+        description
+            "A unique ID for a physical path.";
+        type unique-id;
+    }
+
+    typedef virtual-port-id {
+        description
+            "A unique ID for a virtual port.";
+        type unique-id;
+    }
+
+    typedef virtual-node-id {
+        description
+            "A unique ID for a virtual node.";
+        type unique-id;
+    }
+
+    typedef virtual-link-id {
+        description
+            "A unique ID for a virtual link.";
+        type unique-id;
+    }
+
+    typedef virtual-path-id {
+        description
+            "A unique ID for a virtual path.";
+        type unique-id;
+    }
+
+    typedef virtual-network-id {
+        description
+            "A unique ID for a virtual network.";
+        type unique-id;
+    }
+
+    typedef virtual-resource-id {
+        description
+            "A unique ID for the virtual resource.";
+        type unique-id;
+    }
+
+    typedef virtual-resource-entity-id {
+        description
+            "A unique ID for a virtual resource entity.";
+        type unique-id;
+    }
+
+    typedef physical-resource-id {
+        description
+            "A unique ID for the physical resource.";
+        type unique-id;
+    }
+
+    typedef physical-resource-entity-id {
+        description
+            "A unique ID for a physical resource entity.";
+        type string;
+    }
+
+    // *********************
+    // * Names
+    // *********************
+    typedef attribute-name {
+        description
+            "A name for a physical port or node attribute.";
+        type name;
+    }
+
+    typedef physical-host-name {
+        description
+            "A name for a physical host.";
+        type name;
+    }
+}

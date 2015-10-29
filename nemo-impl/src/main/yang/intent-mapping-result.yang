@@ -1,0 +1,196 @@
+/*
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+module intent-mapping-result {
+    yang-version 1;
+
+    namespace "urn:opendaylight:params:xml:ns:yang:intent:mapping:result";
+    prefix "intent-mapping-result";
+
+    import nemo-engine-common {prefix nemo-engine-common;}
+    import nemo-common {prefix nemo-common;}
+
+    revision "2015-10-10" {
+        description
+            "Initial revision.";
+    }
+
+    grouping virtual-resource-instance {
+        description
+            "Represents the abstract entity of the virtual resource,
+             which can be a vport, vnode, vlink or vpath.";
+
+        leaf virtual-resource-id {
+            description
+                "A unique ID for a virtual resource.";
+            type nemo-engine-common:virtual-resource-id;
+            mandatory true;
+        }
+
+        leaf virtual-resource-type {
+            description
+                "The type of the virtual resource.";
+            type enumeration {
+                enum vport;
+                enum vnode;
+                enum vlink;
+                enum vpath;
+            }
+        }
+
+        leaf virtual-resource-entity-id {
+            description
+                "A unique ID for the entity corresponding to
+                 the virtual resource.";
+            type nemo-engine-common:virtual-resource-entity-id;
+        }
+
+        leaf parent-virtual-resource-entity-id {
+            description
+                "A unique ID for the parent entity corresponding
+                 to the virtual resource. If the resource entity
+                 is a virtual port, it's parent entity is the
+                 virtual node which it belongs to.";
+            type nemo-engine-common:virtual-resource-entity-id;
+        }
+    }
+
+    grouping physical-resource-instance {
+        description
+            "Represents the abstract entity of the physical resource,
+             which can be a port, node or path.";
+
+        leaf physical-resource-id {
+            description
+                "A unique ID for a physical resource.";
+            type nemo-engine-common:physical-resource-id;
+            mandatory true;
+        }
+
+        leaf physical-resource-type {
+            description
+                "The type of the physical resource.";
+            type enumeration {
+                enum port;
+                enum node;
+                enum path;
+            }
+        }
+
+        leaf physical-resource-entity-id {
+            description
+                "A unique ID for the entity corresponding to
+                 the physical resource.";
+            type nemo-engine-common:physical-resource-entity-id;
+        }
+
+        leaf parent-physical-resource-entity-id {
+            description
+                "A unique ID for the parent entity corresponding
+                 to the physical resource. If the resource entity
+                 is a physical port, it's parent entity is the
+                 physical node which it belongs to.";
+            type nemo-engine-common:physical-resource-entity-id;
+        }
+    }
+
+    container intent-vn-mapping-results {
+        description
+            "Contains the intent-vn mapping results of all users.";
+
+        list user-intent-vn-mapping {
+            description
+                "Represents the intent-vn mapping results of a user.";
+
+            key "user-id";
+            leaf user-id {
+                description
+                    "The user id for the intents that are mapped to
+                     the virtual resource.";
+                type nemo-common:user-id;
+            }
+
+            leaf virtual-network-id {
+                description
+                    "The virtual network id of the user.";
+                type nemo-engine-common:virtual-network-id;
+            }
+
+            list intent-vn-mapping-result {
+                description
+                    "Represents a intent-vn mapping result of the user.";
+
+                key "intent-id";
+                leaf intent-id {
+                    description
+                        "A unique ID for the user intent.";
+                    type nemo-common:intent-id;
+                }
+
+                leaf intent-type {
+                    description
+                        "The type of the user intent.";
+                    type enumeration {
+                        enum node;
+                        enum connection;
+                        enum operation;
+                    }
+                }
+
+                list virtual-resource {
+                    description
+                        "The list of virtual resource corresponding to
+                         the user intent.";
+
+                    key "virtual-resource-id";
+                    uses virtual-resource-instance;
+
+                    leaf order {
+                        description
+                            "Specify the order of the virtual resource instance
+                             in a sequence list.";
+                        type uint32;
+                    }
+                }
+            }
+        }
+    }
+
+    container vn-pn-mapping-results {
+        description
+            "Contains the vn-pn mapping results of all users.";
+
+        list user-vn-pn-mapping {
+            description
+                "Represents the vn-pn mapping results of a user.";
+
+            key "virtual-network-id";
+            leaf virtual-network-id {
+                description
+                    "The virtual network id of the user.";
+                type nemo-engine-common:virtual-network-id;
+            }
+
+            leaf user-id {
+                description
+                    "The user id for the virtual network.";
+                type nemo-common:user-id;
+            }
+
+            list vn-pn-mapping-result {
+                description
+                    "Represents a vn-pn mapping result of the user.";
+
+                key "virtual-resource-entity-id";
+                uses virtual-resource-instance;
+
+                uses physical-resource-instance;
+            }
+        }
+    }
+}

@@ -1,58 +1,23 @@
 /*
- * Copyright (c) 2015  Huawei Technologies Co., Ltd. and others.  All rights reserved.
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-module nemo-result{
+module nemo-result {
+    yang-version 1;
 
-	yang-version 1;	
-	namespace "urn:opendaylight:params:xml:ns:yang:nemo:result";	
-	prefix "nemo-result";
-	
-	import nemo-common {prefix nemo-common;}
-	
-	revision "2015-06-29" {
+    namespace "urn:opendaylight:params:xml:ns:yang:nemo:result";
+    prefix "nemo-result";
+
+    import nemo-common {prefix nemo-common;}
+
+    revision "2015-10-10" {
         description
             "Initial revision.";
     }
-	
-	container expected-definitons{
-	
-	}	
-	
-	grouping expected-instance {
-		leaf expected-id {
-			type nemo-common:expected-instance-id;
-			mandatory true;
-		}
-		leaf expected-name{
-			type nemo-common:expected-instance-name;
-			mandatory false;
-		}
-		leaf expected-description {
-			type nemo-common:description;
-		}		
-	}
-	
-	container avoid-definitons{
-	
-	}
 
-	grouping avoid-instance {
-		leaf avoid-id {
-			type nemo-common:avoid-instance-id;
-			mandatory true;
-		}
-		leaf avoid-name{
-			type nemo-common:avoid-instance-name;
-			mandatory false;
-		}
-		leaf avoid-description {
-			type nemo-common:description;
-		}		
-	}
-	
+    // TBD
 }

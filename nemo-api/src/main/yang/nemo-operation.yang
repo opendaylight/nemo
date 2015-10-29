@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015  Huawei Technologies Co., Ltd. and others.  All rights reserved.
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,201 +7,288 @@
  */
 
 module nemo-operation {
+    yang-version 1;
 
-	yang-version 1;	
-	namespace "urn:opendaylight:params:xml:ns:yang:nemo:operation";	
-	prefix "nemo-operation";
-	
-	import nemo-common {prefix nemo-common;}
-	
-	revision "2015-06-29" {
+    namespace "urn:opendaylight:params:xml:ns:yang:nemo:operation";
+    prefix "nemo-operation";
+
+    import nemo-common {prefix nemo-common;}
+
+    revision "2015-10-10" {
         description
             "Initial revision.";
     }
-	
-	grouping parameter-definition {
-		leaf name {
-			description "A user-visible name for parameter";
-			type nemo-common:parameter-name;
-			mandatory true;
-		}	
-		leaf type {
-			description "The type of the parameter";
-			default string;
-			type enumeration {
-				enum string {
-					description "A string-valued parameter";
-				}
-				enum int {
-					description "An integer-valued parameter";
-				}
-				enum range {
-					description "An integer-range parameter";
-				}
-			}
-		}	
-		leaf is-required {
-			description "Specify whether the parameter is required ";
-			default optional;
-			type enumeration {
-				enum required {
-					description "The parameter is required";
-				}
-				enum optional {
-					description "The parameter is optional";
-				}
-			}
-		}	
-	}
-	
-	
-	container action-definitions {
-	    list action-definition {		
-			key "action-name";
-			leaf action-name {
-				description "A name for the action definition";
-				type nemo-common:action-definition-name;
-			    mandatory true;			
-		    }			
-	        list data {
-				description
-					"data for the action that can be passed in.";
-				key "name";			
-				uses parameter-definition;		
-		    }		
-	    }
-	}	
-	grouping action-parameter-instance{
-		leaf data-name {
-			type nemo-common:data-name;
-			mandatory true;
-		}
-		leaf string-value {
-			type string;
-		}
-		leaf int-value {
-			type int64;
-		}
-		container range-value {
-			leaf min {
-				type int64;
-				mandatory true;
-			}
-			leaf max {
-				type int64;
-				mandatory true;
-			}
-		}	
-	}	
-	grouping action-instance{
-		description " ";
-		leaf action-name{
-			type nemo-common:action-instance-name;
-			mandatory true;
-		}
-		list data {
-			key "data-name";
-			uses action-parameter-instance;			
-		}		
-	}
-		
-	container condition-definitions {
-		list condition-definition{
-			key "condition-name";
-			leaf condition-name{
-				type nemo-common:condition-definition-name;
-				mandatory true;		
-			}
-			list condition-parameter{
-				key "name";
-				uses parameter-definition;
-				min-elements 1;
-			}	
-		}
-	}
-	grouping conditon-parameter-instance{
-		leaf parameter-name {
-		    type nemo-common:condition-parameter-name;
-			mandatory true;
-		}
-		leaf string-value {
-			type string;
-		}
-		leaf int-value {
-			type int64;
-		}
-		container range-value {
-			leaf min {
-				type int64;
-				mandatory true;
-			}
-			leaf max {
-				type int64;
-				mandatory true;
-			}
-		}	
-	}	
-	grouping condition-instance {
-		description " ";
-		leaf condition-name{
-			type nemo-common:condition-instance-name;
-			mandatory true;				
-		}	
-		list condition-parameter{
-			key "parameter-name";
-			uses conditon-parameter-instance;
-			min-elements 1;
-		}
-	}
-	
-	
-	container constraint-definitions {
-		list constraint-definition{
-			key "constraint-name";
-			leaf constraint-name{
-				type nemo-common:constraint-definition-name;
-				mandatory true;		
-			}
-			list constraint-parameter{
-				key "name";
-				uses parameter-definition;
-				min-elements 1;
-			}	
-		}
-	}
-	grouping constraint-parameter-instance{
-		leaf parameter-name {
-			type nemo-common:constraint-parameter-name;
-			mandatory true;
-		}
-		leaf string-value {
-			type string;
-		}
-		leaf int-value {
-			type int64;
-		}
-		container range-value {
-			leaf min {
-				type int64;
-				mandatory true;
-			}
-			leaf max {
-				type int64;
-				mandatory true;
-			}
-		}	
-	}	
-	grouping constraint-instance {
-		description " ";
-		leaf constraint-name{
-			type nemo-common:constraint-instance-name;
-			mandatory true;				
-		}	
-		list constraint-parameter{
-			key "parameter-name";
-			uses constraint-parameter-instance;
-			min-elements 1;
-		}
-	}
-	
+
+    container condition-parameter-definitions {
+        list condition-parameter-definition {
+            description
+                "Defines the condition parameter with its metadata.";
+
+            key "parameter-name";
+            leaf parameter-name {
+                description
+                    "A name for the condition parameter.";
+                type nemo-common:parameter-name;
+                mandatory true;
+            }
+
+            leaf parameter-value-type {
+                description
+                    "A type of value for the condition parameter.";
+                type enumeration {
+                    enum string {
+                        description
+                            "A string-valued parameter.";
+                    }
+                    enum int {
+                        description
+                            "An integer-valued parameter.";
+                    }
+                    enum range {
+                        description
+                            "An integer-range parameter.";
+                    }
+                }
+            }
+
+            container parameter-match-patterns {
+                description
+                    "Defines the match patterns of the condition parameter.";
+
+                leaf-list parameter-match-pattern {
+                    type enumeration {
+                        enum less-than;
+                        enum not-less-than;
+                        enum equal;
+                        enum not-equal;
+                        enum greater-than;
+                        enum not-greater-than;
+                        enum between;
+                        enum periodical;
+                    }
+                }
+            }
+        }
+    }
+
+    container action-definitions {
+        list action-definition {
+            description
+                "Defines the actions which will be supported by the NEMO project.";
+
+            key "action-name";
+            leaf action-name {
+                description
+                    "A name for the action definition.";
+                type nemo-common:action-name;
+                mandatory true;
+            }
+
+            leaf parameter-value-type {
+                description
+                    "The type of the action parameter.";
+                default string;
+                type enumeration {
+                    enum string {
+                        description
+                            "A string-valued parameter.";
+                    }
+                    enum int {
+                        description
+                            "An integer-valued parameter.";
+                    }
+                    enum range {
+                        description
+                            "An integer-range parameter.";
+                    }
+                }
+            }
+        }
+    }
+
+    grouping condition-instance {
+        description
+            "Specific a instance of condition whose metadata has been filled in.";
+
+        list condition-segment {
+            description
+                "The segment entities will be composed into a whole condition entity.
+                 Each segment will be a sub expression of the condition.";
+
+            key "condition-segment-id";
+            leaf condition-segment-id {
+                description
+                    "A unique ID for a condition segment.";
+                type nemo-common:condition-segment-id;
+                mandatory true;
+            }
+
+            leaf condition-parameter-name {
+                description
+                    "A name for a conditon parameter.";
+                type nemo-common:condition-parameter-name;
+            }
+
+            leaf condition-parameter-match-pattern {
+                description
+                    "The operator for the condition parameter and it's target value.";
+                type enumeration {
+                    enum less-than;
+                    enum not-less-than;
+                    enum equal;
+                    enum not-equal;
+                    enum greater-than;
+                    enum not-greater-than;
+                    enum between;
+                    enum periodical;
+                }
+            }
+
+            container condition-parameter-target-value {
+                description
+                    "The target value of condition parameter.";
+
+                leaf string-value {
+                    type string;
+                }
+
+                leaf int-value {
+                    type int64;
+                }
+
+                container range-value {
+                    leaf min {
+                        type int64;
+                        mandatory true;
+                    }
+
+                    leaf max {
+                        type int64;
+                        mandatory true;
+                    }
+                }
+            }
+
+            leaf precursor-relation-operator {
+                description
+                    "The logical operator between current segment and the next segment.";
+                type enumeration {
+                    enum none;
+                    enum and;
+                    enum or;
+                    enum not;
+                }
+            }
+
+            leaf order {
+                description
+                    "The order of the segment in the whole condition entity.";
+                type uint32;
+            }
+        }
+    }
+
+    grouping action-instance {
+        description
+            "Specific a action instance whose metadata has been filled in.";
+
+        leaf action-name {
+            description
+                "A name for a action instance.";
+            type nemo-common:action-name;
+            mandatory true;
+        }
+
+        container parameter-values {
+            description
+                "The parameter value list of an action.";
+
+            list string-value {
+                key "value order";
+                leaf value {
+                    type string;
+                }
+
+                leaf order {
+                    type uint32;
+                }
+            }
+
+            list int-value {
+                key "value order";
+                leaf value {
+                    type int64;
+                }
+
+                leaf order {
+                    type uint32;
+                }
+            }
+
+            container range-value {
+                leaf min {
+                    type int64;
+                    mandatory true;
+                }
+
+                leaf max {
+                    type int64;
+                    mandatory true;
+                }
+            }
+        }
+    }
+
+    grouping operation-instance {
+        description
+            "Specific an operation instance whose metadata has been filled in.
+             Operation is a type of intent which refers to taking for some specific
+             actions to realize the purpose.";
+
+        leaf operation-id {
+            description
+                "A unique ID for a operation instance.";
+            type nemo-common:operation-id;
+            mandatory true;
+        }
+
+        leaf operation-name {
+            description
+                "A user-visible and unique name for a operation instance.";
+            type nemo-common:operation-name;
+            mandatory true;
+        }
+
+        leaf priority {
+            description
+                "Defines the priority of a operation instance.";
+            type uint32;
+            default 0;
+        }
+
+        leaf target-object {
+            description
+                "The target object which the operation instance will apply to.";
+            type nemo-common:object-id;
+            mandatory true;
+        }
+
+        uses condition-instance;
+
+        list action {
+            description
+                "The action list for the operation instance.";
+
+            key "action-name";
+            uses action-instance;
+
+            leaf order {
+                description
+                    "The order of an action instance in execution sequence.";
+                type uint32;
+            }
+
+            min-elements 1;
+        }
+    }
 }

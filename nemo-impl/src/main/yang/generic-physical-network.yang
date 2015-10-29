@@ -1,0 +1,443 @@
+/*
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+module generic-physical-network {
+    yang-version 1;
+
+    namespace "urn:opendaylight:params:xml:ns:yang:generic:physical:network";
+    prefix "generic-pn";
+
+    import nemo-engine-common {prefix nemo-engine-common;}
+    import ietf-inet-types {
+        prefix inet;
+        revision-date 2010-09-24;
+    }
+    import ietf-yang-types {
+        prefix yang;
+        revision-date 2010-09-24;
+    }
+
+    description
+        "Represents the generic physical network information model.
+         Each renderer will collect detailed physical network information
+         and fill in this generic model.";
+
+    revision "2015-10-10" {
+        description
+            "Initial revision.";
+    }
+
+    grouping attribute-definition {
+        description
+            "Defines an attribute for a physical port or node.";
+
+        leaf attribute-name {
+            description
+                "A name for the attribute.";
+            type nemo-engine-common:attribute-name;
+            mandatory true;
+        }
+
+        leaf attribute-value-type {
+            description
+                "The value type for the attribute.";
+            type enumeration {
+                enum string;
+                enum int;
+                enum range;
+            }
+        }
+
+        container attribute-match-patterns {
+            description
+                "Defines the match patterns of the attribute.";
+
+            leaf-list attribute-match-pattern {
+                type enumeration {
+                    enum less-than;
+                    enum not-less-than;
+                    enum equal;
+                    enum not-equal;
+                    enum greater-than;
+                    enum not-greater-than;
+                    enum between;
+                }
+            }
+        }
+    }
+
+    container physical-port-attribute-definitions {
+        description
+            "Contains all attribute definitions for the physical port.";
+
+        list physical-port-attribute-definition {
+            description
+                "An attribute definition for the physical port.";
+
+            key "attribute-name";
+            uses attribute-definition;
+        }
+    }
+
+    container physical-node-attribute-definitions {
+        description
+            "Contains all attribute definitions for the physical node.";
+
+        list physical-node-attribute-definition {
+            description
+                "An attribute definition for the physical node.";
+
+            key "attribute-name";
+            uses attribute-definition;
+        }
+    }
+
+    grouping attribute-instance {
+        description
+            "Represents an attribute instance and it's metadata.";
+
+        leaf attribute-name {
+            description
+                "A name for an attribute instance.";
+            type nemo-engine-common:attribute-name;
+            mandatory true;
+        }
+
+        container attribute-value {
+            description
+                "The value of the attribute instance.";
+
+            leaf string-value {
+                type string;
+            }
+
+            leaf int-value {
+                type int64;
+            }
+
+            container range-value {
+                leaf min {
+                    type int64;
+                    mandatory true;
+                }
+
+                leaf max {
+                    type int64;
+                    mandatory true;
+                }
+            }
+        }
+    }
+
+    grouping physical-port-instance {
+        description
+            "Represents a physical port instance and it's metadata.";
+
+        leaf port-id {
+            description
+                "A unique ID for a physical port.";
+            type nemo-engine-common:physical-port-id;
+            mandatory true;
+        }
+
+        leaf port-type {
+            description
+                "The type of a physical port.";
+            type enumeration {
+                enum external {
+                    description
+                        "The physical port is connected to a external host
+                         or network device.";
+                }
+                enum internal {
+                    description
+                        "The physical port is connected to a physical node.";
+                }
+            }
+            mandatory true;
+        }
+
+        leaf mac-address {
+            description
+                "The mac address of a physical port.";
+            type yang:mac-address;
+            mandatory true;
+        }
+
+        leaf bandwidth {
+            description
+                "The bandwidth capacity of a physical port.
+                 The unit is kbps.";
+            type uint32;
+            units kbps;
+        }
+
+        list attribute {
+            description
+                "The list of attributes of a physical port.";
+
+            key "attribute-name";
+            uses attribute-instance;
+        }
+    }
+
+    grouping physical-node-instance {
+        description
+            "Represents a physical node instance and it's metadata.";
+
+        leaf node-id {
+            description
+                "A unique ID for a physical node.";
+            type nemo-engine-common:physical-node-id;
+            mandatory true;
+        }
+
+        leaf node-type {
+            description
+                "The type of a physical node.";
+            type enumeration {
+                enum switch;
+                enum router;
+                enum firewall;
+                enum loadbalancer;
+            }
+        }
+
+        list physical-port {
+            description
+                "The list of ports of a physical node.";
+
+            key "port-id";
+            uses physical-port-instance;
+        }
+
+        list attribute {
+            description
+                "The list of attributes of a physical node.";
+
+            key "attribute-name";
+            uses attribute-instance;
+        }
+    }
+
+    grouping physical-link-instance {
+        description
+            "Represents a physical link instance and it's metadata.";
+
+        leaf link-id {
+            description
+                "A unique ID for a physical link.";
+            type nemo-engine-common:physical-link-id;
+            mandatory true;
+        }
+
+        leaf src-node-id {
+            description
+                "Represents the ID of the source physical node.";
+            type nemo-engine-common:physical-node-id;
+        }
+
+        leaf src-port-id {
+            description
+                "Represents the ID of the source physical port.";
+            type nemo-engine-common:physical-port-id;
+        }
+
+        leaf dest-node-id {
+            description
+                "Represents the ID of the destination physical node.";
+            type nemo-engine-common:physical-node-id;
+        }
+
+        leaf dest-port-id {
+            description
+                "Represents the ID of the destination physical port.";
+            type nemo-engine-common:physical-port-id;
+        }
+
+        leaf metric {
+            description
+                "The routing metric is used by routing computation.";
+            type uint32;
+        }
+
+        leaf bandwidth {
+            description
+                "The bandwidth capacity of a physical link.
+                 The unit is kbps.";
+            type uint32;
+            units kbps;
+        }
+
+        leaf delay {
+            description
+                "The packet transfer delay of a physical link.
+                 The unit is millisecond.";
+            type uint32;
+            units millisecond;
+        }
+
+        leaf loss-rate {
+            description
+                "The ratio of total lost packet outcomes to
+                 total transmitted packets. The unit is percent.";
+            type uint8 {
+                range "0..100";
+            }
+            units percent;
+        }
+    }
+
+    grouping physical-host-instance {
+        description
+            "Represents a physical host instance and it's metadata.";
+
+        leaf host-id {
+            description
+                "A unique ID for a physical host.";
+            type nemo-engine-common:physical-host-id;
+            mandatory true;
+        }
+
+        leaf host-name {
+            description
+                "A human-readable name for a physical host.";
+            type nemo-engine-common:physical-host-name;
+        }
+
+        leaf mac-address {
+            description
+                "The mac address of the host.";
+            type yang:mac-address;
+            mandatory true;
+        }
+
+        container ip-addresses {
+            description
+                "One or more ip addresses of the host.";
+
+            leaf-list ip-address {
+                type inet:ip-address;
+                min-elements 1;
+            }
+        }
+
+        leaf node-id {
+            description
+                "A unique ID for the physical node that the host connects to.";
+            type nemo-engine-common:physical-node-id;
+            mandatory true;
+        }
+
+        leaf port-id {
+            description
+                "A unique ID for the physical port that the host connects to.";
+            type nemo-engine-common:physical-port-id;
+            mandatory true;
+        }
+    }
+
+    grouping physical-path-instance {
+        description
+            "Represents a physical tunnel instance and it's metadata.";
+
+        leaf path-id {
+            description
+                "A unique ID for a physical path.";
+            type nemo-engine-common:physical-path-id;
+            mandatory true;
+        }
+
+        list physical-link {
+            description
+                "A list of physical links which compose the physical path.";
+
+            key "link-id";
+            leaf link-id {
+                description
+                    "A unique ID for the physical link.";
+                type nemo-engine-common:physical-link-id;
+            }
+
+            leaf order {
+                description
+                    "Specify the order of the physical link instance
+                     in a sequence list.";
+                type uint32;
+            }
+        }
+
+        leaf metric {
+            description
+                "The routing metric of a physical path.";
+            type uint32;
+        }
+
+        leaf bandwidth {
+            description
+                "The bandwidth capacity of a physical path.
+                 The unit is kbps.";
+            type uint32;
+            units kbps;
+        }
+
+        leaf delay {
+            description
+                "The packet transfer delay of a physical path.
+                 The unit is millisecond.";
+            type uint32;
+            units millisecond;
+        }
+    }
+
+    container physical-network {
+        description
+            "Contains all physical nodes, links and tunnels
+             in the underlying network.";
+
+        container physical-nodes {
+            list physical-node {
+                description
+                    "The list of all physical nodes in the underlying network.";
+
+                key "node-id";
+                uses physical-node-instance;
+            }
+        }
+
+        container physical-links {
+            list physical-link {
+                description
+                    "The list of all physical links in the underlying network.";
+
+                key "link-id";
+                uses physical-link-instance;
+            }
+        }
+
+        container physical-hosts {
+            list physical-host {
+                description
+                    "The list of all physical hosts in the underlying network.";
+
+                key "host-id";
+                uses physical-host-instance;
+            }
+        }
+
+        container physical-paths {
+            list physical-path {
+                description
+                    "The list of all physical tunnels in the underlying network.";
+
+                key "path-id";
+                uses physical-path-instance;
+            }
+        }
+    }
+}

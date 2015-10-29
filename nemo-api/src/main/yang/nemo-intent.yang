@@ -1,136 +1,395 @@
 /*
- * Copyright (c) 2015  Huawei Technologies Co., Ltd. and others.  All rights reserved.
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
- 
+
 module nemo-intent {
-	yang-version 1;	
-	namespace "urn:opendaylight:params:xml:ns:yang:nemo:intent";	
-	prefix "nemo-intent";
-	
-	import nemo-common {prefix nemo-common;}
-	import nemo-object {prefix nemo-object;}
-	import nemo-operation {prefix nemo-operation;}
-	import nemo-result {prefix nemo-result;}
-	
-	revision "2015-06-29" {
+    yang-version 1;
+
+    namespace "urn:opendaylight:params:xml:ns:yang:nemo:intent";
+    prefix "nemo-intent";
+
+    import nemo-common {prefix nemo-common;}
+    import nemo-object {prefix nemo-object;}
+    import nemo-operation {prefix nemo-operation;}
+    import nemo-user {prefix nemo-user;}
+
+    revision "2015-10-10" {
         description
             "Initial revision.";
     }
-		
-	grouping intent-instance {
-		description "";
-		leaf intent-id {
-			description "A unique ID for the intent";
-			type nemo-common:intent-id;			
-			mandatory true;
-		}	
-		leaf intent-name {
-			description "A user-visible name for the intent";
-			type nemo-common:intent-name;
-		}	
-		container objects {
-			description "";
-			list node {
-				key "node-id";
-				uses nemo-object:node-instance;
-			}			
-			list connection {
-				key "connection-id";
-				uses nemo-object:connection-instance;
-			}				
-			list flow {
-				key "flow-id";
-				uses nemo-object:flow-instance;
-			}							
-		}
-		
-		container operation {
-			leaf apply-on-object {
-				type nemo-common:object-id;
-				mandatory true;
-			}		
-			leaf priority{
-				type int64;
-				default 1;
-			}
-			uses nemo-operation:condition-instance;
-			uses nemo-operation:action-instance;
-			uses nemo-operation:constraint-instance;			
-		}
-		
-		container result{
-			leaf result-to-object {
-				type nemo-common:object-id;
-				mandatory true;
-			}		
-			leaf priority{
-				type int64;
-				default 1;
-			}
-			choice result-mode {
-				mandatory true;
-				case expected-case {
-					uses nemo-result:expected-instance;
-				}
-				case avoid-case{
-					uses nemo-result:avoid-instance;
-				}		
-			}						
-		}	
-		container contexts{
-			list context {
-				key "context-id";
-				leaf context-id {
-					type nemo-common:context-id;
-					mandatory true;
-				}
-				leaf context-name{
-					type nemo-common:context-name;
-					mandatory true;
-				}
-			}			
-		}
-	}
-		
-	container users {
-		description "The list of all known users";
-		list user {
-            description "";
-            key "user-id";
-            leaf user-id {
-                description "A unique ID for the user";             
-                type nemo-common:user-id;
-				mandatory true;
+
+    grouping user-intent {
+        description
+            "User intent refers to a purpose in getting an ultimate result
+             or performing some specific operation on some objects.";
+
+        container objects {
+            description
+                "The element could be operated and managed by users.
+                 It inludes resources to construct users' virtual network,
+                 and the services in this network.In NEMO project, it is
+                 abstracted into node, connection and flow";
+
+            list node {
+                key "node-id";
+                uses nemo-object:node-instance;
             }
-            leaf user-name {
-                description "A user-visible name for the user";
-                type nemo-common:user-name;
-				mandatory false;
-            }		
-			list intent{
-				key "intent-id";
-				uses intent-instance;
-				min-elements 1;
-			}
-		}		
-	}
-	
-	rpc register-node-instance {
-	    description "";
-		input {
-			uses nemo-object:node-instance;
-		}
-	}
-	
-	rpc unregister-node-instance {
-	    description "";
-		input {
-			uses nemo-object:node-instance;
-		}
-	}
-		
+
+            list connection {
+                key "connection-id";
+                uses nemo-object:connection-instance;
+            }
+
+            list flow {
+                key "flow-id";
+                uses nemo-object:flow-instance;
+            }
+        }
+
+        container operations {
+            description
+                "The operation is to dynamically adjust the behavior of network,
+                 and it is applied on objects, that is, node, connection and flow";
+
+            list operation {
+                key "operation-id";
+                uses nemo-operation:operation-instance;
+            }
+        }
+
+        container results {
+            // TBD
+        }
+    }
+
+    container users {
+        description
+            "The list of all known users";
+
+        list user {
+            description
+                "A user is an administrative domain which is
+                 logically separated from other users, and each
+                 intent is specified by a particular user.";
+
+            key "user-id";
+            uses nemo-user:user-instance;
+            uses user-intent;
+        }
+    }
+
+    container query-condition-definitions {
+        description
+            "Contains the definitions for all advanced query, which means
+             they are the query with conditions supported by the NEMO engine.
+             User will fetch all results which meet the condition.";
+
+        list query-condition-definition {
+            description
+                "Define the query with condition. For example, user may
+                 intent to query all connection's name whose utilization is
+                 beyond 80%. That is a query with condition.";
+
+            key "query-condition-name query-intent-type";
+            leaf query-condition-name {
+                description
+                    "A user-visible name for the query condition definition.
+                     The query condition name is usually to specify the
+                     attribute or property of some kind of intent.
+                     For the above example, the query-condition-name is utility.";
+                type nemo-common:query-condition-name;
+                mandatory true;
+            }
+
+            leaf query-intent-type {
+                description
+                    "The target for the query, and its attributes will be checked out
+                     if meet the condition. In the above example, connection is the
+                     target. So, connection will be the query-intent-type here.";
+                type enumeration {
+                    enum node;
+                    enum connection;
+                    enum flow;
+                    enum operation;
+                    enum result;
+                }
+            }
+
+            leaf query-condition-value-type {
+                description
+                    "The type of the target value for the query condition.
+                     For the above example, the target-value is 80(%),
+                     so the query-condition-value-type will be int.";
+                default string;
+                type enumeration {
+                    enum string {
+                        description
+                            "A string-valued target value.";
+                    }
+                    enum int {
+                        description
+                            "An integer-valued target value.";
+                    }
+                    enum range {
+                        description
+                            "An integer-range target value.";
+                    }
+                }
+            }
+
+            container query-condition-match-patterns {
+                description
+                    "The relationship between the value of query-condition-name
+                     and query-condition-target-value. If an intent's attribute
+                     or property specified by the query condition name matches
+                     to the target value by the match pattern, this intent meets
+                     the condition. For the above example, the condition's
+                     query-condition-match-patterns could be less-than, not-less-than,
+                     equal, not-equal, greater-than, not-greater-than, between.";
+
+                leaf-list query-condition-match-pattern {
+                    type enumeration {
+                        enum less-than;
+                        enum not-less-than;
+                        enum equal;
+                        enum not-equal;
+                        enum greater-than;
+                        enum not-greater-than;
+                        enum between;
+                    }
+                }
+            }
+        }
+    }
+
+    grouping common-rpc-result {
+        description
+            "Common return result for all defined RPCs.";
+
+        leaf result-code {
+            description
+                "Result code which is convenient for processing in a program.";
+            type enumeration {
+                enum ok {
+                    description
+                        "The invoked RPC was executed successfully";
+                }
+                enum error {
+                    description
+                        "There's an error while executing the RPC";
+                }
+            }
+        }
+
+        leaf message {
+            description
+                "A human-readable message for an error or exception";
+            type string;
+        }
+    }
+
+    grouping query-condition-instance {
+        description
+            "A query condition instance generated according to
+             a specified query condition definition.";
+
+        leaf query-condition-id {
+            description
+                "A unique ID for a query condition instance.";
+            type nemo-common:query-condition-id;
+            mandatory true;
+        }
+
+        leaf query-condition-name {
+            description
+                "The name of the query condition definition.";
+            type nemo-common:query-condition-name;
+            mandatory true;
+        }
+
+        leaf query-intent-type {
+            description
+                "The type of the intents that the user wants to query from through
+                 the condition instance.";
+            type enumeration {
+                enum node;
+                enum connection;
+                enum flow;
+                enum operation;
+                enum result;
+            }
+        }
+
+        leaf query-condition-match-pattern {
+            description
+                "The match pattern the condition instance will use.";
+            type enumeration {
+                enum less-than;
+                enum not-less-than;
+                enum equal;
+                enum not-equal;
+                enum greater-than;
+                enum not-greater-than;
+                enum between;
+            }
+        }
+
+        container query-condition-target-value {
+            description
+                "The target value used to compare with the attribute
+                 or property of the intents.";
+
+            leaf string-value {
+                type string;
+            }
+
+            leaf int-value {
+                type int64;
+            }
+
+            container range-value {
+                leaf min {
+                    type int64;
+                    mandatory true;
+                }
+
+                leaf max {
+                    type int64;
+                    mandatory true;
+                }
+            }
+        }
+    }
+
+    rpc register-user {
+        description
+            "Register a user to the user repository.";
+
+        input {
+            uses nemo-user:user-instance;
+        }
+
+        output {
+            uses common-rpc-result;
+        }
+    }
+
+    rpc begin-transaction {
+        description
+            "Begin a transaction for the user";
+
+        input {
+            uses nemo-user:user-instance;
+        }
+
+        output {
+            uses common-rpc-result;
+        }
+    }
+
+    rpc end-transaction {
+        description
+            "Commit the user's current transaction";
+
+        input {
+            uses nemo-user:user-instance;
+        }
+
+        output {
+            uses common-rpc-result;
+        }
+    }
+
+    rpc language-style-nemo-request {
+        description
+            "Create, update or delete an intent of a user through an NEMO statement";
+
+        input {
+            uses nemo-user:user-instance;
+
+            leaf nemo-statement {
+                type string;
+            }
+        }
+
+        output {
+            uses common-rpc-result;
+        }
+    }
+
+    rpc structure-style-nemo-update {
+        description
+            "Create or update all or a part of the user's intents,
+             which are described as json or xml format.";
+
+        input {
+            uses nemo-user:user-instance;
+            uses user-intent;
+        }
+
+        output {
+            uses common-rpc-result;
+        }
+    }
+
+    rpc structure-style-nemo-delete {
+        description
+            "Delete some intents of a user from the user repository";
+
+        input {
+            uses nemo-user:user-instance;
+
+            container objects {
+                leaf-list node {
+                    type nemo-common:node-id;
+                }
+
+                leaf-list connection {
+                    type nemo-common:connection-id;
+                }
+
+                leaf-list flow {
+                    type nemo-common:flow-id;
+                }
+            }
+
+            container operations {
+                leaf-list operation {
+                    type nemo-common:operation-id;
+                }
+            }
+
+            container results {
+                // TBD
+            }
+        }
+
+        output {
+            uses common-rpc-result;
+        }
+    }
+
+    rpc advanced-nemo-query {
+        description
+            "Query some intents of a user from the user repository
+             according to several advanced query conditions.";
+
+        input {
+            uses nemo-user:user-instance;
+
+            list query-condition {
+                key "query-condition-id";
+                uses query-condition-instance;
+            }
+        }
+
+        output {
+            uses common-rpc-result;
+            uses user-intent;
+        }
+    }
 }

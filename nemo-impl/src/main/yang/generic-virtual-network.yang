@@ -1,0 +1,414 @@
+/*
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+module generic-virtual-network {
+    yang-version 1;
+
+    namespace "urn:opendaylight:params:xml:ns:yang:generic:virtual:network";
+    prefix "generic-vn";
+
+    import nemo-engine-common {prefix nemo-engine-common;}
+    import generic-physical-network {prefix generic-pn;}
+    import nemo-common {prefix nemo-common;}
+    import ietf-inet-types {
+        prefix inet;
+        revision-date 2010-09-24;
+    }
+    import ietf-yang-types {
+        prefix yang;
+        revision-date 2010-09-24;
+    }
+
+    revision "2015-10-10" {
+        description
+            "Initial revision.";
+    }
+
+    grouping virtual-port-instance {
+        description
+            "Represents a virtual port instance and it's metadata.";
+
+        leaf port-id {
+            description
+                "A unique ID for a virtual port.";
+            type nemo-engine-common:virtual-port-id;
+            mandatory true;
+        }
+
+        leaf port-type {
+            description
+                "The type of a virtual port.";
+            type enumeration {
+                enum external {
+                    description
+                        "The virtual port is connected to a external host
+                         or network device.";
+                }
+                enum internal {
+                    description
+                        "The virtual port is connected to a virtual node.";
+                }
+            }
+            mandatory true;
+        }
+
+        leaf bandwidth {
+            description
+                "The bandwidth capacity of a virtual port.
+                 The unit is kbps.";
+            type uint32;
+            units kbps;
+        }
+
+        container external-mac-addresses {
+            description
+                "A list of external mac addresses in the layer2 network
+                 that connects to the virtual port.";
+
+            leaf-list external-mac-address {
+                type yang:mac-address;
+            }
+        }
+
+        container external-ip-prefixes {
+            description
+                "A list of external ip prefixes in the layer3 network
+                 that connects to the virtual port.";
+
+            leaf-list external-ip-prefix {
+                type inet:ip-prefix;
+            }
+        }
+
+        list physical-resource-requirement {
+            description
+                "A list of physical port attribute requirements
+                 for selecting physical port resource.";
+
+            key "attribute-name";
+            uses generic-pn:attribute-instance;
+
+            leaf attribute-match-pattern {
+                description
+                    "The match pattern for an attribute instance.
+                     It represents the arithmetic logic.";
+                type enumeration {
+                    enum less-than;
+                    enum not-less-than;
+                    enum equal;
+                    enum not-equal;
+                    enum greater-than;
+                    enum not-greater-than;
+                    enum between;
+                }
+            }
+        }
+    }
+
+    grouping virtual-node-instance {
+        description
+            "Represents a virtual node instance and it's metadata.";
+
+        leaf node-id {
+            description
+                "A unique ID for a virtual node.";
+            type nemo-engine-common:virtual-node-id;
+            mandatory true;
+        }
+
+        leaf node-type {
+            description
+                "The type of a virtual node.";
+            type enumeration {
+                enum vswitch;
+                enum vrouter;
+                enum vfirewall;
+                enum vloadbalancer;
+            }
+        }
+
+        list virtual-port {
+            description
+                "A list of ports of a virtual node.";
+
+            key "port-id";
+            uses virtual-port-instance;
+        }
+
+        list physical-resource-requirement {
+            description
+                "A list of physical node attribute requirements
+                 for selecting physical node resource.";
+
+            key "attribute-name";
+            uses generic-pn:attribute-instance;
+
+            leaf attribute-match-pattern {
+                description
+                    "The match pattern for an attribute instance.
+                     It represents the arithmetic logic.";
+                type enumeration {
+                    enum less-than;
+                    enum not-less-than;
+                    enum equal;
+                    enum not-equal;
+                    enum greater-than;
+                    enum not-greater-than;
+                    enum between;
+                }
+            }
+        }
+    }
+
+    grouping virtual-link-instance {
+        description
+            "Represents a virtual link instance and it's metadata.";
+
+        leaf link-id {
+            description
+                "A unique ID for a virtual link.";
+            type nemo-engine-common:virtual-link-id;
+            mandatory true;
+        }
+
+        leaf src-node-id {
+            description
+                "A unique ID for the source virtual node.";
+            type nemo-engine-common:virtual-node-id;
+        }
+
+        leaf src-port-id {
+            description
+                "A unique ID for the source virtual port.";
+            type nemo-engine-common:virtual-port-id;
+        }
+
+        leaf dest-node-id {
+            description
+                "A unique ID for the destination virtual node.";
+            type nemo-engine-common:virtual-node-id;
+        }
+
+        leaf dest-port-id {
+            description
+                "A unique ID for the destination virtual port.";
+            type nemo-engine-common:virtual-port-id;
+        }
+
+        leaf metric {
+            description
+                "The routing metric is used by routing computation.";
+            type uint32;
+        }
+
+        leaf bandwidth {
+            description
+                "The bandwidth capacity of a virtual link.
+                 The unit is kbps.";
+            type uint32;
+            units kbps;
+        }
+
+        leaf delay {
+            description
+                "The packet transfer delay of a virtual link.
+                 The unit is millisecond.";
+            type uint32;
+            units millisecond;
+        }
+
+        leaf delay-requirement {
+            description
+                "The packet transfer delay requirement which
+                 is specified by the user and used in the virtual
+                 network mapping.";
+            type uint32;
+            units millisecond;
+        }
+    }
+
+    grouping virtual-path-instance {
+        description
+            "Represents a virtual path instance and it's metadata.";
+
+        leaf path-id {
+            description
+                "A unique ID for a virtual path.";
+            type nemo-engine-common:virtual-path-id;
+            mandatory true;
+        }
+
+        list virtual-link {
+            description
+                "A list of virtual links which compose the virtual path.";
+
+            key "link-id";
+            leaf link-id {
+                description
+                    "A unique ID for the virtual link.";
+                type nemo-engine-common:virtual-link-id;
+            }
+
+            leaf order {
+                description
+                    "Specify the order of the virtual link instance
+                     in a sequence list.";
+                type uint32;
+            }
+        }
+
+        leaf metric {
+            description
+                "The routing metric of a virtual path.";
+            type uint32;
+        }
+
+        leaf bandwidth {
+            description
+                "The bandwidth capacity of a virtual path.
+                 The unit is kbps.";
+            type uint32;
+            units kbps;
+        }
+
+        leaf delay {
+            description
+                "The packet transfer delay of a virtual path.
+                 The unit is millisecond.";
+            type uint32;
+            units millisecond;
+        }
+    }
+
+    grouping virtual-route-instance {
+        description
+            "Represents a route instance in the virtual network.";
+
+        leaf src-node-id {
+            description
+                "A unique ID for the source virtual node.";
+            type nemo-engine-common:virtual-node-id;
+        }
+
+        leaf dest-node-id {
+            description
+                "A unique ID for the destination virtual node.";
+            type nemo-engine-common:virtual-node-id;
+        }
+
+        leaf path-id {
+            description
+                "A unique ID for the virtual path.";
+            type nemo-engine-common:virtual-path-id;
+        }
+    }
+
+    grouping virtual-arp-instance {
+        description
+            "Represents a arp instance in the virtual network.";
+
+        leaf ip-address {
+            description
+                "Represents the ip address for an ARP entry.";
+            type inet:ip-address;
+        }
+
+        leaf mac-address {
+            description
+                "Represents the mac address for an ARP entry.";
+            type yang:mac-address;
+        }
+
+        leaf node-id {
+            description
+                "A unique ID for the virtual node that connects to
+                 the host corresponding to the ARP entry.";
+            type nemo-engine-common:virtual-node-id;
+        }
+
+        leaf port-id {
+            description
+                "A unique ID for the virtual port that connects to
+                 the host corresponding to the ARP entry.";
+            type nemo-engine-common:virtual-port-id;
+        }
+    }
+
+    container virtual-networks {
+        description
+            "Contains all virtual networks that the NEMO engine maintains.";
+
+        list virtual-network {
+            description
+                "A virtual network which a user created.";
+
+            key "network-id";
+            leaf network-id {
+                description
+                    "A unique ID for a virtual network.";
+                type nemo-engine-common:virtual-network-id;
+            }
+
+            leaf user-id {
+                description
+                    "The user ID for the virtual network.";
+                type nemo-common:user-id;
+            }
+
+            container virtual-nodes {
+                list virtual-node {
+                    description
+                        "All virtual nodes in the virtual network.";
+
+                    key "node-id";
+                    uses virtual-node-instance;
+                }
+            }
+
+            container virtual-links {
+                list virtual-link {
+                    description
+                        "All virtual links in the virtual network.";
+
+                    key "link-id";
+                    uses virtual-link-instance;
+                }
+            }
+
+            container virtual-paths {
+                list virtual-path {
+                    description
+                        "All virtual paths in the virtual network.";
+
+                    key "path-id";
+                    uses virtual-path-instance;
+                }
+            }
+
+            container virtual-routes {
+                list virtual-route {
+                    description
+                        "All virtual routes in the virtual network.";
+
+                    key "src-node-id dest-node-id";
+                    uses virtual-route-instance;
+                }
+            }
+
+            container virtual-arps {
+                list virtual-arp {
+                    description
+                        "All virtual ARP entries in the virtual network.";
+
+                    key "ip-address";
+                    uses virtual-arp-instance;
+                }
+            }
+        }
+    }
+}

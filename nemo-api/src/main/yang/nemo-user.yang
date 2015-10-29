@@ -1,0 +1,80 @@
+/*
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+module nemo-user {
+    yang-version 1;
+
+    namespace "urn:opendaylight:params:xml:ns:yang:nemo:user";
+    prefix "nemo-user";
+
+    import nemo-common {prefix nemo-common;}
+
+    revision "2015-10-10" {
+        description
+            "Initial revision.";
+    }
+
+    container user-roles {
+        list user-role {
+            description
+                "Defines the user role. Different users have different
+                 intention manifestations, which have different granularity
+                 or different level. It depends on users' role, knowledge
+                 and their purpose.";
+
+            key "role-name";
+            leaf role-name {
+                description
+                    "A user-visible and unique name for a kind of role.";
+                type nemo-common:user-role-name;
+                mandatory true;
+            }
+
+            leaf role-description {
+                description
+                    "Describes the characteristic,responsibility and purpose for a kind of role.";
+                type nemo-common:user-role-description;
+            }
+
+            // TBD
+        }
+    }
+
+    grouping user-instance {
+        description
+            "It represents an instance of the user.";
+
+        leaf user-id {
+            description
+                "A unique ID for a user.";
+            type nemo-common:user-id;
+            mandatory true;
+        }
+
+        leaf user-name {
+            description
+                "A user-visible and unique name for the user.";
+            type nemo-common:user-name;
+            mandatory true;
+        }
+
+        leaf user-password {
+            description
+                "The password of a user.";
+            type nemo-common:user-password;
+            mandatory true;
+        }
+
+        leaf user-role {
+            description
+                "The role of a user.";
+            type nemo-common:user-role-name;
+            mandatory true;
+        }
+    }
+}
