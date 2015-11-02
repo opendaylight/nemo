@@ -1,0 +1,124 @@
+﻿.Si_group h3 ,.Si_group p,.Si_group select,.Si_group .btn_group_less,.Si_group span{margin:0px 0 10px 0;}
+.Si_group h3{
+    font-size:18px;
+    color:black;
+	text-align:center;
+    font-family:微软雅黑,Verdana,Geneva,Arial,sans-serif;
+    margin-top:20px;
+}
+.Si_group p{
+    font-size:16px;
+    font-family:微软雅黑,Verdana,Geneva,Arial,sans-serif;
+	color:DarkSlateGray;
+	margin-bottom:1px;
+	margin-top:2px;
+}
+.select_item
+{
+    /*width:200px;*/
+	width:180px;
+    height:25px;
+	margin-left:0px;
+}
+#h3_height
+{
+    height:30px;
+}
+
+/*meng*/
+.btn_group_less
+{
+    /*border:2px solid green;*/
+    margin-top:10px;
+    /*width:250px;*/
+    height:30px;
+   padding-top:6px;
+	/*
+	meng
+	*/
+	position:absolute;
+	top:84px;
+	left:190px;
+	width:166px;
+}
+.btn_group_less input
+{
+ width:50px !important;
+}
+#Add_show
+{
+      position:relative;
+    margin-top:20px;
+    width:340px;
+    height:250px;
+	margin-left:0px;
+}
+    #Add_show span
+    {
+        display:block;
+        margin-top:5px;
+    }
+
+.close_group
+{
+    position:absolute;
+    right:0px;
+    top:0px;
+    width:20px;
+    height:20px;
+}
+
+.select_btn
+{
+    height:40px;
+	margin-left:0px;
+}
+
+.btn_SI
+{    height:25px; 
+    background-color:#939;
+	/*meng*/
+	margin-left:0px;
+	width:50px;
+       font-size:15px;
+	font-family:黑体;
+}
+.text_item
+{
+    height:25px;
+	/*meng*/
+	width:340px;
+	margin-left:0px;
+}
+/* .desc_text
+{
+    width:315px;
+} */
+
+.save_group
+{
+     width:100px;
+     height:27px;
+     float:right;
+     margin-top:30px;
+     margin-right:-3px;
+     background-color:#399;
+}
+.submit_group
+{
+     /*width:360px;
+     height:40px;
+     margin:50px auto;
+     background-color:#939;
+     font-size:17px;*/
+
+}
+#dialog
+{
+    display:none;
+    width:500px;
+}
+#ser_dialoge,#del_ser_dialog
+{
+    display:none;
+}

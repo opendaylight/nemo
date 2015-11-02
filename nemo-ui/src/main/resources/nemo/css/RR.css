@@ -1,0 +1,35 @@
+.RR_top
+{
+	margin-top:20px;
+	margin-left:-5px;
+}
+.btn_item_show #json_select
+{
+ position:absolute; 
+ top:30px; 
+ left:0px; 
+ height:24px; 
+ width:265px;
+ height:28px;}
+ 
+.que_group
+{
+    width:300px;
+    height:30px;
+}
+.btn_item_show #query_topo
+{ 
+    margin-top:5px;
+    margin-left:10px;
+    width:180px;
+    height:25px;
+    background-color: #939;
+}
+.RR_up h3
+{
+    font-size: 18px;
+    color: black;
+    text-align: center;
+    font-family: 微软雅黑,Verdana,Geneva,Arial,sans-serif;
+    margin-top: 20px;
+}

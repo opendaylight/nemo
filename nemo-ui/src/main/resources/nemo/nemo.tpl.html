@@ -1,0 +1,1063 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html"; charset="utf-8" />
+    <title>nemo-ui-cn</title>
+    <link href="src/app/nemo/css/jquery-ui.min.css" rel="stylesheet" />
+    <link href="src/app/nemo/css/nemo_main.css" rel="stylesheet" />
+    <link rel="stylesheet" href="src/app/nemo/css/SI.css">
+    <link rel="stylesheet" href="src/app/nemo/css/NE.css">
+    <link href="src/app/nemo/css/SP.css" rel="stylesheet" />
+    <link rel="stylesheet" href="src/app/nemo/css/RR.css">
+    <link rel="stylesheet" href="src/app/nemo/css/AQ.css">
+
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+
+
+    <script src="src/app/nemo/js/vis.js"></script>
+    <script src="src/app/nemo/js/jquery.shCircleLoader-min.js"></script>
+    <script src="src/app/nemo/js/Nemo_Annouce_vis.js"></script>
+    <script src="src/app/nemo/js/Nemo_Main.js"></script>
+    <script src="src/app/nemo/js/Service_Instance.js"></script>
+	<script src="src/app/nemo/js/analyjson.js"></script>
+    <script src="src/app/nemo/js/Network_Entity.js"></script>
+    <script src="src/app/nemo/js/Service_Policy.js"></script>
+    <script type="text/javascript" src="src/app/nemo/js/submit.js" charset="utf-8"></script>
+    <script src="src/app/nemo/js/scrollrun.js"></script>
+    <script src="src/app/nemo/js/EI_tranjson.js"></script>
+    <script src="src/app/nemo/js/topo_data.js"></script>
+
+    <script>
+
+      var hostname = document.location.hostname;
+		var user_id = 1;
+		var user_password = 2;
+		var user_name = 3;
+		var user_role = 4;
+        var service_select = "";
+        var json_data, json_str;
+        nodes.add({
+            id: 100000,
+            group: 'null',
+            x: 700,
+            y: 400 
+        });
+		var user_str = localStorage.getItem("useinfo").split(",");
+		user_id = user_str[0];
+		user_name = user_str[1];
+		user_password = user_str[2];
+		user_role = user_str[3];
+
+        function guid() {
+            function S4() {
+                return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+            }
+            return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+        }
+
+
+        jQuery(document).ready(function ($) {
+            //$('#loader').shCircleLoader();
+        
+            $(".id_").each(function () { $(this).val(guid()).attr("disabled", "true") });
+
+        });
+    </script>
+</head>
+<body>
+    <div class="group">
+
+        <div class="group_left">
+            <div class="title tt">
+                <h2>Service Configuration</h2>
+            </div>
+
+            <div class="btn_group">
+                <button class="btn_item" id="ser_init" >Service Instance</button>
+
+                <button class="btn_item" id="nemo-business-model">Service Modeling</button>
+
+                <button class="btn_item" id="net_ent_init">Network Entity</button>
+
+                <button class="btn_item" id="ser_poc_init">Service Policy</button>
+
+                <button class="btn_item" id="advance_query" style="display: none;">Advance Query</button>
+
+                <button class="btn_item">Resource Mapping Info</button>
+
+            </div>
+
+            <div class="btn_item_show" id="ser_inst_show">
+                <div class="Si_group">
+
+                    <div class="close_item_show">
+                        <img src="src/app/nemo/images/shut.png" />
+                    </div>
+                    <div class="h3_style">
+                        <h3>Service Instance</h3>
+                    </div>
+                    <p>Service Instance List:</p>
+                    <div class="select_btn">
+                        <select class="select_item">
+                        </select>
+                        <div class="btn_group_less">
+                            <input type="button" id="SI_Add" class="btn_ btn_SI" value="Add" />
+                            <input type="button" id="SI_Edit" class="btn_ btn_SI" value="Edit" />
+                            <input type="button" id="SI_Delete" class="btn_ btn_SI" value="Delete" />
+                        </div>
+                    </div>
+                    <div id="Add_show">
+                        <img class="close_group" src="src/app/nemo/images/shut.png" alt="close" />
+                        <span class="second_title">Service Name:</span><input class="text_item name_text" type="text" />
+                        <span class="second_title">Service Description:</span>
+                        <input class="text_item desc_text" type="text" />
+
+                        <input type="button" id="SI_Save" class="btn_ save_group" value="Save" />
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="btn_item_show"></div>
+
+            <div class="btn_item_show">
+
+                <div class="close_item_show">
+                    <img src="src/app/nemo/images/shut.png" />
+                </div>
+
+                <div class="NE_up">
+                    <div class="up_group1" id="up_service_name">
+                        <div class="h3_style">
+                            <h3>Network Entity</h3>
+                        </div>
+                        <span class="second_title NE_serviceName">Service Name:</span>
+                        <select id="sel_1"></select>
+                    </div>
+                    <div class="up_group1 up_group1_2">
+                        <span class="second_title">Entity Instance List:</span>
+                        <select id="sel_2"></select>
+                    </div>
+                    <input type="button" id="NE_Edit" name="name" class="btn_" value="Edit" />
+                    <input type="button" id="NE_Delete" name="name" class="btn_" value="Delete" />
+                    <div id="up_down">
+                        <span class="second_title">Entity Type:</span>
+                        <select id="entity_type">
+                            <option value="node">node</option>
+                            <option value="connection">connection</option>
+                            <option value="flow">flow</option>
+                        </select>
+                        <input type="button" name="name" id="add_entity" class="btn_" value="Add" />
+                    </div>
+
+                </div>
+
+                <div class="NE_Add_show NE_node_show NE_close_item">
+
+                    <img class="NE_close_show" src="src/app/nemo/images/shut.png" alt="close" />
+                    <div class="NE_middle">
+                        <table>
+                            <tr>
+                                <td><span class="second_title">Node ID:</span> </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input class="id_" id="node_id" type="text" name="name" value="" /></td>
+                            </tr>
+
+                            <tr>
+                                <td><span class="second_title">Node Type:</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select id="sel_show">                                        
+                                        <option value="l2-group">l2-group</option>
+                                        <option value="l3-group">l3-group</option>
+                                        <option value="ext-group">ext-group</option>
+                                        <option value="chain-group">chain-group</option>
+                                        <option value="fw">firewall</option>
+                                        <option value="lb">loadbalance</option>
+                                        <option value="cache">cache</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="second_title">Node Name:</span><img class="alert_" id="node_icon" src="src/app/nemo/images/alert.png" /></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" id="node_name" name="name" value="" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="NE_down">
+                       
+                        <div id="l2-group_type" class="node_type_group node_type_group_group">
+                            <table class="select_table">
+                                <tr>
+                                    <td class="second_title">sub-node</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <select id="l2_addhost" class="txt2">
+                                         
+                                        </select>
+                                        <input class="btn_ add_node" id="l2_ok" type="button" name="name" value="Add" />
+                                    </td>
+                                </tr>                                                                                                                  
+                                <tr>
+                                    <td>
+                                        <div id="l2_delgroup" class="delgroup">
+                                            <table id="l2_select_table"></table>
+                                        </div>                                                               
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="big_second_title">
+                                <span>Property</span>
+                            </div>
+                            <table>
+                                <tr>
+                                    <td class="second_title">ip-prefix:
+                                        <!--img class="alert_" id="" src="#" /--></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="l2-group_ip-prefix" value=""/></td>
+                                </tr>
+                                <tr>
+                                    <td class="second_title">gateway-ip:</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="l2-group_gateway-ip" value="" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="second_title">location:</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="l2-group_location" value="" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div id="l3-group_type" class="node_type_group node_type_group_group">
+                            <table class="select_table">
+                                <tr>
+                                    <td class="second_title">sub-node</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <select id="l3_addhost" class="txt2">                                        
+                                        </select>
+                                        <input class="btn_ add_node" id="l3_ok" type="button" name="name" value="Add" />
+                                    </td>
+                                </tr>                                                                                                                  
+                                <tr>
+                                    <td>
+                                        <div id="l3_delgroup" class="delgroup">
+                                              <table id="l3_select_table"></table>
+                                        </div>                                                               
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div class="big_second_title">
+                                <span>Property</span>
+                            </div>
+                            <table>
+                                <tr>
+                                    <td class="second_title">ip-prefix:
+                                        <!--img class="alert_" id="" src="#" /--></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="l3-group_ip-prefix" value=""/></td>
+                                </tr>
+                   
+                            </table>
+                        </div>
+
+                        <div id="ext-group_type" class="node_type_group">                                                                                                                  
+
+                            <div class="big_second_title">
+                                <span>Property</span>
+                            </div>
+                            <table>
+                                <tr>
+                                    <td class="second_title">location:
+                                        <!--img class="alert_" id="" src="#" /--></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="ext-group_location" value=""/></td>
+                                </tr>
+                                <tr>
+                                    <td class="second_title">ac-info-network:</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="ext-group_ac-info-network" value=""/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="second_title">ac-info-protocol:</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="ext-group_ac-info-protocol" value=""/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="second_title">ip-prefix:</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="ext-group_ip-prefix" value=""/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div id="chain-group_type" class="node_type_group node_type_group_group">
+                               <table class="select_table">
+                                <tr>
+                                    <td class="second_title">Vas Node:</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <select id="chain_addhost" class="txt2">  </select>
+                                        <input class="btn_ add_node" id="chain_ok" type="button" name="name" value="Add" />
+                                    </td>
+                                </tr>                                                                                                                  
+                                <tr>
+                                    <td>
+                                        <div id="chain_delgroup" class="delgroup">
+                                              <table id="chain_select_table"></table>
+                                        </div>                                                               
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                         <div id="fw_type" class="node_type_group">
+                            <div class="big_second_title">
+                                <span>Property</span>
+                            </div>
+                            <table>
+                                <tr>
+                                    <td class="second_title">location:
+                                        <!--img class="alert_" id="firewall_loc_icon" src="src/app/nemo/images/alert.png" /--></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="fw_location" value=""/></td>
+                                </tr>
+                                <tr>
+                                    <td class="second_title">operating-mode:</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="fw_operating-mode" value=""/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div id="lb_type" class="node_type_group">
+                            <div class="big_second_title">
+                                <span>Property</span>
+                            </div>
+                            <table>
+                                <tr>
+                                    <td class="second_title">location:
+                                        <!--img class="alert_" id="Img1" src="#" /--></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="lb_location" value=""/></td>
+                                </tr>
+                                <tr>
+                                    <td class="second_title">operating-mode:</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="lb_operating-mode" value="" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                         <div id="cache_type" class="node_type_group">
+                            <div class="big_second_title">
+                                <span>Property</span>
+                            </div>
+                            <table>
+                                <tr>
+                                    <td class="second_title">location:
+                                        <!--img class="alert_" id="Img1" src="#" /--></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="cache_location" value=""/></td>
+                                </tr>
+                                <tr>
+                                    <td class="second_title">operating-mode:</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="text" class="txt" id="cache_operating-mode" value="" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <input type="button" name="name" class="btn_ NE_save net_entity_save" id="node_save" value="Save" />
+
+                    </div>
+
+                </div>
+
+                <div class="NE_conn_show  NE_connection_show NE_close_item">
+                    <img class="NE_close_show" src="src/app/nemo/images/shut.png" alt="close" />
+                    <table>
+                        <tr>
+                            <td><span class="second_title">connection ID:</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input class="id_ long" id="connection_id" type="text" name="name" value="" /></td>
+                        </tr>
+
+                        <tr>
+                            <td><span class="second_title">connection type:</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <select id="con_type">
+                                    <option value="p2p">p2p</option>
+                                    <option value="p2mp">p2mp</option>
+                                    <option value="mesh">mesh</option>
+                                    <!-- <option value="chain">chain</option> -->
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="second_title">connection name:</span><img class="alert_" id="connection_icon" src="src/app/nemo/images/alert.png" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input class="long" id="connection_name" type="text" name="name" value="" />
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div id="p2p_type" class="conn_type_group">
+                        <div class="big_second_title">
+                            <span>End Point:</span>
+                        </div>
+                        <table class="conn_node_group">
+                            <tr>
+                                <td>
+                                <select id="p2p_select" class="txt3"> </select>
+                                <input class="btn_ add_node" id="p2p_select_ok" type="button" name="name" value="Add One">
+                                <input class="btn_ add_node" id="p2p_select_ok2" type="button" name="name" value="Add The Other">
+                                </td>
+                           </tr>
+                            <tr>
+                                <td>
+                                <div id="p2p_node_group">
+                                    <table >
+                                        <tr>
+                                            <td colspan="2"><span  class="second_title">One End Point:</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="60px"></td><td></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><span class="second_title">Other End Point:</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td><td></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                    </td>
+                            </tr>
+                            <!--<tr>
+                                <td><span class="second_title">一端点名称：</span>
+                                    <select class="sel_1" id="p2p_node-name1">
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="second_title">另一端点名称：</span>
+                                    <select id="p2p_node-name2"></select>
+                                </td>
+                            </tr>-->
+                        </table>
+                    </div>
+
+                    <div id="p2mp_type" class="conn_type_group ">
+                        <div class="big_second_title">
+                            <span>End Point Information</span>
+                        </div>
+                        <table class="conn_node_group_p2mp">
+                        <!--    <tr>
+                                <td><span class="second_title">一端点名称：</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select id="p2mp_node-name1">
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="second_title">另一端点名称：</span>
+                                    <div class="other_node_list" id="p2mp_node-name2">
+                                    </div>
+                                </td>
+                            </tr>-->
+                             <tr>
+                                <td>
+                                <select id="p2mp_select" class="txt3"> </select>
+                                <input class="btn_ add_node" id="p2mp_select_ok" type="button" name="name" value="Add One">
+                                <input class="btn_ add_node" id="p2mp_select_ok2" type="button" name="name" value="Add The Other">
+                                </td>
+                           </tr>
+                            <tr>
+                                <td>
+                                <div id="p2mp_node_group">
+                                    <table class="">
+                                        <tr>
+                                            <td colspan="2"><span  class="second_title">One End Point:</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="60px"></td><td></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><span class="second_title">Other End Point:</span></td>
+                                        </tr>
+                                        <tr><td></td><td></td></tr>
+                                    </table>
+                                </div>
+                                    </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div id="mesh_type" class="conn_type_group">
+                         <div class="big_second_title">
+                            <span>End Point Information</span>
+                        </div>
+                        <table class="conn_node_group_mesh">
+                             <tr>
+                                <td>
+                                <select id="mesh_select" class="txt2"> </select>
+                                <input class="btn_ add_node" id="mesh_select_ok" type="button" name="name" value="Add">                             
+                                </td>
+                           </tr>
+                            <tr>
+                                <td>
+                                <div id="mesh_node_group">
+                                    <table class="">
+                                        <tr>
+                                            <td><span  class="second_title">End Point:</span></td><td></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td><td></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                    </td>
+                            </tr>
+                        </table>
+                    </div>
+                     <div id="chain_type" class="conn_type_group">
+                        <div class="big_second_title">
+                            <span>业务链结点</span>
+                        </div>
+                        <table class="conn_node_group_chain">
+                             <tr>
+                                <td>
+                                <select id="chain_select" class="txt2"> </select>
+                                <input class="btn_ add_node" id="chain_select_ok" type="button" name="name" value="添加">                             
+                                </td>
+                           </tr>
+                            <tr>
+                                <td>
+                                <div id="chain_node_group">
+                                    <table class="">
+                                        <tr>
+                                            <td><span  class="second_title">端点名称：</span></td> <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td> <td></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                    </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="property_type">
+                        <div class="big_second_title">
+                            <span>Property</span>
+                        </div>
+                        <table>
+                              
+                            <tr>
+                                <td><span class="second_title">bandwidth：</span><!--img class="alert_" id="bandwidth_icon" src="#" /--></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="bandwidth" class="txt" type="text" name="name" value="kb" /><span>kbps</span>
+                                </td>
+                            </tr>
+                            <tr style="display: none">
+                                <td><span class="second_title">时延</span></td>
+                            </tr>
+                            <tr style="display: none">
+                                <td>
+                                    <input id="latency" class="txt" type="text" name="name" value="" />
+                                </td>
+                            </tr>
+                            <tr style="display: none">
+                                <td><span class="second_title">抖动</span></td>
+                            </tr>
+                            <tr style="display: none">
+                                <td>
+                                    <input id="Jitter" class="txt" type="text" name="name" value="" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <input type="button" name="name" id="connection_save" class="btn_ NE_con_save net_entity_save" value="Save" />
+                </div>
+
+                <div class="NE_flow_show NE_close_item">
+                    <img class="NE_close_show" id="NE_flow_close_icon" src="src/app/nemo/images/shut.png" alt="close" />
+                    <table>
+                        <tr>
+                            <td><span class="second_title">flow ID：</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input id="flow_id" type="text" class="id_ long" name="name" value="" /></td>
+                        </tr>
+                        <tr>
+                            <td><span class="second_title">flow name:</span><img class="alert_" id="flow_icon" src="src/app/nemo/images/alert.png" /></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input id="flow_name" class="long" type="text" name="name" value="" /></td>
+                        </tr>
+                    </table>
+                    <div class="big_second_title">
+                        <span>Flow match item</span>
+                    </div>
+                    <table>
+                        <tr>
+                            <td><span class="second_title">eth-type:</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="text" class="long" id="eth_type"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><span class="second_title">src-mac:</span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                 <input type="text" class="long" id="src_mac"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><span class="second_title">dst-mac:</span><!--img class="alert_" id="src_ip_icon" src="#" /--></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input id="dst_mac" class="long" type="text"  value="" />
+                            </td>
+                        </tr>
+
+                         <tr>
+                            <td><span class="second_title">proto:</span><!--img class="alert_" id="protocol_icon" src="#" /--></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input id="protocol" class="long" type="text" name="name" value=" " />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><span class="second_title">src-ip:</span><!--img class="alert_" id="dest_ip_icon" src="#" /--></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input id="src_ip" class="long" type="text" name="name" value="" />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><span class="second_title">dst-ip:</span><!--img class="alert_" id="dest_ip_icon" src="#" /--></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input id="dst_ip" class="long" type="text" name="name" value=" " />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><span class="second_title">src-port:</span><!--img class="alert_" id="src_port_icon" src="#" /--></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input id="src_port" class="long" type="text" name="name" value=" " />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><span class="second_title">dst-port:</span><!--img class="alert_" id="dest_port_icon" src="#" /--></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input id="dst_port" class="long" type="text" name="name" value=" " />
+                            </td>
+                        </tr>
+                                          
+                    </table>
+                    <input type="button" name="name" id="flow_save" class="btn_ NE_flow_save net_entity_save" value="Save" />
+                </div>
+
+            </div>
+
+            <div class="btn_item_show">
+
+                <div class="close_item_show">
+                    <img src="src/app/nemo/images/shut.png" />
+                </div>
+
+                <div class="SP_up">
+                    <div class="h3_style">
+                        <h3>Service Policy</h3>
+                    </div>
+                    <span class="second_title OP_serviceName">Service Name:</span>
+                    <select class="select_item"></select>
+                    <span class="second_title">Operation Entity List:</span>
+                    <select id="policy_name_list"></select>
+                    <div class="SP_btn_group">
+                        <input id="policy_add" class="btn_" type="button" name="name" value="Add" />
+                        <input id="policy_edit" class="btn_" type="button" name="name" value="Edit" />
+                        <input id="policy_delete" class="btn_" type="button" name="name" value="Delete" />
+                    </div>
+                </div>
+
+
+
+                <div class="SP_add_show">
+                    <img id="SP_close_show" src="src/app/nemo/images/shut.png" />
+                    <div class="SP_down">
+                        <table>
+                            <tr>
+                                <td><span s class="second_title">Operation ID:</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input class="id_" id="policy_id" type="text" name="name" value="" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span class="second_title">Operation name:</span><img class="alert_" id="policy_name_icon" src="src/app/nemo/images/alert.png" /></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="policy_name" class="cle" type="text" name="name" value="" />
+                                </td>
+                            </tr>
+                              <tr>
+                                <td><span class="second_title">Priority:</span><!--img class="alert_" id="policy_priority_icon" src="src/app/nemo/images/alert.png" /--></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="policy_priority" class="cle" type="text" name="name" value="0" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="second_title">Action to Entity:</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select id="apply_entity">
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="big_second_title">
+                            <span>Condition:</span>
+                        </div>
+                        <table>
+                            <tr>
+                                <td>
+                                    <!--div class="Con_group">
+                                        <span class="second_title">开始时间：</span><img class="alert_" id="start_time_icon" src="src/app/nemo/images/alert.png"/>
+                                        <input id="StartTime" class="cle" type="time" name="name" value="" />
+                                        <span class="second_title">结束时间：</span><img class="alert_" id="end_time_icon" src="src/app/nemo/images/alert.png"/>
+                                        <input id="EndTime" class="cle" type="time" name="name" value="" />
+                                    </div-->
+                                    <select class="con_show">
+                                        <option value="time">time</option>
+                                   </select>
+                                    <select class="con_show" >
+                                        <option value="less-than">less-than</option>
+                                        <option value="not-less-than">not-less-than</option>
+                                        <option value="equal">equal</option>
+                                        <option value="not-equal">not-equal</option>
+                                        <option value="greater-than">greater-than</option>
+                                        <option value="not-greater-than">not-greater-than</option>
+                                        <option value="between">between</option>
+                                        <option value="preiodical">preiodical</option>
+                                   </select>
+                                    <input class="con_show" type="text" name="name" value=" " />
+                                    <!--<input type="button" class="btn_ con_show" name="name" value=" 确定" />-->
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span>relationship with prior:</span>
+                                    <select class="ext_con_1">
+                                        <option value="none">none</option>
+                                         <option value="and">and</option>
+                                         <option value="or">or</option>
+                                         <option value="not">not</option>
+                                    </select>
+                                    <!--<input type="button" class="btn_ ext_con_2" name="name" value=" 确定" />-->
+                                    </td></tr>
+                            <tr>
+                                <td>
+                                    <span>condition priority:</span>
+                                    <input class="ext_con_3" type="text" name="name" value="1" />
+                                    <!--<input type="button" class="btn_ ext_con_4" name="name" value=" 确定" />-->
+                                     <input type="button" class="btn_ con_button" name="name" value="confirm" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Selected conditions:
+                                    <input type="button" name="name" class="btn_" id="con_clear" value="clear" />
+                                </td>  
+                            </tr>
+                             <tr>
+                                <td>
+                                    <div id="con_select"> </div>
+                                </td>  
+                            </tr>
+                        </table>
+                        <div class="big_second_title">
+                            <span>Action:</span>
+                        </div>
+                        <table>
+                            <tr>
+                                <td>
+                                    <select id="policy_action">
+                                        <option value="Deny">Deny</option>
+                                        <option value="Allow">Allow</option>
+                                        <option value="go-through">go-through</option>
+                                        <option value="qos-bandwidth">qos-bandwidth</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="big_second_title">
+                            <span>Constrain</span>
+                        </div>
+                        <table>
+                            <tr>
+                                <td>
+                                    <span class="third_title">&nbsp;Exclusive Node List:</span>
+
+                                    <div class="list_nodes">
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="big_second_title">
+                            <span>Data:</span>
+                        </div>
+                        <table>
+                            <tr>
+                                <td>
+                                    <select id="policy_data">
+                                        
+                                    </select>
+                                    <!--input class="btn_ btn_edit" type="button" name="name" value="编 辑" /-->
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="SP_btn_save">
+                        <input class="btn_" id="sp_save" type="button" name="name" value="Save" />
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="btn_item_show">
+                <div class="close_item_show">
+                    <img src="src/app/nemo/images/shut.png" />
+                </div>
+                <div class="AQ_up">
+                    <div class="h3_style">
+                        <h3>Advance Query</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn_item_show">
+                <div class="close_item_show">
+                    <img src="src/app/nemo/images/shut.png" />
+                    <!--<div class="RR_top">
+                        <input type="file" name="fileField" class="file" id="json_select" size="28" onchange="document.getElementById('textfield').value=this.value" />
+                        <input type='text' name='textfield' id='textfield' class='txt' />
+                        <input type='button' class='btn_' value='选择文件' />
+                        <input type="button" name="submit" class="btn_" id="display_info" value="展示命令" />
+                    </div>-->
+                    <!--<div id="order"></div>-->
+
+                    <div class="RR_up">
+                    <div class="h3_style">
+                        <h3>Resource Mapping Info</h3>
+                     </div>
+                        <div class="que_group">
+                            <span></span>
+                            <input type="button" class="btn_" id="query_topo" value="Query Physical Topo" />
+                        </div>
+                   </div>
+
+                </div>
+            </div>
+
+            <div id="btn_local">
+                <input id="submit" class="btn_ btn_submit" type="button" value="Submit" /></div>
+        </div>
+
+        <div class="group_right">
+            <div class="up">
+                <div class="title">
+                    <h2>Service View</h2>
+                    <div id="right_top">
+                    <span>Username:</span>
+                    <input type="text" id="getUserName">
+                <input id="refresh" class='btn_' type="button" value="Refresh" onclick="analyjson_topo()">
+                    </div>
+                    <svg id="service_svg"  width="800" height="560"  viewBox="100 40 900 780" style='display:none'>
+                    <defs>
+                    <marker id="idArrow" viewBox="0 0 20 20" refX="0" refY="10" markerUnits="strokeWidth" markerWidth="6" markerHeight="15" orient="auto"><path d="M 0 0 L 20 10 L0 20 z"fill="purple"stroke="black"/> </marker>
+                    <marker id="idtext" viewBox="0 0 120 50" refX="0" refY="0" markerUnits="strokeWidth" markerWidth="20" markerHeight="20"  orient="auto"><text style="font-family:sans-serif; font-size:14pt;"  x="20" y="20">text</text></marker>  
+                    </defs>
+                    </svg>
+
+                    <svg id="service_svg2"  width="800" height="560"  viewBox="100 40 900 780">
+                    <defs>
+                    <marker id="idArrow2" viewBox="0 0 20 20" refX="0" refY="10" markerUnits="strokeWidth" markerWidth="6" markerHeight="15" orient="auto"><path d="M 0 0 L 20 10 L0 20 z"fill="purple"stroke="black"/> </marker>
+                    <marker id="idtext2" viewBox="0 0 120 50" refX="0" refY="0" markerUnits="strokeWidth" markerWidth="20" markerHeight="20"  orient="auto"><text style="font-family:sans-serif; font-size:14pt;"  x="20" y="20">text</text></marker>  
+                    </defs>
+                    </svg>
+                    <div id="graph"></div>
+                </div>
+
+            </div>
+
+            <div class="down">
+                <div id="tabs">
+                    <ul>
+                        <li><a href="#nemo_str_show">Service Modeling Language Description</a></li>
+                        <li><a href="#trans_info">History Infomation</a></li>
+                    </ul>
+    
+                    <div id="nemo_str_show"></div>
+                    <div id="trans_info"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- dialog start -->
+        <div id="dialog" title="warning">
+            <p>
+                The service name is already existing,please input another name!
+            </p>
+        </div>
+        <div id="policy_dialog" title="warning">
+            <p>
+                The policy name is already existing,please input another name!
+            </p>
+        </div>
+        <div id="flow_dialog" title="warning">
+            <p>
+                'src_ip','dest_ip','src_port','dest_port','protocol','vlanid'这些选项不能为空
+            </p>
+        </div>
+        <div id="del_ser_dialog" title="warning">
+            <p>
+                The entities and policies that belong to this service will also be deleted,are you sure to continue?
+            </p>
+        </div>
+
+        <div id="ser_dialoge" title="warning">
+            <p>
+                 The service name is null,please input a name!
+            </p>
+        </div>
+        <div id="ety_dialog" title="warning">
+            <p>
+                The entity instance name is already existing,please input another name!
+            </p>
+        </div>
+
+        <div id="adc_dialog" title="">
+            <h3>业 务 链 配 置</h3>
+            <p>结点实体列表：</p>
+            <select id="adc_node"></select>
+            <input id="add_node" class="btn_" type="button" name="name" value="添 加" />
+            <span>序号</span>
+            <select id="num">
+            </select>
+            <input id="delete_node" class="btn_" type="button" name="name" value="删 除" />
+            <div id="table_show">
+                <table id="table_tab" style="border: 2px">
+                    <tr>
+                        <th class="first_colum">序号</th>
+                        <th>结点ID</th>
+                    </tr>
+                    <tr>
+                        <td class="first_colum"></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- dialog end -->
+
+        <!-- show_trans_status start-->
+        <div id='show_status' style="background: rgba(80,80,80,0.3); width: 220px; height: 50px; z-index: 999; position: absolute; top: 15px; right: 0; margin-top: 10px;">
+            <p style="font-size:15px">Transaction is running...</p>
+            <div id='loader' style='z-index: 999; margin-left: 100px;margin-top:10px'>
+            </div>
+        </div>
+        <!-- show_trans_status end-->
+    </div>
+</body>
+</html>

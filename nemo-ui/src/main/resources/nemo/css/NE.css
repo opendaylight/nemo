@@ -1,0 +1,523 @@
+﻿.NE_up, .NE_middle, .NE_down
+{
+    margin-left:2px;
+}
+.NE_up
+{
+    position:relative;
+    /*border:2px solid green;*/
+    width:357px;
+    height:140px;
+}
+.up_group1
+{   margin-left:0px;
+    /*border:2px solid green;*/
+    width:350px;
+	/*meng*/
+    height:53px;
+	margin-top:20px;
+}
+.up_group1_2
+{
+    margin-left:0px;
+    /*border:2px solid green;*/
+    width:350px;
+	/*meng*/
+    height:53px;
+	margin-top:35px;
+}
+.up_group1 h3
+{   
+    color:black;
+    font-size:18px;
+}
+.up_group1>select
+{  
+    width:348px;
+    height:25px;
+    margin-right:0px;
+    margin-top:1px;
+	top:0px;
+}
+/* #sel_1
+{
+    position:absolute;
+    top:0px;
+    right:18px;
+} */
+#sel_2{
+    width:220px;
+}
+
+#NE_Edit
+{
+   position:absolute;
+    top:106px;
+    right:68px;
+    width:60px;
+    height:25px;
+    background-color:#939;
+}
+#NE_Delete
+{
+    position:absolute;
+    top:106px;
+    right:5px;
+    width:60px;
+    height:25px;
+    background-color:#939;
+}
+#up_down
+{
+     margin-left:0px;
+    /*border:2px solid green;*/
+    position:absolute;
+    top:140px;
+    left:0px;
+    width:357px;
+    height:25px;
+}
+    #up_down select
+    {
+        width:280px;
+        height:25px;
+   }
+    #up_down input
+    {
+    width:65px;
+    height:25px;
+    background-color:#939;
+	margin-left:-4px;
+    }
+
+	
+.NE_middle
+{
+    /*border:2px solid green;*/
+
+    width:360px;
+    height:140px;
+}
+.NE_middle *{margin-left:4px;}
+   
+   
+   .NE_middle input
+    {
+    width:345px;
+    height:25px;
+    }
+  .NE_middle select
+    {
+    width:348px;
+    height:25px;
+    }
+
+.NE_down
+{
+    /*border:2px solid green;*/
+    width:360px;
+    height:50px;
+}
+.NE_down *{margin-left:4px;}
+    .NE_down select
+    {
+        width:120px;
+        height:25px;
+    }
+    .NE_down input
+    {
+        width:120px;
+        height:20px;
+    }
+
+   .NE_down .NE_save
+    {
+	float:right;
+    width:100px;
+    height:25px;
+    background-color:#399;
+	right:-7px;
+	margin:20px;
+	margin-right:4px;
+    margin-bottom: 35px;
+    }
+.NE_close_show
+{
+   position:absolute;
+    right:4px;
+    top:0px;
+    width:20px;
+    height:20px;
+}
+
+
+.NE_down .txt
+    {
+    width:345px;
+    height:25px;
+	margin-left:0px;
+    }
+	
+.property_type .txt
+{
+    width:300px;
+    height:25px;
+}
+.NE_down .sel
+    {
+    width:140px;
+    height:25px;
+	margin-left:0px;
+	width:348px;
+    }
+#host_type
+{
+    padding-left:0px;
+    width:360px;
+    height:180px;  
+}
+#firewall_type
+{
+    display:none;
+    padding-left:0px;
+    width:360px;
+    height:130px;  
+}
+#forwarding_type,#internet_type,#loadBalance_type
+{
+    display:none;
+    padding-left:0px;
+    width:360px;
+    /*height:80px;*/ 
+	height:130px;
+}
+.NE_Add_show
+{
+    display:none;
+    position:absolute;
+	top:250px;
+	margin-left:-4px;
+}
+
+
+
+
+
+.NE_conn_show
+{
+    position:absolute;
+    display:none;
+    font-size:16px;
+    margin-left:-6px;
+    /*border:2px solid green;*/
+    width:350px;
+    height:300px;
+	top:250px;
+}
+.NE_flow_show
+{
+    position:relative;
+    display:none;
+    font-size:16px;
+    margin-left:-4px;
+    /*border:2px solid green;*/
+    width:350px;
+    height:200px;	
+	margin-top:65px;
+}
+.NE_conn_show input.long
+{
+     width:345px;
+     height:25px;
+}
+
+.NE_conn_show input.short
+{
+
+     width:100px;
+     height:25px;
+}
+.NE_conn_show select
+{
+     width:348px;
+     height:25px;
+}
+.NE_conn_show .NE_close_show
+{
+    right:-2px;
+}
+ 
+    .NE_conn_show #p2p_type
+    {     
+    /*border:2px solid green;*/
+    font-size:16px;
+    margin-left:-1px;
+    width:350px;
+    height:120px;
+    }
+
+
+ .NE_conn_show .property_type
+{
+    font-size:16px;
+    margin-left:0px;
+     width:360px;
+     height:75px;
+}
+
+span.black {
+    color: black;
+}
+.NE_con_save,.NE_flow_save
+{
+    float:right;
+    margin-right:-7px;
+	margin-top:20px;
+    width:100px !important;
+    height:25px !important;
+    background-color:#399 !important;
+	margin-bottom:35px;
+}
+#p2mp_node-name1
+{
+   width:348px;
+}
+#p2mp_type .other_node_list
+{
+    overflow:auto;
+    margin-left:6px;
+    width:345px;
+    height:75px;
+}
+#p2mp_node-name2 table
+{
+    margin-left:0px;
+
+}
+#p2mp_node-name2 table td
+{
+    width:25px;
+    font-size:16px;
+    height:20px;
+
+}
+#p2mp_node-name2 table td input
+{
+    width:15px;
+    height:15px;
+
+}
+
+ .NE_conn_show #p2mp_type
+    {   
+    display:none;
+    font-size:16px;
+    margin-left:-3px;
+    width:360px;
+    height:200px;
+    }
+  .NE_conn_show #mesh_type
+    {   
+    /*border:2px solid green;*/
+    display:none;
+    font-size:16px;
+    margin-left:-3px;
+    width:350px;
+    height:200px;
+    }
+  .NE_conn_show #chain_type
+    {   
+    /*border:2px solid green;*/
+    display:none;
+    font-size:16px;
+    margin-left:-3px;
+    width:350px;
+    height:200px;
+    }
+select#mesh_select,select#chain_select {
+    margin-left: 6px;
+}
+
+.NE_flow_show .match_items
+{
+    width:165px;
+    height:25px;
+}
+.NE_flow_show input.long,select.long
+{
+    width:345px;
+    height:25px;
+}
+.NE_flow_show .match_value
+{
+    
+     width:165px;
+    height:21px;
+}
+.NE_flow_show table
+{
+    margin-bottom:10px;
+	margin-left:3px;
+}
+#ety_dialog
+{
+    display:none;
+}
+#flow_dialog
+{
+    display:none;
+}
+
+.node_type_group
+{
+  padding-left: 0px;
+  width: 360px;
+  height: 130px;
+}
+#l2-group_type{
+    height:380px;
+}
+.node_type_group_group
+{
+  height: 280px;
+}
+
+#ext-group_type
+{
+     height: 240px;
+}
+#chain-group_type
+{
+    /*border: solid 1px red;*/
+     height: 200px;
+}
+.add_node,.del_node,.add_group,.del_group, .del_p2mp_node,.del_mesh_node,.del_chain_node
+{
+    background-color:#939;
+    width:55px !important;
+    height:25px !important;
+}
+.del_node,.del_p2mp_node,.del_mesh_node,.del_chain_node
+{
+       margin-left:30px;
+}
+.select_table
+{
+    margin-top:10px;
+}
+#l2_delgroup,#l3_delgroup,#chain_delgroup
+{
+    margin-top:5px;
+    width:278px;
+    height:110px;
+    border:1px solid #808080;
+    overflow:auto;
+}
+.del_sub_node
+{
+    margin-left:60px;
+    background-color:#939;
+    width:55px !important;
+    height:20px !important;
+    margin-top:5px;
+    margin-bottom:5px;
+}
+.l2_select_table tr
+{
+    margin-left:5px;
+    margin-bottom:10px;
+}
+
+/*out table set*/
+.conn_node_group
+{
+width:360px;
+}
+.conn_node_group_p2mp
+{
+width:360px;
+height:100px;
+/*border: 1px solid red;*/
+}
+.conn_node_group_mesh
+{
+width:360px;
+height:150px;
+/*border: 1px solid red;*/
+}
+.conn_node_group_chain
+{
+width:360px;
+height:100px;
+/*border: 1px solid red;*/
+}
+/*out table set*/
+
+/*border show div set*/
+#p2p_node_group
+{
+    margin-top:5px;
+    border:1px solid #808080;
+    width:335px;
+    height:100px;
+}
+
+#p2mp_node_group
+{
+    margin-top:5px;
+    border:1px solid #808080;
+    width:335px;
+    height:130px;
+    overflow:auto;
+}
+#mesh_node_group
+{
+    margin-top:5px;
+    border:1px solid #808080;
+    width:335px;
+    height:140px;
+    overflow:auto;
+}
+#chain_node_group
+{
+    margin-top:5px;
+    border:1px solid #808080;
+    width:335px;
+    height:140px;
+    overflow:auto;
+}
+/*border show div set*/
+
+#p2p_node_group table tr
+{
+    height:20px;
+}
+#p2mp_node_group table tr,#mesh_node_group table tr,#chain_node_group table tr
+{
+height:20px;
+width:220px;
+}
+    #p2mp_node_group table tr td
+    {
+        /*width:120px;*/
+    }
+
+#p2p_type {
+  height: 150px !important;
+}
+.txt3
+{
+  width: 110px !important;
+  height: 25px !important;
+  margin-left: 5px
+}
+
+#p2p_select_ok,#p2mp_select_ok
+{
+width:100px !important;
+}
+
+#p2p_select_ok2,#p2mp_select_ok2
+{
+    width:110px !important;
+}

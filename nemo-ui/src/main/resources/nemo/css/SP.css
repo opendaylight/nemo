@@ -1,0 +1,445 @@
+﻿.SP_up, .SP_btn_group, .SP_down{margin-left:2px;}
+.SP_add_show{
+    display:none;
+    margin-left:-8px;
+}
+.SP_up
+{
+    /*border:2px solid green;*/
+    width:356px;
+    height:155px;
+}
+.SP_up h3
+{
+  color:black;
+  font-size:18px;
+}
+ .SP_up span
+    {
+     margin-top:0px;
+      /*border:2px solid green;*/
+      display:block;
+        width:180px;
+        float:left;
+        
+    }
+    .SP_up select
+    {       
+        margin-top:0px;
+        width:348px;
+        height:25px;
+		margin-bottom:10px;
+    }
+    .SP_up .select_item
+    {
+        width:348px;
+        height:25px;
+        margin-left:6px;
+    }
+.SP_btn_group
+{
+    float:right;
+    /*border:2px solid green;*/
+    width:160px;
+    height:25px;
+	margin-right:0px;
+}
+    .SP_btn_group input
+    {
+        /*float:right;*/
+        margin-left:-6px;
+        width:50px;
+        height:25px;
+        background-color:#939;
+    }
+	
+	
+.SP_down
+{
+    /*border:2px solid green;*/
+    width:360px;
+	height:850px;
+}
+    .SP_down table tr
+    {
+        height:26px;
+    }
+    .SP_down .id_,#policy_name,#policy_priority
+    {
+        width:343px;
+        height:25px;
+    }
+    .SP_down select
+    {
+        width:346px;
+        height:25px;
+    }
+	select#policy_data
+	{
+	    width:284px;
+	}
+	
+    .SP_down .Con_group input
+    {
+        width:340px;
+        height:25px;
+    }
+    .SP_down .list_nodes
+    {
+    /*border:1px solid #7e5b42;
+    background-color:#f2f2f2;*/
+    overflow:auto;
+    margin-left:13px;
+    width:336px;
+    height:90px;
+    }
+	.list_nodes table td
+{
+    /*border:2px solid black;*/
+    /*width:154px;*/
+    width:25px;
+    font-size:16px;
+    height:20px;
+
+}
+    .list_nodes table td input
+{
+    /*border:2px solid black;*/
+    /*width:154px;*/
+	margin-top:7px;
+    width:15px;
+    height:15px;
+
+}
+    .SP_down .btn_edit
+    {
+        width:50px;
+        height:25px;
+        background-color:#939;
+        margin-left:1px;
+    }
+.SP_btn_save
+{
+    /*border:2px solid green;*/
+    width:360px;
+    height:25px;
+}
+.SP_btn_save .btn_
+{
+
+    width:100px;
+    height:25px;
+    margin-left:254px;
+    background-color:#399;
+    margin-top:60px;
+	margin-bottom:30px;
+}
+input#policy_edit{
+margin-left:0px;
+margin-right:2px;
+}
+#SP_close_show
+{
+    float:right;
+	margin-right:10px;
+    width:20px;
+    height:20px;
+}
+#adc_dialog
+{
+    display:none;
+    padding-top:10px;  
+    width:500px;
+    height:395px;
+    font-size:16px;
+	/*overflow-y:scroll;*/
+}
+    #adc_dialog p
+    {
+        font-family:微软雅黑;
+        margin-top:20px;
+        margin-left:7px;
+    }
+    #adc_dialog input
+{ 
+        margin-top:5px;
+        margin-bottom:10px;
+        margin-left:6px;
+    width:285px;
+    height:25px;
+}
+#adc_dialog input.btn_
+{ 
+     color:white;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+    cursor:pointer;
+	font-size:15px;
+	font-family:黑体;
+    width:111px;
+    height:24px;
+    background-color:#939;
+}
+
+    #adc_dialog span,h3{
+    color:black;
+    }
+#adc_node
+{
+   width:280px;
+   height:25px;
+   margin-left:6px;
+}
+
+#num
+{
+   width:242px;
+   height:25px;
+}
+
+#adc_dialog span
+{
+   margin-left:7px;
+}
+
+
+#adc_dialog h3
+{
+   text-align:center;
+}
+
+
+.ui-button
+{
+    width:92px;
+}
+    #table_tab th,#table_tab td
+    {
+        height:20px;
+		border:1px solid #696969;
+    }	
+ #table_tab th
+    {
+        background-color:#A9A9A9;
+    }		
+		
+	
+#table_tab .first_colum
+{
+    width:45px;
+}
+#table_show
+{
+    width:408px;
+    height:140px;
+    overflow:scroll;
+}
+#table_tab
+{ 
+    border-collapse:collapse;
+    border:1px solid #696969;
+    width:380px;
+    height:50px;
+	margin-top:10px;
+    overflow-y:scroll;
+}
+
+#firewall_dialog
+{
+    display:none;
+    padding-top:10px;  
+    width:500px;
+    height:395px;
+    font-size:16px;
+	/*overflow-y:scroll;*/
+}
+    #firewall_dialog p
+    {
+        font-family:微软雅黑;
+        margin-top:20px;
+        margin-left:7px;
+    }
+    #firewall_dialog input
+{ 
+        margin-top:5px;
+        margin-bottom:10px;
+        margin-left:6px;
+    width:285px;
+    height:25px;
+}
+#firewall_dialog input.btn_
+{ 
+     color:white;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -moz-box-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+    cursor:pointer;
+	font-size:15px;
+	font-family:黑体;
+    width:111px;
+    height:24px;
+    background-color:#939;
+}
+
+    #firewall_dialog span,h3{
+    color:black;
+    }
+#firewall_node
+{
+   width:280px;
+   height:25px;
+   margin-left:6px;
+}
+
+#firewall_num
+{
+   width:242px;
+   height:25px;
+}
+
+#firewall_dialog span
+{
+   margin-left:7px;
+}
+
+
+#firewall_dialog h3
+{
+   text-align:center;
+}
+
+
+.ui-button
+{
+    width:92px;
+}
+    #firewall_table_tab th,#firewall_table_tab td
+    {
+        height:20px;
+		border:1px solid #696969;
+    }	
+ #firewall_table_tab th
+    {
+        background-color:#A9A9A9;
+    }		
+		
+	
+#firewall_table_tab .first_colum
+{
+    width:45px;
+}
+#firewall_table_show
+{
+    width:408px;
+    height:140px;
+    overflow:scroll;
+}
+#firewall_table_tab
+{ 
+    border-collapse:collapse;
+    border:1px solid #696969;
+    width:380px;
+    height:50px;
+	margin-top:10px;
+    overflow-y:scroll;
+}
+
+
+#policy_name_list
+{
+    width:180px;
+}
+.Con_group
+{
+   margin-left:1px;
+}
+
+#policy_name_icon
+{
+  height:14px;
+  margin-bottom:-3px;
+}
+#start_time_icon
+{
+   height:14px;
+   margin-bottom:-3px;
+}
+#node_list_table tr
+{
+   padding-top:1px;
+   padding-bottom:1px;
+}
+
+#policy_dialog
+{
+    display:none;
+}
+
+
+.con_show:nth-child(1)
+{
+    width:70px;
+    height:25px;
+}
+.con_show:nth-child(2)
+{
+    width:132px;
+    height:25px;
+}
+input.con_show:nth-child(3)
+{
+    width:75px;
+    height:25px;
+}
+input.con_button
+{
+    width:60px;
+    background-color:#939;
+     height:25px;
+}
+
+select.ext_con_1
+{
+    width:115px;
+    height:25px;
+    margin-top:10px;
+    margin-bottom:10px;
+}
+input.ext_con_2
+{
+    width:60px;
+    height:25px;
+}
+input.ext_con_3
+{
+    width:85px;
+    height:25px;
+}
+input.ext_con_4
+{
+    height:25px;
+    width:60px;
+}
+#con_clear
+{
+  background-color:#939;
+  margin-left: 90px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  width:65px;
+  height:25px;
+}
+#con_select
+{
+    border:1px solid #ccc;
+    overflow-x:scroll;
+    width:320px;
+    height:100px;
+}
