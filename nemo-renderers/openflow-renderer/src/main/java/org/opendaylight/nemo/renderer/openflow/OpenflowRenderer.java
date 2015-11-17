@@ -9,46 +9,53 @@
 package org.opendaylight.nemo.renderer.openflow;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
+import org.opendaylight.nemo.renderer.openflow.physicalnetwork.PhyConfigLoader;
+import org.opendaylight.nemo.renderer.openflow.physicalnetwork.PhysicalNetworkAdapter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-
 public class OpenflowRenderer implements AutoCloseable {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(OpenflowRenderer.class);
-	
-	private DataBroker dataBroker;
-	private final ResourceManager resourceManager;
-	private final FlowTableManager flowTableMng;
-	
-	public OpenflowRenderer(DataBroker dataBroker) {
-		super();
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowRenderer.class);
+
+    private final DataBroker dataBroker;
+    private final NotificationProviderService notificationProviderService;
+    private final PacketProcessingService packetProcessingService;
+
+    private final PhyConfigLoader phyConfigLoader;
+    private final FlowTableManager flowTableMng;
+    private PhysicalNetworkAdapter physicalNetworkAdapter;
+
+    public OpenflowRenderer(DataBroker dataBroker,
+                            NotificationProviderService notificationProviderService,
+                            PacketProcessingService packetProcessingService) {
+        super();
+
         this.dataBroker = dataBroker;
-		System.out.println();
-		System.out.println("Waiting for loading config file about 30s...");
+        this.notificationProviderService = notificationProviderService;
+        this.packetProcessingService = packetProcessingService;
 
-		LOG.info("New ResourceManager.");
-		resourceManager = new ResourceManager(dataBroker);
+        phyConfigLoader = new PhyConfigLoader(dataBroker);
+        LOG.debug("New FlowTableManager.");
+        flowTableMng = new FlowTableManager(dataBroker
+                , packetProcessingService
+                , phyConfigLoader);
+        physicalNetworkAdapter = new PhysicalNetworkAdapter(dataBroker
+                , notificationProviderService
+                , phyConfigLoader
+                , flowTableMng.getFlowUtils());
 
-		LOG.info("New FlowTableManager.");
-		flowTableMng = new FlowTableManager(dataBroker, resourceManager);
-
-		LOG.info("Initialized openflow renderer.");
+        LOG.info("Initialized the NEMO OpenFlow renderer.");
     }
-	
-	// *************
+
+    // *************
     // AutoCloseable
     // *************
 
     @Override
     public void close() throws Exception {
-		if (flowTableMng != null) flowTableMng.close();
-		if (resourceManager != null) resourceManager.close();
+        if (flowTableMng != null) flowTableMng.close();
+        if (physicalNetworkAdapter != null) physicalNetworkAdapter.close();
     }
 }
-

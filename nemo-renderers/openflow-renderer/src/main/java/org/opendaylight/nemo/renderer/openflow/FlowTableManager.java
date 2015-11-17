@@ -9,23 +9,14 @@
 package org.opendaylight.nemo.renderer.openflow;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import com.google.common.util.concurrent.CheckedFuture;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-
+import org.opendaylight.nemo.renderer.openflow.physicalnetwork.PhyConfigLoader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.PhysicalNetwork;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.PhysicalNodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.nodes.PhysicalNode;
@@ -37,19 +28,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.intent.vn.mapping.results.UserIntentVnMapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.intent.vn.mapping.results.UserIntentVnMappingKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.vn.pn.mapping.results.UserVnPnMapping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.VirtualNetworkId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.VirtualNetworkId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.Users;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.UserKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,18 +47,30 @@ public class FlowTableManager implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(FlowTableManager.class);
 
     private final DataBroker dataProvider;
+    private final PacketProcessingService packetProcessingService;
 
     private ListenerRegistration<DataChangeListener> userVnPnMappingChangeListenerReg;
 
     private FlowUtils flowUtils = null;
 
-    public FlowTableManager(DataBroker dataProvider, ResourceManager resourceManager){
+    public FlowTableManager(DataBroker dataProvider,
+                            PacketProcessingService packetProcessingService,
+                            PhyConfigLoader phyConfigLoader) {
+        super();
 
         this.dataProvider = dataProvider;
-        LOG.info("Initialized FlowTableManager.");
-        flowUtils = new FlowUtils(dataProvider, resourceManager);
-        //register  listener
+        this.packetProcessingService = packetProcessingService;
+
+        LOG.debug("Initialized FlowTableManager.");
+
+        flowUtils = new FlowUtils(dataProvider, packetProcessingService, phyConfigLoader);
+
+        // Register listener;
         registerUserVnPnMappingListener();
+    }
+
+    protected FlowUtils getFlowUtils() {
+        return flowUtils;
     }
 
     private void registerUserVnPnMappingListener() {
@@ -99,11 +101,11 @@ public class FlowTableManager implements AutoCloseable {
             e.printStackTrace();
         }
         if (result.isPresent()){
-            LOG.info("getUser  OK");
+            LOG.debug("getUser  OK");
             return (result.get());
 
         }else{
-            LOG.info("getUser  ERROR");
+            LOG.debug("getUser  ERROR");
             return  null;
         }
     }
@@ -128,11 +130,11 @@ public class FlowTableManager implements AutoCloseable {
             e.printStackTrace();
         }
         if (result.isPresent()) {
-            LOG.info("getVirtualNetwork  OK");
+            LOG.debug("getVirtualNetwork  OK");
             return (result.get());
 
         }else{
-            LOG.info("getVirtualNetwork  ERROR");
+            LOG.debug("getVirtualNetwork  ERROR");
             return  null;
         }
     }
@@ -151,11 +153,11 @@ public class FlowTableManager implements AutoCloseable {
             e.printStackTrace();
         }
         if (result.isPresent()) {
-            LOG.info("getUserIntentVnMapping  OK");
+            LOG.debug("getUserIntentVnMapping  OK");
             return (result.get());
 
         }else{
-            LOG.info("getUserIntentVnMapping  ERROR");
+            LOG.debug("getUserIntentVnMapping  ERROR");
             return  null;
         }
     }
@@ -173,11 +175,11 @@ public class FlowTableManager implements AutoCloseable {
             e.printStackTrace();
         }
         if (result.isPresent()) {
-            LOG.info("getPhysicalNetwork  OK");
+            LOG.debug("getPhysicalNetwork  OK");
             return (result.get());
 
         }else{
-            LOG.info("getPhysicalNetwork  ERROR");
+            LOG.debug("getPhysicalNetwork  ERROR");
             return  null;
         }
     }
@@ -196,7 +198,7 @@ public class FlowTableManager implements AutoCloseable {
             if ( null != createdData && !createdData.isEmpty() ) {
                 for ( DataObject dataObject : createdData.values() ) {
                     if ( dataObject instanceof UserVnPnMapping ) {
-                        LOG.info("Ready to update flow table.");
+                        LOG.debug("Ready to update flow table.");
                         UserVnPnMapping userVnPnMapping = (UserVnPnMapping)dataObject;
                         UserId userId = userVnPnMapping.getUserId();
 
@@ -214,7 +216,7 @@ public class FlowTableManager implements AutoCloseable {
                         flowUtils.init(physicalNodeList);
 
                         flowUtils.updateFlowTable(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
-                        LOG.info("Already call flowUtils.updateFlowTable().");
+                        LOG.debug("Already call flowUtils.updateFlowTable().");
                     }
                 }
             }

@@ -36,7 +36,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version='${project.version}'>odl-nemo-engine-rest</feature>
     <bundle>mvn:org.opendaylight.nemo/openflow-renderer/${project.version}</bundle>
     <configfile finalname='etc/opendaylight/karaf/01-nemo-openflow-renderer.xml'>mvn:org.opendaylight.nemo/openflow-renderer/${project.version}/xml/config</configfile>
-    <configfile finalname='etc/nemo/nemo-openflow-renderer-resource.json'>mvn:org.opendaylight.nemo/openflow-renderer/${project.version}/json/resource</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-openflow-renderer-node-resource.json'>mvn:org.opendaylight.nemo/openflow-renderer/${project.version}/json/node-resource</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-openflow-renderer-link-resource.json'>mvn:org.opendaylight.nemo/openflow-renderer/${project.version}/json/link-resource</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-openflow-renderer-host-resource.json'>mvn:org.opendaylight.nemo/openflow-renderer/${project.version}/json/host-resource</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-openflow-renderer-external-resource.json'>mvn:org.opendaylight.nemo/openflow-renderer/${project.version}/json/external-resource</configfile>
   </feature>
   <feature name='odl-nemo-cli-renderer' version='${project.version}' description='OpenDaylight :: NEMO :: CLI Renderer'>
     <feature version='${project.version}'>odl-nemo-engine-rest</feature>

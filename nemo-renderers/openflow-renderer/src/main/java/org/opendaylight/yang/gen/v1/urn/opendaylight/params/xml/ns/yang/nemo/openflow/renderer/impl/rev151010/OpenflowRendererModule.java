@@ -9,9 +9,9 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.openflow.renderer.impl.rev151010;
 
 import org.opendaylight.nemo.renderer.openflow.OpenflowRenderer;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public class OpenflowRendererModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.openflow.renderer.impl.rev151010.AbstractOpenflowRendererModule {
 
@@ -32,8 +32,10 @@ public class OpenflowRendererModule extends org.opendaylight.yang.gen.v1.urn.ope
 
     @Override
     public java.lang.AutoCloseable createInstance() {
-        LOG.info("Openflow Renderer createInstance()");
-        final OpenflowRenderer renderer = new OpenflowRenderer(getDataBrokerDependency());
+        LOG.debug("Openflow Renderer createInstance()");
+        final OpenflowRenderer renderer = new OpenflowRenderer(
+                getDataBrokerDependency(), getNotificationServiceDependency(),
+                getRpcRegistryDependency().getRpcService(PacketProcessingService.class));
 
         final class CloseResources implements AutoCloseable {
             @Override
@@ -41,9 +43,10 @@ public class OpenflowRendererModule extends org.opendaylight.yang.gen.v1.urn.ope
                 if (renderer != null) {
                     renderer.close();
                 }
-                LOG.info("Openflow Renderer (instance {}) tear down.", this);
+                LOG.debug("Openflow Renderer (instance {}) tear down.", this);
             }
         }
+
         return new CloseResources();
     }
 

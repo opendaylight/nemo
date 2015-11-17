@@ -1,0 +1,42 @@
+{
+    "link": [
+        {
+          "link-id":"openflow:1:3",
+          "metric":"1",
+          "delay":"",
+          "loss-rate":""
+        },
+        {
+          "link-id":"openflow:3:1",
+          "metric":"1",
+          "delay":"",
+          "loss-rate":""
+        },
+
+        {
+          "link-id":"openflow:3:2",
+          "metric":"1",
+          "delay":"",
+          "loss-rate":""
+        },
+        {
+          "link-id":"openflow:2:3",
+          "metric":"1",
+          "delay":"",
+          "loss-rate":""
+        },
+
+        {
+          "link-id":"openflow:3:3",
+          "metric":"1",
+          "delay":"",
+          "loss-rate":""
+        },
+        {
+          "link-id":"openflow:4:1",
+          "metric":"1",
+          "delay":"",
+          "loss-rate":""
+        }
+    ]
+}

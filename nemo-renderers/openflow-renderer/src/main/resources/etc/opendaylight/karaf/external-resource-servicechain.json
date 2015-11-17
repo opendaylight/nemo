@@ -1,0 +1,34 @@
+{
+    "external-network-mac": [
+        {
+          "node-id":"openflow:3",
+          "port-id":"openflow:3:4",
+          "mac-address":"08:00:27:6e:f2:07"
+        },
+        {
+          "node-id":"openflow:4",
+          "port-id":"openflow:4:2",
+          "mac-address":"00:00:00:00:00:03"
+        },
+        {
+          "node-id":"openflow:1",
+          "port-id":"openflow:1:1",
+          "mac-address":"08:00:27:65:4c:f6"
+        },
+        {
+          "node-id":"openflow:1",
+          "port-id":"openflow:1:2",
+          "mac-address":"00:00:00:00:00:01"
+        },
+        {
+          "node-id":"openflow:2",
+          "port-id":"openflow:2:1",
+          "mac-address":"00:00:00:00:00:02"
+        },
+        {
+          "node-id":"openflow:2",
+          "port-id":"openflow:2:2",
+          "mac-address":"08:00:27:90:0f:a5"
+        }
+    ]
+}

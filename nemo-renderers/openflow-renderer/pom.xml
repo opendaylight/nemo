@@ -31,16 +31,18 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   </properties>
 
   <dependencies>
-    <!-- model dependencies -->
     <dependency>
       <groupId>org.opendaylight.mdsal.model</groupId>
       <artifactId>yang-ext</artifactId>
     </dependency>
-    <!-- project specific dependencies -->
     <dependency>
       <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>openflowplugin-extension-nicira</artifactId>
       <version>${openflowplugin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.controller.model</groupId>
+      <artifactId>model-topology</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
@@ -162,15 +164,30 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
             <phase>package</phase>
             <configuration>
               <artifacts>
-              	<artifact>
-                  <file>${project.build.directory}/classes/etc/nemo/resource.json</file>
-                  <type>json</type>
-                  <classifier>resource</classifier>
-                </artifact>
                 <artifact>
                   <file>${project.build.directory}/classes/etc/opendaylight/karaf/config.xml</file>
                   <type>xml</type>
                   <classifier>config</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/classes/etc/opendaylight/karaf/node-resource.json</file>
+                  <type>json</type>
+                  <classifier>node-resource</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/classes/etc/opendaylight/karaf/host-resource.json</file>
+                  <type>json</type>
+                  <classifier>host-resource</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/classes/etc/opendaylight/karaf/link-resource.json</file>
+                  <type>json</type>
+                  <classifier>link-resource</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/classes/etc/opendaylight/karaf/external-resource.json</file>
+                  <type>json</type>
+                  <classifier>external-resource</classifier>
                 </artifact>
               </artifacts>
             </configuration>
