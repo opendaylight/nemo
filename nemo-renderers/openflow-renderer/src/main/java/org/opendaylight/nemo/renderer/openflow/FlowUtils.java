@@ -8,11 +8,19 @@
 
 package org.opendaylight.nemo.renderer.openflow;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.opendaylight.controller.liblldp.Ethernet;
+import org.opendaylight.controller.liblldp.HexEncode;
+import org.opendaylight.controller.liblldp.NetUtils;
+import org.opendaylight.controller.liblldp.PacketException;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.nemo.renderer.openflow.physicalnetwork.PhyConfigLoader;
+import org.opendaylight.nemo.renderer.openflow.utils.ARP;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpPrefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.*;
@@ -76,6 +84,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.PhysicalNetwork;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.PhysicalLinks;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.PhysicalPaths;
@@ -86,7 +98,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.node.instance.PhysicalPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.VirtualNetwork;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.arps.VirtualArp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.arps.VirtualArpKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.arps.VirtualArpBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.links.VirtualLink;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.nodes.VirtualNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.paths.VirtualPath;
@@ -98,11 +110,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.vn.pn.mapping.results.user.vn.pn.mapping.VnPnMappingResult;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.IntentId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.MatchItemName;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.PropertyName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.operations.Operation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.flow.instance.MatchItem;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.node.instance.Property;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,6 +141,7 @@ public class FlowUtils implements AutoCloseable {
     private static final int ETH_TYPE_ARP = 0x0806;
 
     private final DataBroker dataBroker;
+    private final PacketProcessingService packetProcessingService;
 
     private Map<PhysicalNodeId, MplsLabelGenerator> mplsGenerators;
     private Map<PhysicalNodeId, MeterIdGenerator> meterIdGenerators;
@@ -135,22 +150,27 @@ public class FlowUtils implements AutoCloseable {
 	private Map<UserId, Long> metadatas;
     private long currentMetadata = 0;
 
-    private PhysicalNetworkHelper physicalNetworkHelper;
-    private VirtualNetworkHelper virtualNetworkHelper;
+    private Map<UserId, User> users;
+    private Map<UserId, UserIntentVnMapping> userIntentVnMappings;
+    private Map<UserId, UserVnPnMapping> userVnPnMappings;
 
-    //liushixing
+    private PhysicalNetworkHelper physicalNetworkHelper;
+    private Map<VirtualNetworkId, VirtualNetworkHelper> virtualNetworkHelpers;
+    private ArpHandlerHelper arpHandlerHelper;
+
+    // liushixing
     private Map<UserId, List<InstanceIdentifier<Flow>>> flowIdsOfUsers;
     private Map<UserId, List<InstanceIdentifier<Meter>>> meterIdIdsOfUsers;
-//    private List<PhysicalPortId> assignedPortForInPort;
-    private ResourceManager resourceManager;
-	
-    private Map<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId, MacAddress> gatewayMacAddress;
+    private PhyConfigLoader phyConfigLoader;
 
-    public FlowUtils(DataBroker dataBroker, ResourceManager resourceManager) {
+    public FlowUtils(DataBroker dataBroker,
+                     PacketProcessingService packetProcessingService,
+                     PhyConfigLoader phyConfigLoader) {
         super();
 
         this.dataBroker = dataBroker;
-        this.resourceManager = resourceManager;
+        this.packetProcessingService = packetProcessingService;
+        this.phyConfigLoader = phyConfigLoader;
 
         mplsGenerators = new HashMap<PhysicalNodeId, MplsLabelGenerator>();
         meterIdGenerators = new HashMap<PhysicalNodeId, MeterIdGenerator>();
@@ -158,18 +178,18 @@ public class FlowUtils implements AutoCloseable {
         meterIdsOfPhysicalPaths = new HashMap<PhysicalPathId, Long>();
         metadatas = new HashMap<UserId, Long>();
 
-        //liushixing
+        users = new HashMap<UserId, User>();
+        userIntentVnMappings = new HashMap<UserId, UserIntentVnMapping>();
+        userVnPnMappings = new HashMap<UserId, UserVnPnMapping>();
+
+        virtualNetworkHelpers = new HashMap<VirtualNetworkId, VirtualNetworkHelper>();
+        arpHandlerHelper = new ArpHandlerHelper();
+
+        // liushixing
         flowIdsOfUsers = new HashMap<UserId, List<InstanceIdentifier<Flow>>>();
         meterIdIdsOfUsers = new HashMap<UserId, List<InstanceIdentifier<Meter>>>();
-//        assignedPortForInPort = new ArrayList<PhysicalPortId>();
 
-        gatewayMacAddress = new HashMap<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId, MacAddress>();
-        // Gateway of the DMZ group.
-        gatewayMacAddress.put(new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId("b46cfa7f-93a3-43f4-ac20-09307c75feca"),
-                new MacAddress("00:00:0a:0b:0c:01"));
-        // Gateway of the interior group.
-        gatewayMacAddress.put(new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId("175425f7-c9c9-474a-962c-70cb6c180d4d"),
-                new MacAddress("00:00:0a:0b:0c:02"));
+        return;
     }
 
 	public void init(List<PhysicalNode> physicalNodes) {
@@ -191,9 +211,7 @@ public class FlowUtils implements AutoCloseable {
     private InstanceIdentifier<Flow> generateFlowInsId(UserId userId,
                                                        NodeId nodeId,
                                                        Short tableId,
-                                                       FlowId flowId){
-
-
+                                                       FlowId flowId) {
         InstanceIdentifier<Flow> flowInsId = createFlowPath(nodeId, tableId, flowId);
 
         if(flowIdsOfUsers.containsKey(userId) == false){
@@ -204,7 +222,7 @@ public class FlowUtils implements AutoCloseable {
             List<InstanceIdentifier<Flow>> flowInsIds = flowIdsOfUsers.get(userId);
             flowInsIds.add(flowInsId);
         }
-        LOG.info("nemo:generateFlowInsId");
+        LOG.debug("nemo:generateFlowInsId");
         return  flowInsId;
     }
 
@@ -232,28 +250,48 @@ public class FlowUtils implements AutoCloseable {
             List<InstanceIdentifier<Meter>> meterInsIds = meterIdIdsOfUsers.get(userId);
             meterInsIds.add(meterInsId);
         }
-        LOG.info("nemo:getMeterInsId");
+        LOG.debug("nemo:getMeterInsId");
         return  meterInsId;
     }
 
-    public void updateFlowTable(User user,
-                                VirtualNetwork virtualNetwork,
-                                UserIntentVnMapping userIntentVnMapping,
-                                UserVnPnMapping userVnPnMapping,
-                                PhysicalNetwork physicalNetwork) {
-		//If new user, generate metadata;
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param user TODO
+     * @param virtualNetwork TODO
+     * @param userIntentVnMapping TODO
+     * @param userVnPnMapping TODO
+     * @param physicalNetwork TODO
+     */
+    protected void updateFlowTable(User user,
+                                   VirtualNetwork virtualNetwork,
+                                   UserIntentVnMapping userIntentVnMapping,
+                                   UserVnPnMapping userVnPnMapping,
+                                   PhysicalNetwork physicalNetwork) {
+		// If new user, generate metadata;
         if ( !metadatas.containsKey(user.getUserId()) ) {
             metadatas.put(user.getUserId(), ++currentMetadata);
         }
 
+        users.put(user.getUserId(), user);
+        userIntentVnMappings.put(user.getUserId(), userIntentVnMapping);
+        userVnPnMappings.put(user.getUserId(), userVnPnMapping);
+
         physicalNetworkHelper = new PhysicalNetworkHelper(physicalNetwork);
-        virtualNetworkHelper = new VirtualNetworkHelper(virtualNetwork);
+        virtualNetworkHelpers.put(virtualNetwork.getNetworkId(), new VirtualNetworkHelper(virtualNetwork));
+        arpHandlerHelper.update(userVnPnMapping);
+
+        flowIdsOfUsers.put(user.getUserId(), new LinkedList<InstanceIdentifier<Flow>>());
+        meterIdIdsOfUsers.put(user.getUserId(), new LinkedList<InstanceIdentifier<Meter>>());
 
 		updateInPortTable(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
         updateMeterTable(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
 		updateMplsTable(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
 		updateIpTable(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
 		updateArpTable(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
+
+        return;
     }
 
     /**
@@ -262,12 +300,259 @@ public class FlowUtils implements AutoCloseable {
      * @author Zhigang Ji
      * @param userId TODO
      */
-    public void deleteFlowEntries(UserId userId) {
+    protected void deleteFlowEntries(UserId userId) {
         deleteFlowTableEntries(userId);
         deleteMeterTableEntries(userId);
 
-        flowIdsOfUsers.put(userId, new LinkedList<InstanceIdentifier<Flow>>());
-        meterIdIdsOfUsers.put(userId, new LinkedList<InstanceIdentifier<Meter>>());
+        users.remove(userId);
+        userIntentVnMappings.remove(userId);
+        userVnPnMappings.remove(userId);
+
+        virtualNetworkHelpers.remove(new VirtualNetworkId(userId.getValue()));
+
+        flowIdsOfUsers.remove(userId);
+        meterIdIdsOfUsers.remove(userId);
+
+        return;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param packetReceived TODO
+     * @param ingress TODO
+     */
+    public void handleArp(PacketReceived packetReceived, NodeConnectorRef ingress) {
+        byte[] payload = packetReceived.getPayload();
+        Ethernet ethernet = new Ethernet();
+
+        try {
+            ethernet.deserialize(payload, 0, NetUtils.NumBitsInAByte * payload.length);
+        } catch ( PacketException exception ) {
+            LOG.error("Failed to decode the received packet to ethernet packet.");
+
+            return;
+        }
+
+        ARP arp = new ARP();
+
+        try {
+            arp.deserialize(ethernet.getRawPayload(),
+                    0, NetUtils.NumBitsInAByte * ethernet.getRawPayload().length);
+        } catch ( PacketException exception ) {
+            LOG.error("Failed to decode the raw payload of ethernet packet to arp packet.");
+
+            return;
+        }
+
+        ImmutableTriple<VirtualNetworkId, VirtualNodeId, VirtualPortId> mappingValueForExternalPhysicalPort =
+                arpHandlerHelper.getMappingValueForExternalPhysicalPort(ingress);
+        VirtualNetworkId virtualNetworkId = mappingValueForExternalPhysicalPort.getLeft();
+        VirtualNodeId ingressVirtualNodeId = mappingValueForExternalPhysicalPort.getMiddle();
+        VirtualPortId ingressVirtualPortId = mappingValueForExternalPhysicalPort.getRight();
+
+        IpAddress srcIpAddress = convertByteArray4ToIpAddress(arp.getSenderProtocolAddress());
+        IpAddress dstIpAddress = convertByteArray4ToIpAddress(arp.getTargetProtocolAddress());
+
+        VirtualNetworkHelper virtualNetworkHelper = virtualNetworkHelpers.get(virtualNetworkId);
+        VirtualNode ingressVirtualNode = virtualNetworkHelper.getVirtualNode(ingressVirtualNodeId);
+        VirtualArp virtualArp;
+
+        switch ( ingressVirtualNode.getNodeType() ) {
+            case Vswitch:
+                virtualArp = virtualNetworkHelper.getVirtualArp(srcIpAddress);
+
+                if ( null == virtualArp ) {
+                    virtualArp = new VirtualArpBuilder()
+                            .setIpAddress(srcIpAddress)
+                            .setMacAddress(convertByteArray6ToMacAddress(arp.getSenderHardwareAddress()))
+                            .setNodeId(ingressVirtualNodeId)
+                            .setPortId(ingressVirtualPortId)
+                            .build();
+                    virtualNetworkHelper.addVirtualArp(virtualArp);
+
+                    UserId userId = new UserId(virtualNetworkId.getValue());
+                    Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>> connectedVirtualRouters =
+                            virtualNetworkHelper.getConnectedVirtualRouters(ingressVirtualNodeId);
+
+                    if ( null != connectedVirtualRouters && !connectedVirtualRouters.isEmpty() ) {
+                        VirtualLink virtualLink = virtualNetworkHelper.getVirtualLink(
+                                connectedVirtualRouters.keySet().iterator().next(), ingressVirtualNodeId);
+                        VnPnMappingResult vnPnMappingResult = getVnPnMappingResult(
+                                userVnPnMappings.get(userId).getVnPnMappingResult(),
+                                new VirtualResourceEntityId(virtualLink.getLinkId().getValue()));
+                        PhysicalPathId physicalPathId = new PhysicalPathId(
+                                vnPnMappingResult.getPhysicalResourceEntityId().getValue());
+                        PhysicalPath physicalPath = physicalNetworkHelper.getPhysicalPath(physicalPathId);
+
+                        configArpTableEntry(userId, virtualArp, physicalPath);
+                    }
+
+                    PhysicalNodeId ingressPhysicalNodeId = convertNodeConnectorRefToPhysicalNodeId(ingress);
+                    PhysicalPortId ingressPhysicalPortId = convertNodeConnectorRefToPhysicalPortId(ingress);
+
+                    configMacTableEntry(userId, virtualArp.getMacAddress(),
+                            ingressPhysicalNodeId, ingressPhysicalPortId);
+
+                    Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>> connectedVirtualSwitches =
+                            virtualNetworkHelper.getConnectedVirtualSwitches(ingressVirtualNodeId);
+
+                    if ( null != connectedVirtualSwitches && !connectedVirtualSwitches.isEmpty() ) {
+                        List<VnPnMappingResult> vnPnMappingResults =
+                                userVnPnMappings.get(userId).getVnPnMappingResult();
+                        VirtualLink virtualLink;
+                        VnPnMappingResult vnPnMappingResult;
+                        PhysicalPathId physicalPathId;
+                        PhysicalPath physicalPath;
+
+                        for ( VirtualNodeId virtualNodeId : connectedVirtualSwitches.keySet() ) {
+                            virtualLink = virtualNetworkHelper.getVirtualLink(virtualNodeId, ingressVirtualNodeId);
+                            vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults,
+                                    new VirtualResourceEntityId(virtualLink.getLinkId().getValue()));
+                            physicalPathId = new PhysicalPathId(
+                                    vnPnMappingResult.getPhysicalResourceEntityId().getValue());
+                            physicalPath = physicalNetworkHelper.getPhysicalPath(physicalPathId);
+
+                            configMacTableEntry(userId, virtualArp.getMacAddress(), physicalPath);
+                        }
+                    }
+                }
+
+                if ( ARP.REQUEST == arp.getOpCode() ) {
+                    IpAddress gatewayIpAddress = getGatewayIpAddress(virtualNetworkId, ingressVirtualNode);
+
+                    if ( dstIpAddress.equals(gatewayIpAddress) ) {
+                        MacAddress gatewayMacAddress = getGatewayMacAddress(virtualNetworkId, ingressVirtualNode);
+                        byte[] targetProtocolAddress = arp.getTargetProtocolAddress();
+
+                        arp.setTargetHardwareAddress(arp.getSenderHardwareAddress());
+                        arp.setTargetProtocolAddress(arp.getSenderProtocolAddress());
+                        arp.setSenderHardwareAddress(convertMacAddressToByteArray6(gatewayMacAddress));
+                        arp.setSenderProtocolAddress(targetProtocolAddress);
+                        arp.setOpCode(ARP.REPLY);
+
+                        ethernet.setSourceMACAddress(arp.getSenderHardwareAddress());
+                        ethernet.setDestinationMACAddress(arp.getTargetHardwareAddress());
+
+                        sendPacketOut(createArpPacket(ethernet, arp), ingress, ingress);
+                        break;
+                    }
+
+                    virtualArp = virtualNetworkHelper.getVirtualArp(dstIpAddress);
+
+                    if ( null != virtualArp ) {
+                        byte[] targetProtocolAddress = arp.getTargetProtocolAddress();
+
+                        arp.setTargetHardwareAddress(arp.getSenderHardwareAddress());
+                        arp.setTargetProtocolAddress(arp.getSenderProtocolAddress());
+                        arp.setSenderHardwareAddress(convertMacAddressToByteArray6(virtualArp.getMacAddress()));
+                        arp.setSenderProtocolAddress(targetProtocolAddress);
+                        arp.setOpCode(ARP.REPLY);
+
+                        ethernet.setSourceMACAddress(arp.getSenderHardwareAddress());
+                        ethernet.setDestinationMACAddress(arp.getTargetHardwareAddress());
+
+                        sendPacketOut(createArpPacket(ethernet, arp), ingress, ingress);
+                        break;
+                    }
+
+                    Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>> connectedVirtualSwitches =
+                            virtualNetworkHelper.getConnectedVirtualSwitches(ingressVirtualNodeId);
+
+                    if ( null != connectedVirtualSwitches && !connectedVirtualSwitches.isEmpty() ) {
+                        UserId userId = new UserId(virtualNetworkId.getValue());
+                        UserVnPnMapping userVnPnMapping = userVnPnMappings.get(userId);
+                        List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
+                        VirtualPort layer2ExternalVirtualPort;
+                        VnPnMappingResult vnPnMappingResult;
+                        PhysicalNodeId physicalNodeId;
+                        PhysicalPortId physicalPortId;
+
+                        for ( VirtualNodeId virtualNodeId : connectedVirtualSwitches.keySet() ) {
+                            layer2ExternalVirtualPort =
+                                    virtualNetworkHelper.getLayer2ExternalVirtualPort(virtualNodeId);
+
+                            if ( null != layer2ExternalVirtualPort ) {
+                                vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults,
+                                        new VirtualResourceEntityId(layer2ExternalVirtualPort.getPortId().getValue()));
+                                physicalNodeId = new PhysicalNodeId(
+                                        vnPnMappingResult.getParentPhysicalResourceEntityId().getValue());
+                                physicalPortId = new PhysicalPortId(
+                                        vnPnMappingResult.getPhysicalResourceEntityId().getValue());
+
+                                sendPacketOut(payload, ingress, createNodeConnectorRef(physicalNodeId, physicalPortId));
+                            }
+                        }
+                    }
+                } else {
+                    virtualArp = virtualNetworkHelper.getVirtualArp(dstIpAddress);
+
+                    if ( null != virtualArp ) {
+                        UserId userId = new UserId(virtualNetworkId.getValue());
+                        UserVnPnMapping userVnPnMapping = userVnPnMappings.get(userId);
+                        List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
+                        VnPnMappingResult vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults,
+                                new VirtualResourceEntityId(virtualArp.getPortId().getValue()));
+
+                        PhysicalNodeId physicalNodeId = new PhysicalNodeId(
+                                vnPnMappingResult.getParentPhysicalResourceEntityId().getValue());
+                        PhysicalPortId physicalPortId = new PhysicalPortId(
+                                vnPnMappingResult.getPhysicalResourceEntityId().getValue());
+
+                        sendPacketOut(payload, ingress, createNodeConnectorRef(physicalNodeId, physicalPortId));
+                    }
+                }
+                break;
+
+            case Vrouter:
+                VirtualPort ingressVirtualPort = virtualNetworkHelper
+                        .getVirtualPort(ingressVirtualNodeId, ingressVirtualPortId);
+
+                if ( virtualNetworkHelper.isLayer2ExternalVirtualPort(ingressVirtualPort) ) {
+                    virtualArp = virtualNetworkHelper.getVirtualArp(srcIpAddress);
+
+                    if ( null == virtualArp ) {
+                        virtualArp = new VirtualArpBuilder()
+                                .setIpAddress(srcIpAddress)
+                                .setMacAddress(convertByteArray6ToMacAddress(arp.getSenderHardwareAddress()))
+                                .setNodeId(ingressVirtualNodeId)
+                                .setPortId(ingressVirtualPortId)
+                                .build();
+                        virtualNetworkHelper.addVirtualArp(virtualArp);
+
+                        UserId userId = new UserId(virtualNetworkId.getValue());
+                        PhysicalNodeId ingressPhysicalNodeId = convertNodeConnectorRefToPhysicalNodeId(ingress);
+                        PhysicalPortId ingressPhysicalPortId = convertNodeConnectorRefToPhysicalPortId(ingress);
+
+                        configArpTableEntry(userId, virtualArp, ingressPhysicalNodeId, ingressPhysicalPortId);
+                    }
+
+                    if ( ARP.REQUEST == arp.getOpCode() ) {
+                        IpAddress gatewayIpAddress = getGatewayIpAddress(virtualNetworkId, ingressVirtualNode);
+
+                        if ( dstIpAddress.equals(gatewayIpAddress) ) {
+                            MacAddress gatewayMacAddress = getGatewayMacAddress(virtualNetworkId, ingressVirtualNode);
+                            byte[] targetProtocolAddress = arp.getTargetProtocolAddress();
+
+                            arp.setTargetHardwareAddress(arp.getSenderHardwareAddress());
+                            arp.setTargetProtocolAddress(arp.getSenderProtocolAddress());
+                            arp.setSenderHardwareAddress(convertMacAddressToByteArray6(gatewayMacAddress));
+                            arp.setSenderProtocolAddress(targetProtocolAddress);
+                            arp.setOpCode(ARP.REPLY);
+
+                            ethernet.setSourceMACAddress(arp.getSenderHardwareAddress());
+                            ethernet.setDestinationMACAddress(arp.getTargetHardwareAddress());
+
+                            sendPacketOut(createArpPacket(ethernet, arp), ingress, ingress);
+                        }
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
 
         return;
     }
@@ -311,7 +596,7 @@ public class FlowUtils implements AutoCloseable {
         writeTransaction.put(LogicalDatastoreType.CONFIGURATION, flowInsId, flow, true);
         writeTransaction.submit();
 
-        LOG.info("nemo:configInternalInPortFlowTable");
+        LOG.debug("nemo:configInternalInPortFlowTable");
         return;
     }
 
@@ -339,7 +624,7 @@ public class FlowUtils implements AutoCloseable {
         Instruction instructionMeta = new InstructionBuilder().setOrder(instructionList.size()).setInstruction(writeMetadataCase).build();
         instructionList.add(instructionMeta);
 
-        GoToTable gotoTable = new GoToTableBuilder().setTableId((destNodeType==VirtualNode.NodeType.Vswitch)? MAC_TABLE_ID : IP_TABLE_ID).build();
+        GoToTable gotoTable = new GoToTableBuilder().setTableId((destNodeType == VirtualNode.NodeType.Vswitch) ? MAC_TABLE_ID : IP_TABLE_ID).build();
         GoToTableCase gotoTableCase = new GoToTableCaseBuilder().setGoToTable(gotoTable).build();
         Instruction instructionGoto = new InstructionBuilder().setOrder(instructionList.size()).setInstruction(gotoTableCase).build();
         instructionList.add(instructionGoto);
@@ -358,7 +643,7 @@ public class FlowUtils implements AutoCloseable {
         writeTransaction.put(LogicalDatastoreType.CONFIGURATION, flowInsId, flow, true);
         writeTransaction.submit();
 
-        LOG.info("nemo:configExternalInPortFlowTable");
+        LOG.debug("nemo:configExternalInPortFlowTable");
 
         return;
     }
@@ -381,7 +666,7 @@ public class FlowUtils implements AutoCloseable {
         List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
 
         for(VnPnMappingResult vnPnMappingResult:vnPnMappingResults){
-            LOG.info("nemo:inport  for(VnPnMappingResult vnPnMappingResult:vnPnMappingResults)");
+            LOG.debug("nemo:inport  for(VnPnMappingResult vnPnMappingResult:vnPnMappingResults)");
             if(VirtualResource.VirtualResourceType.Vport == vnPnMappingResult.getVirtualResourceType()) {
                 VirtualPortId virtualPortid = new VirtualPortId(vnPnMappingResult.getVirtualResourceEntityId().getValue());
                 VirtualNodeId virtualNodeId = new VirtualNodeId(vnPnMappingResult.getParentVirtualResourceEntityId().getValue());
@@ -447,10 +732,10 @@ public class FlowUtils implements AutoCloseable {
                                   UserVnPnMapping userVnPnMapping,
                                   PhysicalNetwork physicalNetwork) {
 
-        LOG.info("nemo:meter updateMeterTable()");
+        LOG.debug("nemo:meter updateMeterTable()");
         PhysicalPaths physicalPaths = physicalNetwork.getPhysicalPaths();
         if(null == physicalPaths.getPhysicalPath()){
-            LOG.info("PhysicalPath are null");
+            LOG.debug("PhysicalPath are null");
             return;
         }
 
@@ -462,41 +747,41 @@ public class FlowUtils implements AutoCloseable {
 
         for(PhysicalPath physicalPath:physicalPathList) {
             if(physicalPath.getBandwidth() > 0 ) {
-                LOG.info("nemo: meter physicalPath.getBandwidth() = {}", physicalPath.getBandwidth());
+                LOG.debug("nemo: meter physicalPath.getBandwidth() = {}", physicalPath.getBandwidth());
                 if(meterIdsOfPhysicalPaths.containsKey(physicalPath.getPathId())== false){
-                    LOG.info("nemo:meter meterIdsOfPhysicalPaths.containsKey(physicalPath.getPathId())== false");
+                    LOG.debug("nemo:meter meterIdsOfPhysicalPaths.containsKey(physicalPath.getPathId())== false");
                     org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink
                             physicalLinkInPath = physicalPath.getPhysicalLink().get(0);
 
-                    LOG.info("nemo:meter physicalLinkInPath"+physicalLinkInPath.getLinkId().getValue());
+                    LOG.debug("nemo:meter physicalLinkInPath" + physicalLinkInPath.getLinkId().getValue());
                     for (org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.links.PhysicalLink physicalLink : physicalLinksList) {
-                        LOG.info("nemo:meter physicalLink "+physicalLink.getLinkId().getValue());
+                        LOG.debug("nemo:meter physicalLink " + physicalLink.getLinkId().getValue());
                         if (physicalLinkInPath.getLinkId().getValue().equals(physicalLink.getLinkId().getValue())) {
 
-                            LOG.info("nemo:meter find plink for ppath.");
+                            LOG.debug("nemo:meter find plink for ppath.");
                             PhysicalNodeId physicalSrcNodeId = physicalLink.getSrcNodeId();
                             PhysicalPortId physicalSrcPortId = physicalLink.getSrcPortId();
 
-                            LOG.info("nemo:meter meterIdGenerators.size() = "+ meterIdGenerators.size());
-                            LOG.info("nemo:meter physicalSrcNodeId =" + physicalSrcNodeId.getValue());
+                            LOG.debug("nemo:meter meterIdGenerators.size() = " + meterIdGenerators.size());
+                            LOG.debug("nemo:meter physicalSrcNodeId =" + physicalSrcNodeId.getValue());
 
-                            LOG.info("nemo:meter Assign meter id");
+                            LOG.debug("nemo:meter Assign meter id");
                             Long meterId = (long)0;
                             if(meterIdGenerators.containsKey(physicalSrcNodeId) == false){
-                                LOG.info("meterIdGenerators.containsKey(physicalSrcNodeId) == false");
+                                LOG.debug("meterIdGenerators.containsKey(physicalSrcNodeId) == false");
                                 MeterIdGenerator meterIdGenerator = new MeterIdGenerator();
                                 meterIdGenerators.put(physicalSrcNodeId, meterIdGenerator);
                                 meterId = meterIdGenerators.get(physicalSrcNodeId).generateMeterId();
                                 meterIdsOfPhysicalPaths.put(physicalPath.getPathId(),meterId);
                             }
                             else{
-                                LOG.info("meterIdGenerators.containsKey(physicalSrcNodeId) == true");
+                                LOG.debug("meterIdGenerators.containsKey(physicalSrcNodeId) == true");
                                 meterId = meterIdGenerators.get(physicalSrcNodeId).generateMeterId();
                                 meterIdsOfPhysicalPaths.put(physicalPath.getPathId(),meterId);
                             }
 
                             //Generate meter flow entries
-                            LOG.info("nemo:meter Generate meter flow entries");
+                            LOG.debug("nemo:meter Generate meter flow entries");
                             NodeKey nodeKey = new NodeKey(new NodeId(physicalSrcNodeId.getValue()));
                             MeterKey meterKey = new MeterKey(new MeterId(meterId));
 
@@ -555,7 +840,7 @@ public class FlowUtils implements AutoCloseable {
                             WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
                             writeTransaction.put(LogicalDatastoreType.CONFIGURATION, meterInsId, meter);
                             writeTransaction.submit();
-                            LOG.info("nemo:meter writeTransaction.submit();");
+                            LOG.debug("nemo:meter writeTransaction.submit();");
                             break;
                         }
                     }
@@ -574,17 +859,17 @@ public class FlowUtils implements AutoCloseable {
     public void assignMPLSLabelForPPath(PhysicalPath physicalPath,
                   List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.links.PhysicalLink> physicalLinksList){
 
-        LOG.info("nemo: for(1)");
+        LOG.debug("nemo: for(1)");
         List<Integer> mplsLabels = new ArrayList<Integer>();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink>
                 physicalLinksInPath = physicalPath.getPhysicalLink();
 
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink physicalLinkinPath : physicalLinksInPath) {
-            LOG.info("nemo: for(2)");
+            LOG.debug("nemo: for(2)");
             for (org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.links.PhysicalLink physicalLink : physicalLinksList) {
-                LOG.info("nemo: for(3)");
+                LOG.debug("nemo: for(3)");
                 if (physicalLinkinPath.getLinkId().getValue().equals(physicalLink.getLinkId().getValue())) {
-                    LOG.info("nemo: physicalLinkinPath.getLinkId() == physicalLink.getLinkId()");
+                    LOG.debug("nemo: physicalLinkinPath.getLinkId() == physicalLink.getLinkId()");
                     PhysicalNodeId physicalDestNodeId = physicalLink.getDestNodeId();
                     if(mplsGenerators.containsKey(physicalDestNodeId) == true){
 
@@ -618,16 +903,15 @@ public class FlowUtils implements AutoCloseable {
                                  UserIntentVnMapping userIntentVnMapping,
                                  UserVnPnMapping userVnPnMapping,
                                  PhysicalNetwork physicalNetwork) {
-
-        LOG.info("nemo:mpls: updateMplsTable()");
+        LOG.debug("nemo:mpls: updateMplsTable()");
         PhysicalPaths physicalPaths = physicalNetwork.getPhysicalPaths();
 
         if(null == physicalPaths.getPhysicalPath()){
-            LOG.info("PhysicalPaths are null");
+            LOG.debug("PhysicalPaths are null");
             return;
         }
 
-        List<PhysicalPath> physicalPathList = physicalPaths.getPhysicalPath();
+        VirtualNetworkHelper virtualNetworkHelper = virtualNetworkHelpers.get(virtualNetwork.getNetworkId());
 
         PhysicalLinks physicalLinks = physicalNetwork.getPhysicalLinks();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.links.PhysicalLink>
@@ -672,11 +956,11 @@ public class FlowUtils implements AutoCloseable {
                             PhysicalPortId physicalSrcPortId = physicalLink.getSrcPortId();
 
                             if (0 == counter++) {
-                                LOG.info("nemo:mpls:0 == counter");
+                                LOG.debug("nemo:mpls:0 == counter");
                                 mplsLabelIter = mplsLabelsOfPhysicalPaths.get(physicalPath.getPathId()).iterator();
                                 inMPLSLabel = mplsLabelIter.next();
                             } else {
-                                LOG.info("nemo:mpls:counter="+counter);
+                                LOG.debug("nemo:mpls:counter=" + counter);
                                 WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
                                 List<Instruction> instructionList = new LinkedList<Instruction>();
                                 List<Action> actionList = new LinkedList<Action>();
@@ -716,7 +1000,7 @@ public class FlowUtils implements AutoCloseable {
                                 FlowBuilder flowBuilder = baseFlowBuilder().setId(flowId).setTableId(MPLS_LABEL_TABLE_ID).setPriority(DEFAULT_FLOW_PRIORITY);
                                 Flow flow = flowBuilder.setMatch(match).setInstructions(instructions).build();
 
-                                LOG.info("nemo:mpls"+physicalSrcNodeId.getValue());
+                                LOG.debug("nemo:mpls" + physicalSrcNodeId.getValue());
 
                                 NodeId nodeId = new NodeId(physicalSrcNodeId.getValue());
 
@@ -729,7 +1013,7 @@ public class FlowUtils implements AutoCloseable {
                             }
                             //The last hop
                             if (physicalPath.getPhysicalLink().size() == counter) {
-                                LOG.info("nemo:mpls: last hop");
+                                LOG.debug("nemo:mpls: last hop");
                                 WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
                                 List<Instruction> instructionList = new LinkedList<Instruction>();
                                 List<Action> actionList = new LinkedList<Action>();
@@ -768,7 +1052,7 @@ public class FlowUtils implements AutoCloseable {
                                 FlowBuilder flowBuilder = baseFlowBuilder().setId(flowId).setTableId(MPLS_LABEL_TABLE_ID).setPriority(DEFAULT_FLOW_PRIORITY);
                                 Flow flow = flowBuilder.setMatch(match).setInstructions(instructions).build();
 
-                                LOG.info("nemo:mpls:"+physicalDestNodeId.getValue());
+                                LOG.debug("nemo:mpls:" + physicalDestNodeId.getValue());
                                 NodeId nodeId = new NodeId(physicalDestNodeId.getValue());
                                 InstanceIdentifier<Flow> flowInsId = generateFlowInsId(user.getUserId(), nodeId, flow.getTableId(), flow.getId());
 
@@ -797,6 +1081,7 @@ public class FlowUtils implements AutoCloseable {
                                UserIntentVnMapping userIntentVnMapping,
                                UserVnPnMapping userVnPnMapping,
                                PhysicalNetwork physicalNetwork) {
+        VirtualNetworkHelper virtualNetworkHelper = virtualNetworkHelpers.get(virtualNetwork.getNetworkId());
         List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
         Map<VirtualNodeId, VirtualNode> virtualRouters = virtualNetworkHelper.getVirtualRouters();
         Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>> connectedVirtualSwitches;
@@ -883,9 +1168,8 @@ public class FlowUtils implements AutoCloseable {
             if ( null != connectedVirtualSwitches ) {
                 virtualPort = connectedVirtualSwitches.values().iterator().next().getKey();
                 ipPrefix = virtualPort.getExternalIpPrefixes().getExternalIpPrefix().get(0);
-                gatewayMacAddress = getGateWayMacAddress(userIntentVnMapping, virtualNodeId);
 
-                configIpTableEntry(user.getUserId(), ipPrefix, gatewayMacAddress, physicalNodeId);
+                configIpTableEntry(user.getUserId(), ipPrefix, physicalNodeId);
 
                 for ( Map.Entry<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>> entry
                         : connectedVirtualSwitches.entrySet() ) {
@@ -900,6 +1184,9 @@ public class FlowUtils implements AutoCloseable {
                             .getConnectedVirtualRouters(entry.getKey());
 
                     if ( null != connectedVirtualRouters1 ) {
+                        gatewayMacAddress = getGatewayMacAddress(virtualNetwork.getNetworkId(),
+                                virtualNetworkHelper.getVirtualNode(entry.getKey()));
+
                         virtualLink1 = connectedVirtualRouters1.values().iterator().next().getValue();
                         vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults,
                                 new VirtualResourceEntityId(virtualLink1.getLinkId().getValue()));
@@ -949,7 +1236,6 @@ public class FlowUtils implements AutoCloseable {
                                 vnPnMappingResult.getParentPhysicalResourceEntityId().getValue());
                         physicalPortId = new PhysicalPortId(
                                 vnPnMappingResult.getPhysicalResourceEntityId().getValue());
-                        physicalPort = physicalNetworkHelper.getPhysicalPort(physicalNodeId1, physicalPortId);
 
                         macAddresses = layer2ExternalVirtualPort1
                                 .getExternalMacAddresses().getExternalMacAddress();
@@ -958,7 +1244,7 @@ public class FlowUtils implements AutoCloseable {
                             virtualArp = virtualNetworkHelper.getVirtualArp(macAddress);
 
                             configArpTableEntry(user.getUserId(), virtualArp, physicalPath);
-                            configMacTableEntry(user.getUserId(), macAddress, physicalNodeId1, physicalPort);
+                            configMacTableEntry(user.getUserId(), macAddress, physicalNodeId1, physicalPortId);
                         }
                     }
                 }
@@ -988,8 +1274,8 @@ public class FlowUtils implements AutoCloseable {
 
         updateIpTableForOperations(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
 
-        // for testing - jizhigang
         // log format: vnode(nodetype) --> vnode(nodetype): vlink; ppath; plinks; mplslabels; meterid;
+        StringBuilder stringBuilder = new StringBuilder();
         Set<VirtualLinkId> printedVirtualLinks = new HashSet<VirtualLinkId>();
         VirtualNode srcVirtualNode;
         VirtualNode dstVirtualNode;
@@ -1002,11 +1288,24 @@ public class FlowUtils implements AutoCloseable {
                 vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults, new VirtualResourceEntityId(virtualLink2.getLinkId().getValue()));
                 physicalPath2 = physicalNetworkHelper.getPhysicalPath(new PhysicalPathId(vnPnMappingResult.getPhysicalResourceEntityId().getValue()));
 
-                System.out.println(srcVirtualNode.getNodeId().getValue() + "(" + srcVirtualNode.getNodeType() + ") --> " +
-                        dstVirtualNode.getNodeId().getValue() + "(" + dstVirtualNode.getNodeType() + "): " + virtualLink2.getLinkId().getValue() + "; " +
-                        physicalPath2.getPathId().getValue() + "; " + physicalPath2.getPhysicalLink() + "; " +
-                        mplsLabelsOfPhysicalPaths.get(physicalPath2.getPathId()) + "; " +
-                        meterIdsOfPhysicalPaths.get(physicalPath2.getPathId()) + ";");
+                stringBuilder.append(srcVirtualNode.getNodeId().getValue());
+                stringBuilder.append("(");
+                stringBuilder.append(srcVirtualNode.getNodeType());
+                stringBuilder.append(") --> ");
+                stringBuilder.append(dstVirtualNode.getNodeId().getValue());
+                stringBuilder.append("(");
+                stringBuilder.append(dstVirtualNode.getNodeType());
+                stringBuilder.append("): ");
+                stringBuilder.append(virtualLink2.getLinkId().getValue());
+                stringBuilder.append("; ");
+                stringBuilder.append(physicalPath2.getPathId().getValue());
+                stringBuilder.append("; ");
+                stringBuilder.append(physicalPath2.getPhysicalLink());
+                stringBuilder.append("; ");
+                stringBuilder.append(mplsLabelsOfPhysicalPaths.get(physicalPath2.getPathId()));
+                stringBuilder.append("; ");
+                stringBuilder.append(meterIdsOfPhysicalPaths.get(physicalPath2.getPathId()));
+                stringBuilder.append(";\n");
 
                 for ( VirtualLink virtualLink3 : virtualNetwork.getVirtualLinks().getVirtualLink() ) {
                     if ( virtualLink3.getSrcNodeId().equals(dstVirtualNode.getNodeId())
@@ -1014,11 +1313,24 @@ public class FlowUtils implements AutoCloseable {
                         vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults, new VirtualResourceEntityId(virtualLink3.getLinkId().getValue()));
                         physicalPath2 = physicalNetworkHelper.getPhysicalPath(new PhysicalPathId(vnPnMappingResult.getPhysicalResourceEntityId().getValue()));
 
-                        System.out.println(dstVirtualNode.getNodeId().getValue() + "(" + dstVirtualNode.getNodeType() + ") --> " +
-                                srcVirtualNode.getNodeId().getValue() + "(" + srcVirtualNode.getNodeType() + "): " + virtualLink3.getLinkId().getValue() + "; " +
-                                physicalPath2.getPathId().getValue() + "; " + physicalPath2.getPhysicalLink() + "; " +
-                                mplsLabelsOfPhysicalPaths.get(physicalPath2.getPathId()) + "; " +
-                                meterIdsOfPhysicalPaths.get(physicalPath2.getPathId()) + ";");
+                        stringBuilder.append(dstVirtualNode.getNodeId().getValue());
+                        stringBuilder.append("(");
+                        stringBuilder.append(dstVirtualNode.getNodeType());
+                        stringBuilder.append(") --> ");
+                        stringBuilder.append(srcVirtualNode.getNodeId().getValue());
+                        stringBuilder.append("(");
+                        stringBuilder.append(srcVirtualNode.getNodeType());
+                        stringBuilder.append("): ");
+                        stringBuilder.append(virtualLink3.getLinkId().getValue());
+                        stringBuilder.append("; ");
+                        stringBuilder.append(physicalPath2.getPathId().getValue());
+                        stringBuilder.append("; ");
+                        stringBuilder.append(physicalPath2.getPhysicalLink());
+                        stringBuilder.append("; ");
+                        stringBuilder.append(mplsLabelsOfPhysicalPaths.get(physicalPath2.getPathId()));
+                        stringBuilder.append("; ");
+                        stringBuilder.append(meterIdsOfPhysicalPaths.get(physicalPath2.getPathId()));
+                        stringBuilder.append(";\n");
 
                         printedVirtualLinks.add(virtualLink3.getLinkId());
                     }
@@ -1027,7 +1339,8 @@ public class FlowUtils implements AutoCloseable {
                 printedVirtualLinks.add(virtualLink2.getLinkId());
             }
         }
-        // for testing - jizhigang
+
+        LOG.debug(stringBuilder.toString());
 
         return;
     }
@@ -1120,8 +1433,15 @@ public class FlowUtils implements AutoCloseable {
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow nemoFlow =
                 getFlow(nemoFlows, nemoFlowId);
 
-        long priority = 1 + operation.getPriority();
+        long priority;
 
+        if ( null == operation.getPriority() ) {
+            priority = 1;
+        } else {
+            priority = 1 + operation.getPriority();
+        }
+
+        VirtualNetworkHelper virtualNetworkHelper = virtualNetworkHelpers.get(virtualNetwork.getNetworkId());
         List<IntentVnMappingResult> intentVnMappingResults = userIntentVnMapping.getIntentVnMappingResult();
         List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
         IntentId intentId = new IntentId(operation.getOperationId().getValue());
@@ -1362,7 +1682,7 @@ public class FlowUtils implements AutoCloseable {
     /**
      * TODO
      *
-     * @author Zhigang Ji, Shixing Liu
+     * @author Zhigang Ji, Shixing Liu, Jie Hou
      * @param physicalNodeId TODO
      * @param physicalPortId TODO
      * @return TODO
@@ -1370,13 +1690,13 @@ public class FlowUtils implements AutoCloseable {
     private MacAddress getMacAddressOfConnectedExternalDevice(PhysicalNodeId physicalNodeId,
                                                               PhysicalPortId physicalPortId) {
         com.google.common.collect.Table<PhysicalNodeId, PhysicalPortId, MacAddress> externalNetworkMacTable =
-                this.resourceManager.getExternalNetworkMacTable();
+                this.phyConfigLoader.getExternalNetworkMac();
 
         MacAddress macAddress = externalNetworkMacTable.get(physicalNodeId, physicalPortId);
         if(macAddress == null){
-            LOG.info("nemo: cannot find external network device mac address");
+            LOG.debug("nemo: cannot find external network device mac address");
         }
-        LOG.info("nemo: external network device mac address");
+        LOG.debug("nemo: external network device mac address");
 
         return macAddress;
     }
@@ -1385,23 +1705,202 @@ public class FlowUtils implements AutoCloseable {
      * TODO
      *
      * @author Zhigang Ji
-     * @param userIntentVnMapping TODO
-     * @param virtualNodeId TODO
+     * @param virtualNetworkId TODO
+     * @param virtualNode TODO
      * @return TODO
      */
-    private MacAddress getGateWayMacAddress(UserIntentVnMapping userIntentVnMapping,
-                                            VirtualNodeId virtualNodeId) {
+    private IpAddress getGatewayIpAddress(VirtualNetworkId virtualNetworkId,
+                                          VirtualNode virtualNode) {
+        VirtualNetworkHelper virtualNetworkHelper = virtualNetworkHelpers.get(virtualNetworkId);
+        VirtualNodeId virtualNodeId = virtualNode.getNodeId();
+        VirtualNodeId virtualRouterId = null;
+
+        switch ( virtualNode.getNodeType() ) {
+            case Vswitch:
+                Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>> connectedVirtualRouters =
+                        virtualNetworkHelper.getConnectedVirtualRouters(virtualNodeId);
+
+                if ( null != connectedVirtualRouters && !connectedVirtualRouters.isEmpty() ) {
+                    virtualRouterId = connectedVirtualRouters.keySet().iterator().next();
+                }
+                break;
+
+            case Vrouter:
+                virtualRouterId = virtualNodeId;
+                break;
+
+            default:
+                break;
+        }
+
+        if ( null == virtualRouterId ) {
+            return null;
+        }
+
+        UserId userId = new UserId(virtualNetworkId.getValue());
+        UserIntentVnMapping userIntentVnMapping = userIntentVnMappings.get(userId);
         List<IntentVnMappingResult> intentVnMappingResults = userIntentVnMapping.getIntentVnMappingResult();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId  nodeId = null;
         VirtualResource virtualResource;
 
-        for ( IntentVnMappingResult intentVnMappingResult : intentVnMappingResults ) {
-            virtualResource = intentVnMappingResult.getVirtualResource().get(0);
+        VirtualPort layer2ExternalVirtualPort =
+                virtualNetworkHelper.getLayer2ExternalVirtualPort(virtualRouterId);
 
-            if ( virtualResource.getVirtualResourceEntityId().getValue().equals(virtualNodeId.getValue()) ) {
-                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId nodeId =
-                        new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId(intentVnMappingResult.getIntentId().getValue());
+        if ( null != layer2ExternalVirtualPort ) {
+            for ( IntentVnMappingResult intentVnMappingResult : intentVnMappingResults ) {
+                if ( IntentVnMappingResult.IntentType.Node == intentVnMappingResult.getIntentType() ) {
+                    if ( 1 == intentVnMappingResult.getVirtualResource().size() ) {
+                        virtualResource = intentVnMappingResult.getVirtualResource().get(0);
 
-                return gatewayMacAddress.get(nodeId);
+                        if ( VirtualResource.VirtualResourceType.Vport
+                                == virtualResource.getVirtualResourceType() ) {
+                            if ( virtualResource.getParentVirtualResourceEntityId().getValue()
+                                    .equals(virtualRouterId.getValue()) ) {
+                                nodeId = new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId(
+                                        intentVnMappingResult.getIntentId().getValue());
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>> connectedVirtualSwitches =
+                    virtualNetworkHelper.getConnectedVirtualSwitches(virtualRouterId);
+
+            if ( null != connectedVirtualSwitches && !connectedVirtualSwitches.isEmpty() ) {
+                for ( IntentVnMappingResult intentVnMappingResult : intentVnMappingResults ) {
+                    if ( IntentVnMappingResult.IntentType.Node == intentVnMappingResult.getIntentType() ) {
+                        if ( 1 == intentVnMappingResult.getVirtualResource().size() ) {
+                            virtualResource = intentVnMappingResult.getVirtualResource().get(0);
+
+                            if ( VirtualResource.VirtualResourceType.Vnode
+                                    == virtualResource.getVirtualResourceType() ) {
+                                if ( virtualResource.getVirtualResourceEntityId().getValue()
+                                        .equals(virtualRouterId.getValue()) ) {
+                                    nodeId = new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId(
+                                            intentVnMappingResult.getIntentId().getValue());
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if ( null == nodeId ) {
+            return null;
+        }
+
+        User user = users.get(userId);
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Node node =
+                getNode(user.getObjects().getNode(), nodeId);
+        Property gatewayIpProperty = getNodeProperty(node.getProperty(), new PropertyName("gateway-ip"));
+
+        if ( null != gatewayIpProperty ) {
+            String propertyValue = gatewayIpProperty.getPropertyValues().getStringValue().get(0).getValue();
+
+            return new IpAddress(new Ipv4Address(propertyValue));
+        } else {
+            Property ipPrefixProperty = getNodeProperty(node.getProperty(), new PropertyName("ip-prefix"));
+
+            if ( null != ipPrefixProperty ) {
+                String propertyValue = ipPrefixProperty.getPropertyValues().getStringValue().get(0).getValue();
+
+                return generateDefaultGatewayIpAddress(propertyValue);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param virtualNetworkId TODO
+     * @param virtualNode TODO
+     * @return TODO
+     */
+    private MacAddress getGatewayMacAddress(VirtualNetworkId virtualNetworkId,
+                                            VirtualNode virtualNode) {
+        VirtualNetworkHelper virtualNetworkHelper = virtualNetworkHelpers.get(virtualNetworkId);
+        VirtualNodeId virtualNodeId = virtualNode.getNodeId();
+
+        switch ( virtualNode.getNodeType() ) {
+            case Vswitch:
+                Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>> connectedVirtualRouters =
+                        virtualNetworkHelper.getConnectedVirtualRouters(virtualNodeId);
+
+                if ( null != connectedVirtualRouters && !connectedVirtualRouters.isEmpty() ) {
+                    VirtualNodeId virtualRouterId = connectedVirtualRouters.keySet().iterator().next();
+                    VirtualLink virtualLink = virtualNetworkHelper.getVirtualLink(virtualRouterId, virtualNodeId);
+
+                    UserId userId = new UserId(virtualNetworkId.getValue());
+                    UserVnPnMapping userVnPnMapping = userVnPnMappings.get(userId);
+                    List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
+                    VnPnMappingResult vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults,
+                            new VirtualResourceEntityId(virtualLink.getLinkId()));
+
+                    PhysicalPathId physicalPathId =
+                            new PhysicalPathId(vnPnMappingResult.getPhysicalResourceEntityId().getValue());
+                    PhysicalPath physicalPath = physicalNetworkHelper.getPhysicalPath(physicalPathId);
+                    PhysicalLink physicalLink =
+                            physicalNetworkHelper.getFirstPhysicalLinkOfPhysicalPath(physicalPath);
+                    PhysicalPort physicalPort = physicalNetworkHelper
+                            .getPhysicalPort(physicalLink.getSrcNodeId(), physicalLink.getSrcPortId());
+
+                    return physicalPort.getMacAddress();
+                }
+                break;
+
+            case Vrouter:
+                VirtualPort layer2ExternalVirtualPort =
+                        virtualNetworkHelper.getLayer2ExternalVirtualPort(virtualNodeId);
+
+                if ( null != layer2ExternalVirtualPort ) {
+                    UserId userId = new UserId(virtualNetworkId.getValue());
+                    UserVnPnMapping userVnPnMapping = userVnPnMappings.get(userId);
+                    List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
+                    VnPnMappingResult vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults,
+                            new VirtualResourceEntityId(layer2ExternalVirtualPort.getPortId().getValue()));
+
+                    PhysicalNodeId physicalNodeId =
+                            new PhysicalNodeId(vnPnMappingResult.getParentPhysicalResourceEntityId().getValue());
+                    PhysicalPortId physicalPortId =
+                            new PhysicalPortId(vnPnMappingResult.getPhysicalResourceEntityId().getValue());
+                    PhysicalPort physicalPort =
+                            physicalNetworkHelper.getPhysicalPort(physicalNodeId, physicalPortId);
+
+                    return physicalPort.getMacAddress();
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        return null;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param nodes TODO
+     * @param nodeId TODO
+     * @return TODO
+     */
+    private org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Node getNode(
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Node> nodes,
+            org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId nodeId) {
+        for ( org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Node
+                node : nodes ) {
+            if ( node.getNodeId().equals(nodeId) ) {
+                return node;
             }
         }
 
@@ -1423,6 +1922,26 @@ public class FlowUtils implements AutoCloseable {
                 flow : flows ) {
             if ( flow.getFlowId().equals(flowId) ) {
                 return flow;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param properties TODO
+     * @param propertyName TODO
+     * @return TODO
+     */
+    private Property getNodeProperty(List<Property> properties, PropertyName propertyName) {
+        if ( null != properties ) {
+            for ( Property property : properties ) {
+                if ( property.getPropertyName().equals(propertyName) ) {
+                    return property;
+                }
             }
         }
 
@@ -1515,10 +2034,10 @@ public class FlowUtils implements AutoCloseable {
      * @param userId TODO
      * @param macAddress TODO
      * @param physicalNodeId TODO
-     * @param physicalPort TODO
+     * @param physicalPortId TODO
      */
     private void configMacTableEntry(UserId userId, MacAddress macAddress,
-                                     PhysicalNodeId physicalNodeId, PhysicalPort physicalPort) {
+                                     PhysicalNodeId physicalNodeId, PhysicalPortId physicalPortId) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         List<Instruction> instructionList = new LinkedList<Instruction>();
         List<Action> actionList = new LinkedList<Action>();
@@ -1531,7 +2050,7 @@ public class FlowUtils implements AutoCloseable {
 
         Match match = new MatchBuilder().setEthernetMatch(ethernetMatch).setMetadata(metadata).build();
 
-        OutputAction outputAction = new OutputActionBuilder().setOutputNodeConnector(createNodeConnectorId(physicalPort.getPortId())).build();
+        OutputAction outputAction = new OutputActionBuilder().setOutputNodeConnector(createNodeConnectorId(physicalPortId)).build();
         OutputActionCase outputActionCase = new OutputActionCaseBuilder().setOutputAction(outputAction).build();
         Action actionOutput = new ActionBuilder().setOrder(actionList.size()).setAction(outputActionCase).build();
         actionList.add(actionOutput);
@@ -1631,7 +2150,7 @@ public class FlowUtils implements AutoCloseable {
         List<Instruction> instructionList = new LinkedList<Instruction>();
         List<Action> actionList = new LinkedList<Action>();
 
-        EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetType(new EthernetTypeBuilder().setType(new EtherType((long)ETH_TYPE_IP)).build());
+        EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetType(new EthernetTypeBuilder().setType(new EtherType((long) ETH_TYPE_IP)).build());
         EthernetMatch ethernetMatch = ethernetMatchBuilder.build();
 
         MetadataBuilder metadataBuilder = new MetadataBuilder().setMetadata(BigInteger.valueOf(metadatas.get(userId)));
@@ -1725,7 +2244,7 @@ public class FlowUtils implements AutoCloseable {
 
         PhysicalLink physicalLink = physicalNetworkHelper.getFirstPhysicalLinkOfPhysicalPath(physicalPath);
 
-        EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetType(new EthernetTypeBuilder().setType(new EtherType((long)ETH_TYPE_IP)).build());
+        EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetType(new EthernetTypeBuilder().setType(new EtherType((long) ETH_TYPE_IP)).build());
         EthernetMatch ethernetMatch = ethernetMatchBuilder.build();
 
         MetadataBuilder metadataBuilder = new MetadataBuilder().setMetadata(BigInteger.valueOf(metadatas.get(userId)));
@@ -1821,11 +2340,9 @@ public class FlowUtils implements AutoCloseable {
      * @author Zhigang Ji
      * @param userId TODO
      * @param ipPrefix TODO
-     * @param macAddress TODO
      * @param physicalNodeId TODO
      */
-    private void configIpTableEntry(UserId userId, IpPrefix ipPrefix,
-                                    MacAddress macAddress, PhysicalNodeId physicalNodeId) {
+    private void configIpTableEntry(UserId userId, IpPrefix ipPrefix, PhysicalNodeId physicalNodeId) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         List<Instruction> instructionList = new LinkedList<Instruction>();
         List<Action> actionList = new LinkedList<Action>();
@@ -1845,14 +2362,6 @@ public class FlowUtils implements AutoCloseable {
         DecNwTtlCase decNwTtlCase = new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl).build();
         Action actionDecNW = new ActionBuilder().setOrder(actionList.size()).setAction(decNwTtlCase).build();
         actionList.add(actionDecNW);
-
-        ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetSource(new EthernetSourceBuilder().setAddress(macAddress).build());
-        ethernetMatch = ethernetMatchBuilder.build();
-
-        SetField setField = new SetFieldBuilder().setEthernetMatch(ethernetMatch).build();
-        SetFieldCase setFieldCase = new SetFieldCaseBuilder().setSetField(setField).build();
-        Action actionSetField = new ActionBuilder().setOrder(actionList.size()).setAction(setFieldCase).build();
-        actionList.add(actionSetField);
 
         ApplyActions applyActions = new ApplyActionsBuilder().setAction(actionList).build();
         ApplyActionsCase applyActionsCase = new ApplyActionsCaseBuilder().setApplyActions(applyActions).build();
@@ -1890,16 +2399,77 @@ public class FlowUtils implements AutoCloseable {
      * @author Zhigang Ji
      * @param userId TODO
      * @param virtualArp TODO
+     * @param physicalNodeId TODO
+     * @param physicalPortId TODO
+     */
+    private void configArpTableEntry(UserId userId, VirtualArp virtualArp,
+                                     PhysicalNodeId physicalNodeId, PhysicalPortId physicalPortId) {
+        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
+        List<Instruction> instructionList = new LinkedList<Instruction>();
+        List<Action> actionList = new LinkedList<Action>();
+
+        EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetType(new EthernetTypeBuilder().setType(new EtherType((long)ETH_TYPE_IP)).build());
+        EthernetMatch ethernetMatch = ethernetMatchBuilder.build();
+
+        Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder().setIpv4Destination(convertIpAddressToIpPrefix(virtualArp.getIpAddress()).getIpv4Prefix());
+        Ipv4Match ipv4Match = ipv4MatchBuilder.build();
+
+        MetadataBuilder metadataBuilder = new MetadataBuilder().setMetadata(BigInteger.valueOf(metadatas.get(userId)));
+        Metadata metadata = metadataBuilder.build();
+
+        Match match = new MatchBuilder().setEthernetMatch(ethernetMatch).setLayer3Match(ipv4Match).setMetadata(metadata).build();
+
+        ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetDestination(new EthernetDestinationBuilder().setAddress(virtualArp.getMacAddress()).build());
+        ethernetMatch = ethernetMatchBuilder.build();
+
+        SetField setField = new SetFieldBuilder().setEthernetMatch(ethernetMatch).build();
+        SetFieldCase setFieldCase = new SetFieldCaseBuilder().setSetField(setField).build();
+        Action actionSetField = new ActionBuilder().setOrder(actionList.size()).setAction(setFieldCase).build();
+        actionList.add(actionSetField);
+
+        OutputAction outputAction = new OutputActionBuilder().setOutputNodeConnector(createNodeConnectorId(physicalPortId)).build();
+        OutputActionCase outputActionCase = new OutputActionCaseBuilder().setOutputAction(outputAction).build();
+        Action actionOutput = new ActionBuilder().setOrder(actionList.size()).setAction(outputActionCase).build();
+        actionList.add(actionOutput);
+
+        ApplyActions applyActions = new ApplyActionsBuilder().setAction(actionList).build();
+        ApplyActionsCase applyActionsCase = new ApplyActionsCaseBuilder().setApplyActions(applyActions).build();
+        Instruction instructionApply = new InstructionBuilder().setOrder(instructionList.size()).setInstruction(applyActionsCase).build();
+        instructionList.add(instructionApply);
+
+        Instructions instructions = new InstructionsBuilder().setInstruction(instructionList).build();
+
+        FlowId flowId = new FlowId(UUID.randomUUID().toString());
+        FlowBuilder flowBuilder = baseFlowBuilder().setId(flowId).setTableId(ARP_TABLE_ID).setPriority(DEFAULT_FLOW_PRIORITY);
+        Flow flow = flowBuilder.setMatch(match).setInstructions(instructions).build();
+
+        NodeId nodeId = createNodeId(physicalNodeId);
+        InstanceIdentifier<Flow> flowInsId = generateFlowInsId(userId, nodeId, flow.getTableId(), flow.getId());
+
+        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, flowInsId, flow, true);
+        writeTransaction.submit();
+
+        return;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param userId TODO
+     * @param virtualArp TODO
      * @param physicalPath TODO
      */
-    private void configArpTableEntry(UserId userId, VirtualArp virtualArp, PhysicalPath physicalPath) {
+    private void configArpTableEntry(UserId userId, VirtualArp virtualArp,
+                                     PhysicalPath physicalPath) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         List<Instruction> instructionList = new LinkedList<Instruction>();
         List<Action> actionList = new LinkedList<Action>();
 
         PhysicalLink physicalLink = physicalNetworkHelper.getFirstPhysicalLinkOfPhysicalPath(physicalPath);
+        PhysicalPort physicalPort = physicalNetworkHelper.getPhysicalPort(physicalLink.getSrcNodeId(), physicalLink.getSrcPortId());
 
-        EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetType(new EthernetTypeBuilder().setType(new EtherType((long)ETH_TYPE_IP)).build());
+        EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetType(new EthernetTypeBuilder().setType(new EtherType((long) ETH_TYPE_IP)).build());
         EthernetMatch ethernetMatch = ethernetMatchBuilder.build();
 
         Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder().setIpv4Destination(convertIpAddressToIpPrefix(virtualArp.getIpAddress()).getIpv4Prefix());
@@ -1918,6 +2488,14 @@ public class FlowUtils implements AutoCloseable {
         SetField setField = new SetFieldBuilder().setProtocolMatchFields(new ProtocolMatchFieldsBuilder().setMplsLabel((long)mplsLabelsOfPhysicalPaths.get(physicalPath.getPathId()).get(0)).build()).build();
         SetFieldCase setFieldCase = new SetFieldCaseBuilder().setSetField(setField).build();
         Action actionSetField = new ActionBuilder().setOrder(actionList.size()).setAction(setFieldCase).build();
+        actionList.add(actionSetField);
+
+        ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetSource(new EthernetSourceBuilder().setAddress(physicalPort.getMacAddress()).build());
+        ethernetMatch = ethernetMatchBuilder.build();
+
+        setField = new SetFieldBuilder().setEthernetMatch(ethernetMatch).build();
+        setFieldCase = new SetFieldCaseBuilder().setSetField(setField).build();
+        actionSetField = new ActionBuilder().setOrder(actionList.size()).setAction(setFieldCase).build();
         actionList.add(actionSetField);
 
         ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetDestination(new EthernetDestinationBuilder().setAddress(virtualArp.getMacAddress()).build());
@@ -2064,7 +2642,7 @@ public class FlowUtils implements AutoCloseable {
         Action actionPushMPLS = new ActionBuilder().setOrder(actionList.size()).setAction(pushMplsActionCase).build();
         actionList.add(actionPushMPLS);
 
-        SetField setField = new SetFieldBuilder().setProtocolMatchFields(new ProtocolMatchFieldsBuilder().setMplsLabel((long)mplsLabelsOfPhysicalPaths.get(outPhysicalPath.getPathId()).get(0)).build()).build();
+        SetField setField = new SetFieldBuilder().setProtocolMatchFields(new ProtocolMatchFieldsBuilder().setMplsLabel((long) mplsLabelsOfPhysicalPaths.get(outPhysicalPath.getPathId()).get(0)).build()).build();
         SetFieldCase setFieldCase = new SetFieldCaseBuilder().setSetField(setField).build();
         Action actionSetField = new ActionBuilder().setOrder(actionList.size()).setAction(setFieldCase).build();
         actionList.add(actionSetField);
@@ -2162,6 +2740,59 @@ public class FlowUtils implements AutoCloseable {
      * TODO
      *
      * @author Zhigang Ji
+     * @param payload TODO
+     * @param ingress TODO
+     * @param egress TODO
+     */
+    private void sendPacketOut(byte[] payload, NodeConnectorRef ingress, NodeConnectorRef egress) {
+        TransmitPacketInputBuilder transmitPacketInputBuilder = new TransmitPacketInputBuilder().setPayload(payload).setNode(createNodeRef(egress));
+        TransmitPacketInput transmitPacketInput = transmitPacketInputBuilder.setEgress(egress).setIngress(ingress).build();
+
+        packetProcessingService.transmitPacket(transmitPacketInput);
+
+        return;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param ethernet TODO
+     * @param arp TODO
+     * @return TODO
+     */
+    private byte[] createArpPacket(Ethernet ethernet, ARP arp) {
+        try {
+            ethernet.setRawPayload(arp.serialize());
+        } catch ( PacketException exception ) {
+            LOG.error("Failed to encode the arp packet, smac: {}, sip: {}, dmac: {}, dip: {}.",
+                    convertByteArray6ToMacAddress(arp.getSenderHardwareAddress()).getValue(),
+                    convertByteArray4ToIpAddress(arp.getSenderProtocolAddress()).getIpv4Address().getValue(),
+                    convertByteArray6ToMacAddress(arp.getTargetHardwareAddress()).getValue(),
+                    convertByteArray4ToIpAddress(arp.getTargetProtocolAddress()).getIpv4Address().getValue());
+
+            return null;
+        }
+
+        byte[] arpPacket;
+
+        try {
+            arpPacket = ethernet.serialize();
+        } catch ( PacketException exception ) {
+            LOG.error("Failed to encode the ethernet packet, smac: {}, dmac: {}.",
+                    convertByteArray6ToMacAddress(ethernet.getSourceMACAddress()).getValue(),
+                    convertByteArray6ToMacAddress(ethernet.getDestinationMACAddress()).getValue());
+
+            return null;
+        }
+
+        return arpPacket;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
      * @return TODO
      */
     private FlowBuilder baseFlowBuilder() {
@@ -2229,11 +2860,11 @@ public class FlowUtils implements AutoCloseable {
      * TODO
      *
      * @author Zhigang Ji
-     * @param physicalNodeId TODO
+     * @param nodeConnectorRef TODO
      * @return TODO
      */
-    private NodeRef createNodeRef(PhysicalNodeId physicalNodeId) {
-        return new NodeRef(createNodePath(createNodeId(physicalNodeId)));
+    private NodeRef createNodeRef(NodeConnectorRef nodeConnectorRef) {
+        return new NodeRef(nodeConnectorRef.getValue().firstIdentifierOf(Node.class));
     }
 
     /**
@@ -2265,11 +2896,111 @@ public class FlowUtils implements AutoCloseable {
      * TODO
      *
      * @author Zhigang Ji
+     * @param nodeConnectorRef TODO
+     * @return TODO
+     */
+    private PhysicalPortId convertNodeConnectorRefToPhysicalPortId(NodeConnectorRef nodeConnectorRef) {
+        PhysicalPortId physicalPortId = new PhysicalPortId(
+                nodeConnectorRef.getValue().firstIdentifierOf(NodeConnector.class)
+                        .firstKeyOf(NodeConnector.class).getId().getValue());
+
+        return physicalPortId;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param nodeConnectorRef TODO
+     * @return TODO
+     */
+    private PhysicalNodeId convertNodeConnectorRefToPhysicalNodeId(NodeConnectorRef nodeConnectorRef) {
+        PhysicalNodeId physicalNodeId = new PhysicalNodeId(
+                nodeConnectorRef.getValue().firstIdentifierOf(Node.class)
+                        .firstKeyOf(Node.class).getId().getValue());
+
+        return physicalNodeId;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
      * @param ipAddress TODO
      * @return TODO
      */
     private IpPrefix convertIpAddressToIpPrefix(IpAddress ipAddress) {
         return new IpPrefix(new Ipv4Prefix(ipAddress.getIpv4Address().getValue() + "/32"));
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param byteArray TODO
+     * @return TODO
+     */
+    private IpAddress convertByteArray4ToIpAddress(byte[] byteArray) {
+        char[] charArray = NetUtils
+                .getInetAddress(NetUtils.byteArray4ToInt(byteArray)).getHostAddress().toCharArray();
+
+        return new IpAddress(charArray);
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param byteArray TODO
+     * @return TODO
+     */
+    private MacAddress convertByteArray6ToMacAddress(byte[] byteArray) {
+        return new MacAddress(HexEncode.bytesToHexStringFormat(byteArray));
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param macAddress TODO
+     * @return TODO
+     */
+    private byte[] convertMacAddressToByteArray6(MacAddress macAddress) {
+        byte[] byteArray = new byte[6];
+        String[] segments = macAddress.getValue().split(":");
+
+        for ( int i = 0; i < 6; i++ ) {
+            byteArray[i] = (byte)Integer.parseInt(segments[i], 16);
+        }
+
+        return byteArray;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param ipPrefix TODO
+     * @return TODO
+     */
+    private IpAddress generateDefaultGatewayIpAddress(String ipPrefix) {
+        int indexOfSlash = ipPrefix.indexOf('/');
+
+        String strIpAddress = ipPrefix.substring(0, indexOfSlash);
+        int mask = Integer.parseInt(ipPrefix.substring(indexOfSlash + 1));
+
+        String[] segments = strIpAddress.split("\\.");
+
+        int intIpAddress = (Integer.parseInt(segments[0]) << 24) | (Integer.parseInt(segments[1]) << 16);
+        intIpAddress |= (Integer.parseInt(segments[2]) << 8) | (Integer.parseInt(segments[3]));
+
+        int intGatewayIpAddress = ((intIpAddress >> (32 - mask)) << (32 - mask)) + 1;
+        String strGatewayIpAddress = ((intGatewayIpAddress >> 24) & 0xff) + "." +
+                ((intGatewayIpAddress >> 16) & 0xff) + "." +
+                ((intGatewayIpAddress >> 8) & 0xff) + "." +
+                (intGatewayIpAddress & 0xff);
+
+        return new IpAddress(new Ipv4Address(strGatewayIpAddress));
     }
 
     /**
@@ -2441,7 +3172,7 @@ public class FlowUtils implements AutoCloseable {
         private Map<VirtualNodeId, VirtualPort> layer3ExternalVirtualPortMap;
         private Map<VirtualNodeId, Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>>> virtualSwitchConnectedInternalVirtualPortMap;
         private Map<VirtualNodeId, Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>>> virtualRouterConnectedInternalVirtualPortMap;
-        private Map<VirtualArpKey, VirtualArp> virtualArpMap;
+        private Map<IpAddress, VirtualArp> ipAddressKeyVirtualArpMap;
         private Map<MacAddress, VirtualArp> macAddressKeyVirtualArpMap;
 
         public VirtualNetworkHelper(VirtualNetwork virtualNetwork) {
@@ -2456,7 +3187,7 @@ public class FlowUtils implements AutoCloseable {
                     new HashMap<VirtualNodeId, Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>>>();
             virtualRouterConnectedInternalVirtualPortMap =
                     new HashMap<VirtualNodeId, Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>>>();
-            virtualArpMap = new HashMap<VirtualArpKey, VirtualArp>();
+            ipAddressKeyVirtualArpMap = new HashMap<IpAddress, VirtualArp>();
             macAddressKeyVirtualArpMap = new HashMap<MacAddress, VirtualArp>();
 
             List<VirtualNode> virtualNodes = virtualNetwork.getVirtualNodes().getVirtualNode();
@@ -2535,19 +3266,38 @@ public class FlowUtils implements AutoCloseable {
             List<VirtualArp> virtualArps = virtualNetwork.getVirtualArps().getVirtualArp();
 
             for ( VirtualArp virtualArp : virtualArps ) {
-                virtualArpMap.put(virtualArp.getKey(), virtualArp);
+                ipAddressKeyVirtualArpMap.put(virtualArp.getIpAddress(), virtualArp);
                 macAddressKeyVirtualArpMap.put(virtualArp.getMacAddress(), virtualArp);
             }
 
             return;
         }
 
+        protected VirtualNode getVirtualNode(VirtualNodeId virtualNodeId) {
+            return virtualNodeMap.get(virtualNodeId);
+        }
+
         protected VirtualLink getVirtualLink(VirtualLinkId virtualLinkId) {
             return virtualLinkMap.get(virtualLinkId);
         }
 
+        protected VirtualLink getVirtualLink(VirtualNodeId source, VirtualNodeId destination) {
+            for ( VirtualLink virtualLink : virtualLinkMap.values() ) {
+                if ( virtualLink.getSrcNodeId().equals(source)
+                        && virtualLink.getDestNodeId().equals(destination) ) {
+                    return virtualLink;
+                }
+            }
+
+            return null;
+        }
+
         protected VirtualPath getVirtualPath(VirtualPathId virtualPathId) {
             return virtualPathMap.get(virtualPathId);
+        }
+
+        protected VirtualPort getVirtualPort(VirtualNodeId virtualNodeId, VirtualPortId virtualPortId) {
+            return virtualPortMap.get(virtualNodeId).get(virtualPortId);
         }
 
         protected Map<VirtualNodeId, VirtualNode> getVirtualRouters() {
@@ -2572,8 +3322,85 @@ public class FlowUtils implements AutoCloseable {
             return virtualRouterConnectedInternalVirtualPortMap.get(virtualNodeId);
         }
 
+        protected VirtualArp getVirtualArp(IpAddress ipAddress) {
+            return ipAddressKeyVirtualArpMap.get(ipAddress);
+        }
+
         protected VirtualArp getVirtualArp(MacAddress macAddress) {
             return macAddressKeyVirtualArpMap.get(macAddress);
+        }
+
+        protected void addVirtualArp(VirtualArp virtualArp) {
+            ipAddressKeyVirtualArpMap.put(virtualArp.getIpAddress(), virtualArp);
+            macAddressKeyVirtualArpMap.put(virtualArp.getMacAddress(), virtualArp);
+
+            // TODO: Store this new virtual arp into the data store.
+
+            return;
+        }
+
+        protected boolean isLayer2ExternalVirtualPort(VirtualPort virtualPort) {
+            if ( VirtualPort.PortType.External == virtualPort.getPortType()
+                    && null != virtualPort.getExternalMacAddresses() ) {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     */
+    private class ArpHandlerHelper {
+        Map<NodeConnectorRef, ImmutableTriple<VirtualNetworkId, VirtualNodeId, VirtualPortId>> externalPhysicalPortMapping;
+
+        public ArpHandlerHelper() {
+            super();
+
+            externalPhysicalPortMapping =
+                    new HashMap<NodeConnectorRef, ImmutableTriple<VirtualNetworkId, VirtualNodeId, VirtualPortId>>();
+
+            return;
+        }
+
+        protected void update(UserVnPnMapping userVnPnMapping) {
+            VirtualNetworkId virtualNetworkId = userVnPnMapping.getVirtualNetworkId();
+            List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
+            NodeConnectorRef nodeConnectorRef;
+            PhysicalNodeId physicalNodeId;
+            PhysicalPortId physicalPortId;
+            VirtualNodeId virtualNodeId;
+            VirtualPortId virtualPortId;
+
+            for ( VnPnMappingResult vnPnMappingResult : vnPnMappingResults ) {
+                if ( VirtualResource.VirtualResourceType.Vport
+                        == vnPnMappingResult.getVirtualResourceType() ) {
+                    physicalNodeId =
+                            new PhysicalNodeId(vnPnMappingResult.getParentPhysicalResourceEntityId().getValue());
+                    physicalPortId =
+                            new PhysicalPortId(vnPnMappingResult.getPhysicalResourceEntityId().getValue());
+                    nodeConnectorRef = createNodeConnectorRef(physicalNodeId, physicalPortId);
+
+                    virtualNodeId =
+                            new VirtualNodeId(vnPnMappingResult.getParentVirtualResourceEntityId().getValue());
+                    virtualPortId =
+                            new VirtualPortId(vnPnMappingResult.getVirtualResourceEntityId().getValue());
+
+                    externalPhysicalPortMapping.put(nodeConnectorRef,
+                            new ImmutableTriple<VirtualNetworkId, VirtualNodeId, VirtualPortId>(
+                                    virtualNetworkId, virtualNodeId, virtualPortId));
+                }
+            }
+
+            return;
+        }
+
+        protected ImmutableTriple<VirtualNetworkId, VirtualNodeId, VirtualPortId> getMappingValueForExternalPhysicalPort(
+                NodeConnectorRef nodeConnectorRef) {
+            return externalPhysicalPortMapping.get(nodeConnectorRef);
         }
     }
 }
