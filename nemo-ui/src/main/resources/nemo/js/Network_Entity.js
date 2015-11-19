@@ -11,7 +11,10 @@ function update_host(){
 }
 
 jQuery(document).ready(function ($) {
-    //localStorage.removeItem("nemo_str");
+	 var service_name = "";
+        service_name = $("#sel_1").children("option:selected").val();
+        if (!service_name || typeof (service_name) == "undefined") return;
+    localStorage.removeItem(service_name+"_nemo_str");
     //localStorage.clear();
     //getnemo_str();
     //init service_name
