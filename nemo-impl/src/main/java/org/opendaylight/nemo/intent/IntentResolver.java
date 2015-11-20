@@ -361,12 +361,10 @@ public class IntentResolver implements AutoCloseable {
             vnComputationUnit = new VNComputationUnit(dataBroker, virtualNetwork);
             vnComputationUnits.put(userId, vnComputationUnit);
 
-            // for testing - jizhigang
-            System.out.println(virtualNetwork);
-            System.out.println(userIntentVnMapping);
-            System.out.println(userVnPnMapping);
-            System.out.println(physicalPaths);
-            // for testing - jizhigang
+            LOG.debug("{}", virtualNetwork);
+            LOG.debug("{}", userIntentVnMapping);
+            LOG.debug("{}", userVnPnMapping);
+            LOG.debug("{}", physicalPaths);
 
             readWriteTransaction.put(LogicalDatastoreType.CONFIGURATION, virtualNetworkIid, virtualNetwork, true);
             readWriteTransaction.put(LogicalDatastoreType.CONFIGURATION, userIntentVnMappingIid, userIntentVnMapping, true);
