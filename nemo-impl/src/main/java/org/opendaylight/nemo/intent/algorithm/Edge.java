@@ -65,8 +65,17 @@ public class Edge {
     }
 
     @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
     public boolean equals(Object obj) {
-        return ((Edge)obj).getId().equals(id);
+        if ( obj instanceof Edge ) {
+            return ((Edge)obj).getId().equals(id);
+        }
+
+        return false;
     }
 
     @Override

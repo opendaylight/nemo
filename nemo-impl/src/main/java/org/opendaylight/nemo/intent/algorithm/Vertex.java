@@ -29,8 +29,17 @@ public class Vertex {
     }
 
     @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
     public boolean equals(Object obj) {
-        return ((Vertex)obj).getId().equals(id);
+        if ( obj instanceof Vertex ) {
+            return ((Vertex)obj).getId().equals(id);
+        }
+
+        return false;
     }
 
     @Override
