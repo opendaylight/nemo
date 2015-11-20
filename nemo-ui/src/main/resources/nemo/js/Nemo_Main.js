@@ -28,13 +28,13 @@ jQuery(document).ready(function ($) {
 		if(index == 5 )
 		{
             document.getElementById("service_svg").style.display = "none";
-			document.getElementById("service_svg2").style.display = "none";
+		      	document.getElementById("service_svg2").style.display = "none";
             document.getElementById("graph").style.display = "";
 		}
 		else{
 			jQuery("#service_svg2").empty();
             document.getElementById("service_svg").style.display = "";
-		    document.getElementById("service_svg2").style.display = "none";
+		        document.getElementById("service_svg2").style.display = "none";
             document.getElementById("graph").style.display = "none";
 		}
         //hide service instance
@@ -65,11 +65,13 @@ jQuery(document).ready(function ($) {
     $("#nemo-business-model").show();
     $("#tabs").tabs();
     $("#show_status").hide();
+    $("#nemo-business-model").hide();
+    $("#submit").hide();
 
     //get physical topo
     // $("#nemo-business-model").click(function(){
     // $("#query_topo").click();
-    // });
+    // })
 });
 
 
