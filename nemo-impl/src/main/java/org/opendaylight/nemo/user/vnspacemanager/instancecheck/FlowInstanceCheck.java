@@ -42,9 +42,9 @@ public class FlowInstanceCheck {
                     List<Flow> flowList = tenantManage.getUser().getObjects().getFlow();
                     for (Flow flow1 : flowList)
                     {
-                        if (flow1.getFlowId() == flow.getFlowId())
+                        if (flow1.getFlowId().equals(flow.getFlowId()))
                         {
-                            if (flow1.getFlowName() != flow.getFlowName())
+                            if (!flow1.getFlowName().equals(flow.getFlowName()))
                             {
                                 errorInfo = "The flow name should not be changed.";
                                 break;

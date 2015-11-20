@@ -114,22 +114,23 @@ public class NodeDefinitionCheck {
 
                         if (propertyValues != null && propertyValueType != null)
                         {
-                            if (propertydefinition.getIsReadOnly()!=null)
+                            if (propertydefinition.getIsReadOnly()!=null
+                                    && PropertyDefinition.IsReadOnly.ReadOnly == propertydefinition.getIsReadOnly())
                             {
                                 if (propertydefinition.getIsRequired().getIntValue() == 1)
                                 {
-                                    errorInfo = "The property"+ property.getPropertyName().toString()+" is readonly, can not be written.";
+                                    errorInfo = "The property "+ property.getPropertyName().getValue()+" is readonly, can not be written.";
                                     break;
                                 }
                             }
                             else if (propertyValueType.getIntValue() == 0 && !(propertyValues.getIntValue() == null && propertyValues.getStringValue() != null && propertyValues.getRangeValue() == null))
                             {
-                                errorInfo =  "The property value type"+property.getPropertyName().toString()+" should be string";
+                                errorInfo =  "The property value type "+property.getPropertyName().getValue()+" should be string";
                                 break;
                             }
                             else if (propertyValueType.getIntValue() == 1 && !(propertyValues.getIntValue() != null && propertyValues.getStringValue() == null && propertyValues.getRangeValue() == null))
                             {
-                                errorInfo =  "The property value type"+property.getPropertyName().toString()+" should be integer";
+                                errorInfo =  "The property value type "+property.getPropertyName().getValue()+" should be integer";
                                 break;
                             }
                             else if (propertyValueType.getIntValue() == 2 && !(propertyValues.getIntValue() == null && propertyValues.getStringValue() == null && propertyValues.getRangeValue() != null))

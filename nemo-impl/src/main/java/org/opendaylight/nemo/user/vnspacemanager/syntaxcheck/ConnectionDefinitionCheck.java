@@ -111,18 +111,19 @@ public class ConnectionDefinitionCheck {
 
                         if (propertyValues != null && propertyValueType != null)
                         {
-                            if (propertyDefinition.getIsReadOnly()!=null)
+                            if (propertyDefinition.getIsReadOnly()!=null
+                                    && PropertyDefinition.IsReadOnly.ReadOnly == propertyDefinition.getIsReadOnly())
                             {
                                 if (propertyDefinition.getIsRequired().getIntValue() == 1)
                                 {
-                                    errorInfo = "The property value type of" + property.getPropertyName().toString() + "is read only.";
+                                    errorInfo = "The property value type of " + property.getPropertyName().toString() + " is read only.";
                                     break;
                                 }
                             }
                             else
                             {
                                 if (propertyValueType.getIntValue() == 0 && !(propertyValues.getIntValue() == null && propertyValues.getStringValue() != null && propertyValues.getRangeValue() == null)) {
-                                    errorInfo = "The property value type of" + property.getPropertyName().toString() + " should be string.";
+                                    errorInfo = "The property value type of " + property.getPropertyName().toString() + " should be string.";
                                     break;
                                 }
                                 if (propertyValueType.getIntValue() == 1 && !(propertyValues.getIntValue() != null && propertyValues.getStringValue() == null && propertyValues.getRangeValue() == null)) {

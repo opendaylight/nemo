@@ -21,6 +21,7 @@ import org.opendaylight.nemo.user.tenantmanager.TenantManage;
 import org.opendaylight.nemo.user.transactionmanager.TransactionBegin;
 import org.opendaylight.nemo.user.transactionmanager.TransactionEnd;
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.LanguageIntent;
+import org.opendaylight.nemo.user.vnspacemanager.languagestyle.NEMOParse.ParseException;
 import org.opendaylight.nemo.user.vnspacemanager.structurestyle.deleteintent.DeleteIntent;
 import org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent.UpdateIntent;
 import org.opendaylight.nemo.user.vnspacemanager.VNSpaceManagement;
@@ -68,7 +69,7 @@ public class UserManager implements NemoIntentService, AutoCloseable {
         registerUser = new RegisterUser(tenantManage);
         updateIntent = new UpdateIntent(dataBroker,tenantManage);
         deleteIntent = new DeleteIntent(dataBroker, tenantManage);
-        languageIntent = new LanguageIntent(dataBroker);
+        languageIntent = new LanguageIntent(dataBroker,tenantManage);
         advancedQuery = new AdvancedQuery(dataBroker, tenantManage);
 
         transactionBegin = new TransactionBegin();
@@ -177,16 +178,22 @@ public class UserManager implements NemoIntentService, AutoCloseable {
         RpcResult<LanguageStyleNemoRequestOutput> styleNemoRequestOutputRpcResult = null;
         LanguageStyleNemoRequestOutputBuilder languageStyleNemoRequestOutputBuilder = new LanguageStyleNemoRequestOutputBuilder();
 
-        String errorInfo = languageIntent.LanIntentHandler(aaa,input);
-
-        if (errorInfo != null)
-        {
-            languageStyleNemoRequestOutputBuilder.setResultCode(CommonRpcResult.ResultCode.Error).setMessage(errorInfo);
+        String errorInfo = null;
+        try {
+            errorInfo = languageIntent.LanIntentHandler(aaa,input);
+            if (errorInfo != null)
+            {
+                languageStyleNemoRequestOutputBuilder.setResultCode(CommonRpcResult.ResultCode.Error).setMessage(errorInfo);
+            }
+            else
+            {
+                languageStyleNemoRequestOutputBuilder.setResultCode(CommonRpcResult.ResultCode.Ok).setMessage("The intent has been stored in this transaction.");
+                informresolver = true;
+            }
         }
-        else
-        {
-            languageStyleNemoRequestOutputBuilder.setResultCode(CommonRpcResult.ResultCode.Ok).setMessage("The intent has been stored in this transaction.");
-            informresolver = true;
+        catch (ParseException e) {
+            e.printStackTrace();
+            languageStyleNemoRequestOutputBuilder.setResultCode(CommonRpcResult.ResultCode.Error).setMessage(e.getMessage());
         }
         styleNemoRequestOutputRpcResult = RpcResultBuilder.<LanguageStyleNemoRequestOutput>success(languageStyleNemoRequestOutputBuilder.build()).build();
 

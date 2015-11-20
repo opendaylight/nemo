@@ -59,26 +59,28 @@ public class ConnectionInstanceCheck {
                         }
                     }
                 }
-                if (user.getObjects().getNode() != null)
+                if (connection.getEndNode()!=null)
                 {
-                    List<EndNode> nodeList = connection.getEndNode();
-                    List<Node> nodeList1 = user.getObjects().getNode();
-
-                    for (EndNode endNode : nodeList)
+                    if (user.getObjects().getNode() != null)
                     {
-                        Boolean EndNodeExist = false;
-                        for (Node node : nodeList1)
+                        List<EndNode> nodeList = connection.getEndNode();
+                        List<Node> nodeList1 = user.getObjects().getNode();
+
+                        for (EndNode endNode : nodeList)
                         {
-                            if (node.getNodeId().equals(endNode.getNodeId()))
+                            Boolean EndNodeExist = false;
+                            for (Node node : nodeList1)
                             {
-                                EndNodeExist = true;
+                                if (node.getNodeId().equals(endNode.getNodeId()))
+                                {
+                                    EndNodeExist = true;
+                                }
+                            }
+                            if ( !EndNodeExist)
+                            {
+                                errorInfo = "There are no endnode" + endNode.getNodeId().toString() +" in this user vn space.";
                                 break;
                             }
-                        }
-                        if ( !EndNodeExist)
-                        {
-                            errorInfo = "There are no endnode" + endNode.getNodeId().toString() +" in this user vn space.";
-                            break;
                         }
                     }
                 }

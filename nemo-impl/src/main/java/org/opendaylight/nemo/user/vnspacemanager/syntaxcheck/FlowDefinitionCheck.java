@@ -44,7 +44,6 @@ public class FlowDefinitionCheck {
     public FlowDefinitionCheck(DataBroker dataBroker)
     {
         this.dataBroker = dataBroker;
-        matchItemDefinitionList = null;
     }
 
     public String CheckDefinition(Flow flow)
