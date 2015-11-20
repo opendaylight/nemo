@@ -31,10 +31,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <module>nemo-artifacts</module>
     <module>nemo-api</module>
     <module>nemo-impl</module>
-    <module>nemo-renderers</module>
     <module>nemo-ui</module>
     <module>nemo-features</module>
     <module>nemo-karaf</module>
+    <module>nemo-renderers</module>
   </modules>
 
   <url>https://wiki.opendaylight.org/view/NEMO:Main</url>

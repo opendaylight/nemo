@@ -23,6 +23,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 
   <modules>
     <module>openflow-renderer</module>
+    <module>cli-renderer</module>
   </modules>
 
   <scm>
