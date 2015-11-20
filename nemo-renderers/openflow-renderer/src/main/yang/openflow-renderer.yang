@@ -15,7 +15,7 @@ module openflow-renderer {
     description
         "This module defines the NEMO Openflow renderer model.";
 
-    revision "2015-07-01" {
+    revision "2015-10-10" {
         description
             "Initial revision.";
     }

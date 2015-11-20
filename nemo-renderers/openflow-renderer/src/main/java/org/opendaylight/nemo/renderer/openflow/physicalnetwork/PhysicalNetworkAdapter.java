@@ -210,6 +210,9 @@ public class PhysicalNetworkAdapter {
         nodeBuilder.setKey(new PhysicalNodeKey(nodeId));
         List<PhysicalPort> physicalPortList = new ArrayList<PhysicalPort>();
         List<NodeConnector> nodeConnectors = node.getNodeConnector();
+        if (nodeConnectors == null || nodeConnectors.size() == 0) {
+            log.error("Node : {}, without port.", strNodeId);
+        }
         if (nodeConnectors != null) {
             for (NodeConnector nodeConnector : nodeConnectors) {
                 PhysicalPort physicalPort = getPhysicalPort(node.getKey(), nodeConnector);
