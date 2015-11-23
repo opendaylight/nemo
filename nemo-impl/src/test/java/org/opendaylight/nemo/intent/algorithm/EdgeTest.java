@@ -1,12 +1,10 @@
-package org.test;
+package org.opendaylight.nemo.intent.algorithm;
 
 import junit.framework.TestCase;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.nemo.intent.algorithm.Edge;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by zhangmeng on 2015/11/5.

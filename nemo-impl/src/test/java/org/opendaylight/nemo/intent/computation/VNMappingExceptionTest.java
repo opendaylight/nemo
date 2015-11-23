@@ -5,15 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.test.computation;
+package org.opendaylight.nemo.intent.computation;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.nemo.intent.computation.VNMappingException;
-import org.opendaylight.nemo.intent.computation.VNMappingUnit;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by zhangmeng on 2015/11/10.

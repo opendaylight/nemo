@@ -7,12 +7,13 @@
  */
 package org.opendaylight.nemo.user.vnspacemanager.syntaxcheck;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import junit.framework.TestCase;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.Results;
 
 

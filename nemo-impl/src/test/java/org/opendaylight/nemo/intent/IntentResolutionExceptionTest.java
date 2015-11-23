@@ -7,13 +7,9 @@
  */
 package org.opendaylight.nemo.intent;
 
-import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.nemo.intent.IntentResolutionException;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by zhangmeng on 2015/11/10.

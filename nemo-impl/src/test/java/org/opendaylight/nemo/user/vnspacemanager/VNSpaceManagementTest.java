@@ -5,20 +5,18 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.test.user.vnspacemanager;
+package org.opendaylight.nemo.user.vnspacemanager;
 
+import static org.mockito.Mockito.mock;
 import junit.framework.TestCase;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.nemo.user.vnspacemanager.VNSpaceManagement;
-
-import static org.junit.Assert.*;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.NodeInstance;
-import static org.mockito.Mockito.*;
 /**
  * Created by zhangmeng on 2015/11/12.
  */

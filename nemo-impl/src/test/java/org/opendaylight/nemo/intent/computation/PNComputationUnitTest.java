@@ -5,18 +5,16 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.test.computation;
+package org.opendaylight.nemo.intent.computation;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import junit.framework.TestCase;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.nemo.intent.algorithm.RoutingAlgorithm;
-import org.opendaylight.controller.md.sal.binding.api.*;
-import javax.xml.crypto.Data;
-import org.opendaylight.nemo.intent.computation.PNComputationUnit;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 /**
  * Created by zhangmeng on 2015/11/9.
  */

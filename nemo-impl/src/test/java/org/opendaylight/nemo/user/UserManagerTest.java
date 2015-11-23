@@ -7,34 +7,18 @@
  */
 package org.opendaylight.nemo.user;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import junit.framework.TestCase;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
-import com.google.common.util.concurrent.Futures;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.nemo.intent.IntentResolutionException;
-import org.opendaylight.nemo.intent.IntentResolver;
-import org.opendaylight.nemo.intent.computation.VNMappingException;
-import org.opendaylight.nemo.user.advancedquery.AdvancedQuery;
-import org.opendaylight.nemo.user.tenantmanager.AAA;
-import org.opendaylight.nemo.user.tenantmanager.RegisterUser;
-import org.opendaylight.nemo.user.tenantmanager.TenantManage;
-import org.opendaylight.nemo.user.transactionmanager.TransactionBegin;
-import org.opendaylight.nemo.user.transactionmanager.TransactionEnd;
-import org.opendaylight.nemo.user.vnspacemanager.languagestyle.LanguageIntent;
-import org.opendaylight.nemo.user.vnspacemanager.structurestyle.deleteintent.DeleteIntent;
-import org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent.UpdateIntent;
-import org.opendaylight.nemo.user.vnspacemanager.VNSpaceManagement;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.*;
-import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-import java.util.concurrent.Future;
+import org.junit.Assert;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.AdvancedNemoQueryInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.BeginTransactionInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.EndTransactionInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.LanguageStyleNemoRequestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.RegisterUserInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.StructureStyleNemoDeleteInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.StructureStyleNemoUpdateInput;
 
 /**
  * Created by Thomas Liu on 2015/11/12.

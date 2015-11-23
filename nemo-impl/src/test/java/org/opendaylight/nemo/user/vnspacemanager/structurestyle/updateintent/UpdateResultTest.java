@@ -6,13 +6,9 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent;
-import  org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent.UpdateResult;
-
 import static org.mockito.Mockito.mock;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
+import org.junit.Assert;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
 import org.opendaylight.nemo.user.vnspacemanager.instancecheck.ResultInstanceCheck;

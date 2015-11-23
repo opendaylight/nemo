@@ -7,20 +7,22 @@
  */
 package org.opendaylight.nemo.intent;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import java.util.Map;
+
 import junit.framework.TestCase;
-import org.junit.Before;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.nemo.intent.*;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.nemo.intent.computation.PNComputationUnit;
 import org.opendaylight.nemo.intent.computation.VNComputationUnit;
 import org.opendaylight.nemo.intent.computation.VNMappingUnit;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import java.util.Map;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 /**
  * Created by zhangmeng on 2015/11/10.
