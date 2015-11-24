@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aade967_ff4d5f73",
+        "filename": "nemo-impl/src/main/java/org/opendaylight/nemo/user/tenantmanager/AAA.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3361
+      },
+      "writtenOn": "2015-11-24T00:55:43Z",
+      "side": 1,
+      "message": "This refactory made the previous code cleaner.",
+      "revId": "8c9aa42e0dccca5698ce04722f321fee88d112de",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
