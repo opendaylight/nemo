@@ -17,7 +17,7 @@ public class TransactionEnd {
     public String transactionend(AAA aaa,EndTransactionInput input)
     {
         String errorInfo = null;
-        errorInfo = aaa.CheckUser(input.getUserId(),input.getUserName(),input.getUserPassword(),input.getUserRole());
+        errorInfo = aaa.checkUser(input);
         return errorInfo;
     }
 }

@@ -47,7 +47,7 @@ public class UpdateIntent {
 
         String erroInfo = null;
 
-        erroInfo = aaa.CheckUser(structureStyleNemoUpdateInput.getUserId(),structureStyleNemoUpdateInput.getUserName(),structureStyleNemoUpdateInput.getUserPassword(),structureStyleNemoUpdateInput.getUserRole());
+        erroInfo = aaa.checkUser(structureStyleNemoUpdateInput);
 
         if (erroInfo != null)
         {

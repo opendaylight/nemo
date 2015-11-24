@@ -18,7 +18,7 @@ public class TransactionBegin {
     public String transactionbegin(AAA aaa,BeginTransactionInput input)
     {
         String errorInfo = null;
-        errorInfo = aaa.CheckUser(input.getUserId(),input.getUserName(),input.getUserPassword(),input.getUserRole());
+        errorInfo = aaa.checkUser(input);
         return errorInfo;
     }
 }

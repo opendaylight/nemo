@@ -22,10 +22,7 @@ import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserName;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserPassword;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserRoleName;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.user.rev151010.UserInstance;
 
 /**
  * Created by zhangmeng on 2015/11/20.
@@ -33,27 +30,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.com
 public class AAATest extends TestCase {
     private AAA aaa;
     private TenantManage tenantManage;
-    private UserId userId;
-    private UserName userName;
-    private UserPassword userPassword;
-    private UserRoleName userRoleName;
+    private UserInstance userInstance;
 
     @Before
     public void setUp() throws Exception {
         tenantManage = mock(TenantManage.class);
         aaa = new AAA(tenantManage);
 
-        userId = mock(UserId.class);
-        userName = mock(UserName.class);
-        userPassword = mock(UserPassword.class);
-        userRoleName = mock(UserRoleName.class);
+        userInstance = mock(UserInstance.class);
     }
 
     @Test
     public void testCheckUser() throws Exception {
         doNothing().when(tenantManage).fetchUsers();
         when(tenantManage.getUsersList()).thenReturn(null);
-        String acutal = aaa.CheckUser(userId, userName, userPassword, userRoleName);
+        String acutal = aaa.checkUser(userInstance);
         String expected = "The user is not exist.";
         verify(tenantManage).fetchUsers();
         verify(tenantManage).getUsersList();
