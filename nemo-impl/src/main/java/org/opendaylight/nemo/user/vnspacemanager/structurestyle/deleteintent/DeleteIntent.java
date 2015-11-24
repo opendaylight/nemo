@@ -47,7 +47,7 @@ public class DeleteIntent {
     {
         String errorInfo = null;
 
-        errorInfo = aaa.CheckUser(styleNemoDeleteInput.getUserId(),styleNemoDeleteInput.getUserName(),styleNemoDeleteInput.getUserPassword(),styleNemoDeleteInput.getUserRole());
+        errorInfo = aaa.checkUser(styleNemoDeleteInput);
 
         if (errorInfo != null)
         {

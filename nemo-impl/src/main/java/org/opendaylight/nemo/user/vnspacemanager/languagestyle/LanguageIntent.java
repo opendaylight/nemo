@@ -27,7 +27,7 @@ public class LanguageIntent {
 
         String errorInfo = null;
 
-        errorInfo = aaa.CheckUser(languageStyleNemoRequestInput.getUserId(),languageStyleNemoRequestInput.getUserName(),languageStyleNemoRequestInput.getUserPassword(),languageStyleNemoRequestInput.getUserRole());
+        errorInfo = aaa.checkUser(languageStyleNemoRequestInput);
         if (errorInfo !=null)
         {
            return errorInfo;

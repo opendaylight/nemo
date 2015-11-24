@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.com
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserPassword;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserRoleName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.user.rev151010.UserInstance;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -42,10 +43,9 @@ public class TransactionBeginTest extends TestCase {
     public void testTransactionbegin() throws Exception {
         AAA aaa = mock(AAA.class);
         BeginTransactionInput input = mock(BeginTransactionInput.class);
-        when(aaa.CheckUser(any(UserId.class),any(UserName.class),any(UserPassword.class),any(UserRoleName.class)))
-                .thenReturn(new String("test"));
+        when(aaa.checkUser(any(UserInstance.class))).thenReturn(new String("test"));
         String flag = transactionBegin.transactionbegin(aaa,input);
-        verify(aaa).CheckUser(any(UserId.class),any(UserName.class),any(UserPassword.class),any(UserRoleName.class));
+        verify(aaa).checkUser(any(UserInstance.class));
         Assert.assertEquals("test",flag);
     }
 }

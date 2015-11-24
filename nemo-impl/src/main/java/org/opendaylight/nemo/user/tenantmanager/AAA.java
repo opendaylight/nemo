@@ -12,6 +12,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.com
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserPassword;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserRoleName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.user.rev151010.UserInstance;
 
 import java.util.List;
 
@@ -29,7 +30,11 @@ public class AAA {
         this.tenantManage = tenantManage;
     }
 
-    public String CheckUser(UserId userId, UserName userName, UserPassword userPassword, UserRoleName userRoleName)
+    public String checkUser(UserInstance user) {
+        return checkUser(user.getUserId(), user.getUserName(), user.getUserPassword(), user.getUserRole());
+    }
+
+    private String checkUser(UserId userId, UserName userName, UserPassword userPassword, UserRoleName userRoleName)
     {
         tenantManage.fetchUsers();
         List<User> userList = tenantManage.getUsersList();

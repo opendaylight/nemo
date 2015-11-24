@@ -68,7 +68,7 @@ public class AdvancedQuery
         String errorInfo = null;
         List<QueryCondition> queryConditionList = null;
 
-        errorInfo = aaa.CheckUser(input.getUserId(),input.getUserName(),input.getUserPassword(),input.getUserRole());
+        errorInfo = aaa.checkUser(input);
 
         if (errorInfo != null)
         {

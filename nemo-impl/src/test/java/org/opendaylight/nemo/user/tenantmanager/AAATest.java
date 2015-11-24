@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.com
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserPassword;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserRoleName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.user.rev151010.UserInstance;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,27 +38,21 @@ import static org.junit.Assert.*;
 public class AAATest extends TestCase {
     private AAA aaa;
     private TenantManage tenantManage;
-    private UserId userId;
-    private UserName userName;
-    private UserPassword userPassword;
-    private UserRoleName userRoleName;
+    private UserInstance userInstance;
 
     @Before
     public void setUp() throws Exception {
         tenantManage = mock(TenantManage.class);
         aaa = new AAA(tenantManage);
 
-        userId = mock(UserId.class);
-        userName = mock(UserName.class);
-        userPassword = mock(UserPassword.class);
-        userRoleName = mock(UserRoleName.class);
+        userInstance = mock(UserInstance.class);
     }
 
     @Test
     public void testCheckUser() throws Exception {
         doNothing().when(tenantManage).fetchUsers();
         when(tenantManage.getUsersList()).thenReturn(null);
-        String acutal = aaa.CheckUser(userId, userName, userPassword, userRoleName);
+        String acutal = aaa.checkUser(userInstance);
         String expected = "The user is not exist.";
         verify(tenantManage).fetchUsers();
         verify(tenantManage).getUsersList();
