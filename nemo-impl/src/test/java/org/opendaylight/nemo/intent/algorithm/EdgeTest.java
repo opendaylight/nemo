@@ -99,9 +99,15 @@ public class EdgeTest extends TestCase {
         metric = bandwidth = 1;
         edge = new Edge(id,src,dest,metric,bandwidth);
 
+        Edge edge1= new Edge("test1","test1","test1",1,1);
+
         Assert.assertTrue(obj.getId().equals(edge.getId()));
         Assert.assertTrue(obj.getSrc().equals(edge.getSrc()));
         Assert.assertTrue(obj.getDest().equals(edge.getDest()));
+        Assert.assertTrue(obj.equals(obj));
+        Assert.assertTrue(!obj.equals(edge1));
+
+
     }
 
     @Test

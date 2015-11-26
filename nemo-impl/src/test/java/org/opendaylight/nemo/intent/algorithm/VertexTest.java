@@ -30,8 +30,10 @@ public class VertexTest extends TestCase {
         //Vertex obj = new Vertex(null);
         id = "test";
         vertex = new Vertex(id);
-        Assert.assertTrue(new String("test").equals(vertex.getId()));
-    }
+	Vertex vertex1 = new Vertex("test1");	
+        Assert.assertTrue(vertex1.equals(vertex1));
+	Assert.assertFalse(vertex1.equals(vertex));    
+     }
 
     @Test
     public void testToString() throws Exception {
