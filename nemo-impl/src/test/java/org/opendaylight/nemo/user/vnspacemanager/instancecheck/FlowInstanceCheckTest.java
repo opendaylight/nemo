@@ -69,5 +69,41 @@ public class FlowInstanceCheckTest extends junit.framework.TestCase {
         verify(flowList.get(0)).getFlowName();
         verify(flow).getFlowName();
 
+
+
+        doNothing().when(tenantManage).fetchVNSpace(userId);
+        when(tenantManage.getUser()).thenReturn(null);
+        flowInstanceCheckTest.checkFlowInstance(userId,flow);
+        verify(tenantManage,times(2)).fetchVNSpace(userId);
+        verify(tenantManage,times(4)).getUser();
+
+
+        doNothing().when(tenantManage).fetchVNSpace(userId);
+        when(tenantManage.getUser()).thenReturn(user);
+        when(user.getObjects()).thenReturn(null);
+        flowInstanceCheckTest.checkFlowInstance(userId,flow);
+        verify(tenantManage,times(3)).fetchVNSpace(userId);
+        verify(tenantManage,times(5)).getUser();
+        verify(user,times(7)).getObjects();
+
+
+
+        doNothing().when(tenantManage).fetchVNSpace(userId);
+        when(tenantManage.getUser()).thenReturn(user);
+        when(user.getObjects()).thenReturn(object);
+        when(user.getObjects().getFlow()).thenReturn(null);
+        flowInstanceCheckTest.checkFlowInstance(userId,flow);
+        verify(tenantManage,times(4)).fetchVNSpace(userId);
+        verify(tenantManage,times(6)).getUser();
+        verify(user,times(10)).getObjects();
+        verify(user.getObjects(),times(3)).getFlow();
+
+
+
+
+
+
+
+
     }
 }

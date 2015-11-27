@@ -56,7 +56,6 @@ public class NodeInstanceCheckTest extends junit.framework.TestCase {
     @org.junit.Test
     public void testCheckNodeInstance() throws Exception {
         doNothing().when(tenantManage).fetchVNSpace(userId);
-        //doThrow(new SomeException()).when(tenantManage).fetchVNSpace(userId);
         when(tenantManage.getUser()).thenReturn(user);
         when(user.getObjects()).thenReturn(object);
         when(object.getNode()).thenReturn(nodeList);
@@ -73,10 +72,30 @@ public class NodeInstanceCheckTest extends junit.framework.TestCase {
         verify(object,times(2)).getNode();
         verify(nodeList.get(0)).getNodeId();
         verify(node).getNodeId();
-        //verify(nodeList.get(0)).getNodeName();
-        //verify(node).getNodeName();
-        //verify(nodeList.get(0)).getNodeType();
-        //verify(node).getNodeType();
+
+        doNothing().when(tenantManage).fetchVNSpace(userId);
+        when(tenantManage.getUser()).thenReturn(null);
+        nodeInstanceCheckTest.checkNodeInstance(userId,node);
+        verify(tenantManage,times(2)).getUser();
+
+
+        doNothing().when(tenantManage).fetchVNSpace(userId);
+        when(tenantManage.getUser()).thenReturn(user);
+        when(user.getObjects()).thenReturn(null);
+        nodeInstanceCheckTest.checkNodeInstance(userId,node);
+        verify(tenantManage,times(3)).getUser();
+        verify(user,times(2)).getObjects();
+
+
+        doNothing().when(tenantManage).fetchVNSpace(userId);
+        when(tenantManage.getUser()).thenReturn(user);
+        when(user.getObjects()).thenReturn(object);
+        when(object.getNode()).thenReturn(null);
+        nodeInstanceCheckTest.checkNodeInstance(userId,node);
+        verify(tenantManage,times(4)).getUser();
+        verify(user,times(3)).getObjects();
+        verify(object,times(3)).getNode();
+
 
     }
 }

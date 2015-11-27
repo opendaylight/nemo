@@ -160,14 +160,33 @@ public class ConnectionInstanceCheckTest extends junit.framework.TestCase {
         verify(user,times(16)).getObjects();
         verify(connection,times(2)).getEndNode();
 
+        doNothing().when(tenantManage).fetchVNSpace(userId);
+        when(tenantManage.getUser()).thenReturn(user);
+        when(user.getObjects()).thenReturn(null);
+        when(connection.getEndNode()).thenReturn(null);
+        connectionInstanceCheckTest.checkConnInstance(userId,connection);
+        verify(tenantManage,times(4)).fetchVNSpace(userId);
+        verify(tenantManage,times(6)).getUser();
+        verify(user,times(17)).getObjects();
+        verify(connection,times(3)).getEndNode();
+
 
 
         doNothing().when(tenantManage).fetchVNSpace(userId);
         when(tenantManage.getUser()).thenReturn(null);
         when(connection.getEndNode()).thenReturn(endnodes);
         connectionInstanceCheckTest.checkConnInstance(userId,connection);
-        verify(tenantManage,times(4)).fetchVNSpace(userId);
-        verify(tenantManage,times(6)).getUser();
-        verify(connection,times(3)).getEndNode();
+        verify(tenantManage,times(5)).fetchVNSpace(userId);
+        verify(tenantManage,times(7)).getUser();
+        verify(connection,times(4)).getEndNode();
+
+
+        doNothing().when(tenantManage).fetchVNSpace(userId);
+        when(tenantManage.getUser()).thenReturn(null);
+        when(connection.getEndNode()).thenReturn(null);
+        connectionInstanceCheckTest.checkConnInstance(userId,connection);
+        verify(tenantManage,times(6)).fetchVNSpace(userId);
+        verify(tenantManage,times(8)).getUser();
+        verify(connection,times(5)).getEndNode();
     }
 }

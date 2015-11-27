@@ -207,6 +207,60 @@ public class OperationInstanceCheckTest extends junit.framework.TestCase {
         verify(tenantManage,times(4)).getUser();
         verify(operation,times(16)).getTargetObject();
 
+        doNothing().when(tenantManage).fetchVNSpace(userId);
+        when(tenantManage.getUser()).thenReturn(null);
+        when(operation.getTargetObject()).thenReturn(null);
+        perationInstanceCheckTest.checkOperationInstance(userId,operation);
+        verify(tenantManage,times(5)).fetchVNSpace(userId);
+        verify(tenantManage,times(5)).getUser();
+        verify(operation,times(17)).getTargetObject();
+
+
+        doNothing().when(tenantManage).fetchVNSpace(userId);
+        when(tenantManage.getUser()).thenReturn(null);
+        when(operation.getTargetObject()).thenReturn(null);
+        perationInstanceCheckTest.checkOperationInstance(userId,operation);
+        verify(tenantManage,times(6)).fetchVNSpace(userId);
+        verify(tenantManage,times(6)).getUser();
+        verify(operation,times(18)).getTargetObject();
+
+
+
+        doNothing().when(tenantManage).fetchVNSpace(userId);
+        when(tenantManage.getUser()).thenReturn(user);
+        when(operation.getTargetObject()).thenReturn(null);
+        when(user.getObjects()).thenReturn(object);
+        when(user.getOperations()).thenReturn(null);
+        perationInstanceCheckTest.checkOperationInstance(userId,operation);
+        verify(tenantManage,times(7)).fetchVNSpace(userId);
+        verify(tenantManage,times(7)).getUser();
+        verify(operation,times(20)).getTargetObject();
+        verify(user,times(8)).getObjects();
+        verify(user,times(2)).getOperations();
+
+
+
+
+        doNothing().when(tenantManage).fetchVNSpace(userId);
+        when(tenantManage.getUser()).thenReturn(user);
+        when(operation.getTargetObject()).thenReturn(objectId);
+        when(user.getObjects()).thenReturn(object);
+        when(user.getObjects()).thenReturn(object);
+
+        when(object.getNode()).thenReturn(null);
+        when(object.getConnection()).thenReturn(null);
+        when(object.getFlow()).thenReturn(null);
+
+        perationInstanceCheckTest.checkOperationInstance(userId,operation);
+        verify(tenantManage,times(8)).fetchVNSpace(userId);
+        verify(tenantManage,times(8)).getUser();
+        verify(operation,times(22)).getTargetObject();
+        verify(user,times(11)).getObjects();
+        verify(object,times(5)).getNode();
+        verify(object,times(5)).getConnection();
+        verify(object,times(5)).getFlow();
+
+
 
     }
 }
