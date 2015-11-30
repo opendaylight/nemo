@@ -95,11 +95,4 @@ public class UserManagerTest extends TestCase {
         Assert.assertNotNull(userManagerTest);
         verify(userManagerTest).structureStyleNemoUpdate(structureStyleNemoUpdateInput);
     }
-
-    @org.junit.Test
-    public void testClose() throws Exception {
-        userManagerTest.close();
-        Assert.assertNotNull(userManagerTest);
-        verify(userManagerTest).close();
-    }
 }

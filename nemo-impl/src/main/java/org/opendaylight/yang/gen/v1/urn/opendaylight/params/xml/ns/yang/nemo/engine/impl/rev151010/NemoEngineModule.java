@@ -1,9 +1,11 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.impl.rev151010;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.nemo.intent.IntentResolver;
 import org.opendaylight.nemo.user.UserManager;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.NemoIntentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,24 +27,28 @@ public class NemoEngineModule extends org.opendaylight.yang.gen.v1.urn.opendayli
 
     @Override
     public AutoCloseable createInstance() {
-        DataBroker dataBroker = getDataBrokerDependency();
-        RpcProviderRegistry rpcProviderRegistry = getRpcRegistryDependency();
-
-        final IntentResolver intentResolver = new IntentResolver(dataBroker);
-        final UserManager userManager = new UserManager(dataBroker, rpcProviderRegistry, intentResolver);
+        final DataBroker dataBroker = getDataBrokerDependency();
+        final RpcProviderRegistry rpcProviderRegistry = getRpcRegistryDependency();
 
         final class NemoEngine implements AutoCloseable {
+
+            private final IntentResolver intentResolver = new IntentResolver(dataBroker);
+            private final UserManager userManager = new UserManager(dataBroker, intentResolver);
+            private final RpcRegistration<NemoIntentService> rpcRegistration;
+
+            public NemoEngine() {
+                rpcRegistration = rpcProviderRegistry.addRpcImplementation(NemoIntentService.class, userManager);
+            }
+            
             @Override
             public void close() throws Exception {
+                if (null != rpcRegistration) {
+                    rpcRegistration.close();
+                }
+                
                 if ( null != intentResolver ) {
                     intentResolver.close();
                 }
-
-                if ( null != userManager ) {
-                    userManager.close();
-                }
-
-                return;
             }
         }
 
