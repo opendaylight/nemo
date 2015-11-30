@@ -7,16 +7,19 @@
  */
 package org.opendaylight.nemo.user.tenantmanager;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.ListenableFuture;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserRoleName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.RegisterUserInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.Users;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
@@ -28,8 +31,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 
 /**
  * Created by z00293636 on 2015/8/29.
@@ -39,8 +46,8 @@ import java.util.List;
 public class TenantManage {
     private static final Logger LOG = LoggerFactory.getLogger(TenantManage.class);
     private DataBroker dataBroker;
-    private List<UserRole> userRoleList;
-    private List<User> usersList ;
+    private final SettableFuture<List<UserRole>> userRoleListFuture = SettableFuture.create();
+    private final SettableFuture<List<User>> usersListFuture = SettableFuture.create();
     private User user;
 
     public TenantManage(DataBroker dataBroker)
@@ -50,12 +57,12 @@ public class TenantManage {
 
     private void setUserRoleList(List<UserRole> userRoleList)
     {
-        this.userRoleList = userRoleList;
+        this.userRoleListFuture.set(userRoleList);
     }
 
     private void setUserList(List<User> userList)
     {
-        this.usersList = userList;
+        this.usersListFuture.set(userList);
     }
 
     private void setUser(User user)
@@ -63,14 +70,53 @@ public class TenantManage {
         this.user = user;
     }
 
-    public List<UserRole> getUserRoleList()
-    {
-        return userRoleList;
+    public List<UserRole> getUserRoleList() {
+        try {
+            return userRoleListFuture.get(1, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            LOG.error("Cannot read role information.", e);
+            return null;
+        }
     }
 
-    public List<User> getUsersList()
+    /**
+     *
+     * @return Map from UserRoleName to UserRole.  If no roles exist, an empty (not-null) map is returned.
+     */
+    public Map<UserRoleName, UserRole> getUserRoles() {
+        final Map<UserRoleName, UserRole> map = new HashMap<>();
+        final List<UserRole> userRoleList = getUserRoleList();
+        if (userRoleList != null) {
+            for (UserRole role : userRoleList) {
+                map.put(role.getRoleName(), role);
+            }
+        }
+        return map;
+    }
+
+    public List<User> getUsersList() {
+        try {
+            return usersListFuture.get(1, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            LOG.error("Cannot read user information.", e);
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @return Map from UserId to User.  If no users exist, an empty (not-null) map is returned.
+     */
+    public Map<UserId, User> getUsers()
     {
-        return usersList;
+        final Map<UserId, User> map = new HashMap<>();
+        final List<User> userList = getUsersList();
+        if (userList != null) {
+            for (User user : userList) {
+                map.put(user.getUserId(), user);
+            }
+        }
+        return map;
     }
 
     public User getUser()
@@ -87,18 +133,14 @@ public class TenantManage {
             public void onSuccess(Optional<UserRoles> result)
             {
                 setUserRoleList(result.get().getUserRole());
-                return;
             }
 
             @Override
             public void onFailure(Throwable t)
             {
                 LOG.error("Can not read role information.", t);
-
-                return;
             }
         });
-         return;
     }
 
     public void fetchUsers(){
@@ -109,35 +151,25 @@ public class TenantManage {
             public void onSuccess(Optional<Users> result)
             {
                 setUserList(result.get().getUser());
-                return;
             }
 
             @Override
             public void onFailure(Throwable t)
             {
                 LOG.error("Can not read users information.", t);
-
-                return;
             }
         });
-        return;
     }
 
     public void fetchVNSpace(UserId userId)
     {
         fetchUsers();
-        if (getUsersList() != null)
-        {
-            for (User user : getUsersList())
-            {
-                if (user.getUserId().equals(userId))
-                {
-                    setUser(user);
-                    break;
-                }
-            }
+        final Map<UserId, User> users = getUsers();
+
+        User user = users.get(userId);
+        if (users.containsKey(userId) && user != null) {
+            setUser(user);
         }
-        return;
     }
 
     public void addUser(RegisterUserInput registerUserInput){
