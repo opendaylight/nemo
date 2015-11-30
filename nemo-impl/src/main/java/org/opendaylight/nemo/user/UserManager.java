@@ -11,8 +11,6 @@ import static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.n
 import static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.CommonRpcResult.ResultCode.Ok; 
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.nemo.intent.IntentResolutionException;
 import org.opendaylight.nemo.intent.IntentResolver;
 import org.opendaylight.nemo.intent.computation.VNMappingException;
@@ -35,10 +33,9 @@ import java.util.concurrent.Future;
 /**
  * Created by z00293636 on 2015/9/7.
  */
-public class UserManager implements NemoIntentService, AutoCloseable {
+public class UserManager implements NemoIntentService {
 
-    private DataBroker dataBroker;
-    private RpcProviderRegistry rpcProviderRegistry;
+    private final DataBroker dataBroker;
 
     private VNSpaceManagement vnSpaceManagement;
     private RegisterUser registerUser;
@@ -55,15 +52,11 @@ public class UserManager implements NemoIntentService, AutoCloseable {
     Boolean transaction;
     Boolean informresolver;
 
-    private RpcRegistration<NemoIntentService> rpcRegistration;
-
-    public UserManager(DataBroker dataBroker, RpcProviderRegistry rpcProviderRegistry,
-                       IntentResolver intentResolver)
+    public UserManager(DataBroker dataBroker0, IntentResolver intentResolver0)
     {
-        this.dataBroker = dataBroker;
-        this.rpcProviderRegistry = rpcProviderRegistry;
+        this.dataBroker = dataBroker0;
 
-        this.intentResolver = intentResolver;
+        this.intentResolver = intentResolver0;
         vnSpaceManagement = new VNSpaceManagement(dataBroker);
         tenantManage = new TenantManage(dataBroker);
         aaa = new AAA(tenantManage);
@@ -78,8 +71,6 @@ public class UserManager implements NemoIntentService, AutoCloseable {
 
         transaction = false;
         informresolver = false;
-
-        rpcRegistration = rpcProviderRegistry.addRpcImplementation(NemoIntentService.class, this);
     }
 
     @Override
@@ -244,12 +235,5 @@ public class UserManager implements NemoIntentService, AutoCloseable {
         }
 
         return RpcResultBuilder.success(outputBuilder).buildFuture();
-    }
-
-    @Override
-    public void close() throws Exception {
-        if ( null != rpcRegistration ) {
-            rpcRegistration.close();
-        }
     }
 }
