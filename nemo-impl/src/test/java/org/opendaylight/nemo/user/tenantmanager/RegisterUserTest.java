@@ -38,6 +38,7 @@ public class RegisterUserTest extends TestCase {
     private RegisterUser registerUser;
     private TenantManage tenantManage;
     private RegisterUserInput input;
+    @Override
     @Before
     public void setUp() throws Exception {
         tenantManage = mock(TenantManage.class);
@@ -62,8 +63,8 @@ public class RegisterUserTest extends TestCase {
         when(input.getUserRole()).thenReturn(mock(UserRoleName.class));
         registerUser.registerUser(input);
 
-        verify(tenantManage,times(2)).getUserRoleList();
-        verify(tenantManage,times(2)).getUsersList();
+        verify(tenantManage,times(2)).getUserRoles();
+        verify(tenantManage,times(2)).getUsers();
         Assert.assertNotNull(tenantManage);
         Assert.assertNotNull(registerUser);
     }

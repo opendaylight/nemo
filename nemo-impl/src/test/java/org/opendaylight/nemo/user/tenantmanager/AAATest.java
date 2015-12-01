@@ -32,6 +32,7 @@ public class AAATest extends TestCase {
     private TenantManage tenantManage;
     private UserInstance userInstance;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         tenantManage = mock(TenantManage.class);
@@ -47,7 +48,7 @@ public class AAATest extends TestCase {
         String acutal = aaa.checkUser(userInstance);
         String expected = "The user is not exist.";
         verify(tenantManage).fetchUsers();
-        verify(tenantManage).getUsersList();
+        verify(tenantManage).getUsers();
         Assert.assertNotNull(aaa);
         Assert.assertEquals(expected,acutal);
     }
