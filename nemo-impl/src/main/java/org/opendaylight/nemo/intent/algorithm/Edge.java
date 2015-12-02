@@ -8,6 +8,9 @@
 
 package org.opendaylight.nemo.intent.algorithm;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.links.PhysicalLink;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.links.VirtualLink;
+
 /**
  * An edge in the network topology.
  *
@@ -21,15 +24,21 @@ public class Edge {
     private long bandwidth;
 
     public Edge(String id, String src, String dest, long metric, long bandwidth) {
-        super();
-
         this.id = id;
         this.src = src;
         this.dest = dest;
         this.metric = metric;
         this.bandwidth = bandwidth;
+    }
 
-        return;
+    public Edge(VirtualLink virtualLink) {
+        this(virtualLink.getLinkId().getValue(), virtualLink.getSrcNodeId().getValue(), virtualLink.getDestNodeId()
+                .getValue(), virtualLink.getMetric(), virtualLink.getBandwidth());
+    }
+
+    public Edge(PhysicalLink physicalLink) {
+        this(physicalLink.getLinkId().getValue(), physicalLink.getSrcNodeId().getValue(), physicalLink.getDestNodeId()
+                .getValue(), physicalLink.getMetric(), physicalLink.getBandwidth());
     }
 
     public String getId() {

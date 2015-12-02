@@ -8,7 +8,13 @@
 
 package org.opendaylight.nemo.intent.computation;
 
-import com.google.common.base.Optional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -36,8 +42,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.concurrent.ExecutionException;
+import com.google.common.base.Optional;
 
 /**
  * The physical network computation unit implements the following functions:
@@ -143,9 +148,7 @@ public class PNComputationUnit implements AutoCloseable {
             Edge edge;
 
             for ( PhysicalLink physicalLink : physicalLinks.getPhysicalLink() ) {
-                edge = new Edge(physicalLink.getLinkId().getValue(), physicalLink.getSrcNodeId().getValue(),
-                        physicalLink.getDestNodeId().getValue(), physicalLink.getMetric(),
-                        physicalLink.getBandwidth());
+                edge = new Edge(physicalLink);
                 routingAlgorithm.addEdge(edge);
             }
         }
@@ -328,17 +331,10 @@ public class PNComputationUnit implements AutoCloseable {
             Map<InstanceIdentifier<?>, DataObject> createdData = change.getCreatedData();
 
             if ( null != createdData && !createdData.isEmpty() ) {
-                PhysicalLink physicalLink;
-                Edge edge;
-
                 for ( DataObject dataObject : createdData.values() ) {
                     if ( dataObject instanceof PhysicalLink ) {
-                        physicalLink = (PhysicalLink)dataObject;
-                        edge = new Edge(physicalLink.getLinkId().getValue(), physicalLink.getSrcNodeId().getValue(),
-                                physicalLink.getDestNodeId().getValue(), physicalLink.getMetric(),
-                                physicalLink.getBandwidth());
-
-                        routingAlgorithm.addEdge(edge);
+                        PhysicalLink physicalLink = (PhysicalLink)dataObject;
+                        routingAlgorithm.addEdge(new Edge(physicalLink));
                     }
                 }
             }
@@ -346,17 +342,10 @@ public class PNComputationUnit implements AutoCloseable {
             Map<InstanceIdentifier<?>, DataObject> updatedData = change.getUpdatedData();
 
             if ( null != updatedData && !updatedData.isEmpty() ) {
-                PhysicalLink physicalLink;
-                Edge edge;
-
                 for ( DataObject dataObject : updatedData.values() ) {
                     if ( dataObject instanceof PhysicalLink ) {
-                        physicalLink = (PhysicalLink)dataObject;
-                        edge = new Edge(physicalLink.getLinkId().getValue(), physicalLink.getSrcNodeId().getValue(),
-                                physicalLink.getDestNodeId().getValue(), physicalLink.getMetric(),
-                                physicalLink.getBandwidth());
-
-                        routingAlgorithm.updateEdge(edge);
+                        PhysicalLink physicalLink = (PhysicalLink)dataObject;
+                        routingAlgorithm.updateEdge(new Edge(physicalLink));
                     }
                 }
             }

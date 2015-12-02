@@ -8,7 +8,15 @@
 
 package org.opendaylight.nemo.intent.computation;
 
-import com.google.common.base.Optional;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
@@ -45,8 +53,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.concurrent.ExecutionException;
+import com.google.common.base.Optional;
 
 /**
  * The virtual network computation unit implements the following functions:
@@ -143,13 +150,10 @@ public class VNComputationUnit implements AutoCloseable {
         }
 
         List<VirtualLink> virtualLinks = virtualNetwork.getVirtualLinks().getVirtualLink();
-        Edge edge;
+
 
         for ( VirtualLink virtualLink : virtualLinks ) {
-            edge = new Edge(virtualLink.getLinkId().getValue(), virtualLink.getSrcNodeId().getValue(),
-                    virtualLink.getDestNodeId().getValue(), virtualLink.getMetric(),
-                    virtualLink.getBandwidth());
-            routingAlgorithm.addEdge(edge);
+            routingAlgorithm.addEdge(new Edge(virtualLink));
         }
 
 //        computeRoute(virtualNetwork);
@@ -438,16 +442,13 @@ public class VNComputationUnit implements AutoCloseable {
             Map<InstanceIdentifier<?>, DataObject> createdData = change.getCreatedData();
 
             if ( null != createdData && !createdData.isEmpty() ) {
-                VirtualLink virtualLink;
-                Edge edge;
+
                 boolean needRerouting = false;
 
                 for ( DataObject dataObject : createdData.values() ) {
                     if ( dataObject instanceof VirtualLink ) {
-                        virtualLink = (VirtualLink)dataObject;
-                        edge = new Edge(virtualLink.getLinkId().getValue(), virtualLink.getSrcNodeId().getValue(),
-                                virtualLink.getDestNodeId().getValue(), virtualLink.getMetric(),
-                                virtualLink.getBandwidth());
+                        VirtualLink virtualLink = (VirtualLink)dataObject;
+                        Edge edge = new Edge(virtualLink);
 
                         routingAlgorithm.addEdge(edge);
 
