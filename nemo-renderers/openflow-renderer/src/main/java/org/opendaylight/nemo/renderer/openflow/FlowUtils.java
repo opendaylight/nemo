@@ -62,6 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -108,10 +109,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.intent.vn.mapping.results.user.intent.vn.mapping.intent.vn.mapping.result.VirtualResource;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.vn.pn.mapping.results.UserVnPnMapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.vn.pn.mapping.results.user.vn.pn.mapping.VnPnMappingResult;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.IntentId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.MatchItemName;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.PropertyName;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.operations.Operation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
@@ -290,6 +288,7 @@ public class FlowUtils implements AutoCloseable {
 		updateMplsTable(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
 		updateIpTable(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
 		updateArpTable(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
+        updateFlowTableForOperations(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
 
         return;
     }
@@ -1243,8 +1242,10 @@ public class FlowUtils implements AutoCloseable {
                         for ( MacAddress macAddress : macAddresses ) {
                             virtualArp = virtualNetworkHelper.getVirtualArp(macAddress);
 
-                            configArpTableEntry(user.getUserId(), virtualArp, physicalPath);
-                            configMacTableEntry(user.getUserId(), macAddress, physicalNodeId1, physicalPortId);
+                            if ( null != virtualArp ) {
+                                configArpTableEntry(user.getUserId(), virtualArp, physicalPath);
+                                configMacTableEntry(user.getUserId(), macAddress, physicalNodeId1, physicalPortId);
+                            }
                         }
                     }
                 }
@@ -1268,13 +1269,32 @@ public class FlowUtils implements AutoCloseable {
             layer2ExternalVirtualPort = virtualNetworkHelper.getLayer2ExternalVirtualPort(virtualNodeId);
 
             if ( null != layer2ExternalVirtualPort ) {
-                // TODO: config ip and arp tables.
+                vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults,
+                        new VirtualResourceEntityId(layer2ExternalVirtualPort.getPortId().getValue()));
+                physicalPortId = new PhysicalPortId(vnPnMappingResult.getPhysicalResourceEntityId().getValue());
+                physicalPort = physicalNetworkHelper.getPhysicalPort(physicalNodeId, physicalPortId);
+
+                ipPrefixes = layer2ExternalVirtualPort.getExternalIpPrefixes().getExternalIpPrefix();
+
+                if ( !ipPrefixes.isEmpty() ) {
+                    ipPrefix = ipPrefixes.get(0);
+
+                    configIpTableEntry(user.getUserId(), ipPrefix, physicalNodeId, physicalPort, true);
+                }
+
+                macAddresses = layer2ExternalVirtualPort.getExternalMacAddresses().getExternalMacAddress();
+
+                for ( MacAddress macAddress : macAddresses ) {
+                    virtualArp = virtualNetworkHelper.getVirtualArp(macAddress);
+
+                    if ( null != virtualArp ) {
+                        configArpTableEntry(user.getUserId(), virtualArp, physicalNodeId, physicalPortId);
+                    }
+                }
             }
         }
 
-        updateIpTableForOperations(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
-
-        // log format: vnode(nodetype) --> vnode(nodetype): vlink; ppath; plinks; mplslabels; meterid;
+        // Log format: vnode(nodetype) --> vnode(nodetype): vlink; ppath; plinks; mplslabels; meterid;
         StringBuilder stringBuilder = new StringBuilder();
         Set<VirtualLinkId> printedVirtualLinks = new HashSet<VirtualLinkId>();
         VirtualNode srcVirtualNode;
@@ -1409,11 +1429,11 @@ public class FlowUtils implements AutoCloseable {
      * @param userVnPnMapping TODO
      * @param physicalNetwork TODO
      */
-    private void updateIpTableForOperations(User user,
-                                            VirtualNetwork virtualNetwork,
-                                            UserIntentVnMapping userIntentVnMapping,
-                                            UserVnPnMapping userVnPnMapping,
-                                            PhysicalNetwork physicalNetwork) {
+    private void updateFlowTableForOperations(User user,
+                                              VirtualNetwork virtualNetwork,
+                                              UserIntentVnMapping userIntentVnMapping,
+                                              UserVnPnMapping userVnPnMapping,
+                                              PhysicalNetwork physicalNetwork) {
         if ( null == user.getOperations() ) {
             return;
         }
@@ -1424,8 +1444,276 @@ public class FlowUtils implements AutoCloseable {
             return;
         }
 
-        Operation operation = operations.get(0);
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.operation.instance.Action> actions;
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.operation.instance.Action action;
+        ActionName denyActionName = new ActionName("deny");
+        ActionName allowActionName = new ActionName("allow");
+        ActionName goThroughActionName = new ActionName("go-through");
 
+        for ( Operation operation : operations ) {
+            actions = operation.getAction();
+
+            action = getAction(actions, denyActionName);
+
+            if ( null != action ) {
+                updateFlowTableForOperationWithDenyAction(user, operation,
+                        virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
+
+                break;
+            }
+
+            action = getAction(actions, allowActionName);
+
+            if ( null != action ) {
+                updateFlowTableForOperationWithAllowAction(user, operation,
+                        virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
+
+                break;
+            }
+
+            action = getAction(actions, goThroughActionName);
+
+            if ( null != action ) {
+                updateFlowTableForOperationWithGoThroughAction(user, operation,
+                        virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
+
+//                break;
+            }
+        }
+
+        return;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param user TODO
+     * @param operation TODO
+     * @param virtualNetwork TODO
+     * @param userIntentVnMapping TODO
+     * @param userVnPnMapping TODO
+     * @param physicalNetwork TODO
+     */
+    private void updateFlowTableForOperationWithDenyAction(User user,
+                                                           Operation operation,
+                                                           VirtualNetwork virtualNetwork,
+                                                           UserIntentVnMapping userIntentVnMapping,
+                                                           UserVnPnMapping userVnPnMapping,
+                                                           PhysicalNetwork physicalNetwork) {
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow> nemoFlows =
+                user.getObjects().getFlow();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.FlowId nemoFlowId =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.FlowId(operation.getTargetObject().getValue());
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow nemoFlow =
+                getFlow(nemoFlows, nemoFlowId);
+
+        long priority;
+
+        if ( null == operation.getPriority() ) {
+            priority = 1;
+        } else {
+            priority = 1 + operation.getPriority();
+        }
+
+        List<IntentVnMappingResult> intentVnMappingResults = userIntentVnMapping.getIntentVnMappingResult();
+        IntentId intentId = new IntentId(operation.getOperationId().getValue());
+        IntentVnMappingResult intentVnMappingResult = getIntentVnMappingResult(intentVnMappingResults, intentId);
+        List<VirtualResource> virtualResources = intentVnMappingResult.getVirtualResource();
+        VirtualResource virtualResource = virtualResources.get(0);
+        VirtualNodeId virtualNodeId = new VirtualNodeId(virtualResource.getVirtualResourceEntityId().getValue());
+
+        List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
+        VnPnMappingResult vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults,
+                new VirtualResourceEntityId(virtualNodeId.getValue()));
+        PhysicalNodeId physicalNodeId =
+                new PhysicalNodeId(vnPnMappingResult.getPhysicalResourceEntityId().getValue());
+
+        configFlowTableEntryForOperation(user.getUserId(), nemoFlow, physicalNodeId, (short)priority, true);
+
+        return;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param user TODO
+     * @param operation TODO
+     * @param virtualNetwork TODO
+     * @param userIntentVnMapping TODO
+     * @param userVnPnMapping TODO
+     * @param physicalNetwork TODO
+     */
+    private void updateFlowTableForOperationWithAllowAction(User user,
+                                                            Operation operation,
+                                                            VirtualNetwork virtualNetwork,
+                                                            UserIntentVnMapping userIntentVnMapping,
+                                                            UserVnPnMapping userVnPnMapping,
+                                                            PhysicalNetwork physicalNetwork) {
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow> nemoFlows =
+                user.getObjects().getFlow();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.FlowId nemoFlowId =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.FlowId(operation.getTargetObject().getValue());
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow nemoFlow =
+                getFlow(nemoFlows, nemoFlowId);
+
+        long priority;
+
+        if ( null == operation.getPriority() ) {
+            priority = 1;
+        } else {
+            priority = 1 + operation.getPriority();
+        }
+
+        VirtualNetworkHelper virtualNetworkHelper = virtualNetworkHelpers.get(virtualNetwork.getNetworkId());
+
+        List<IntentVnMappingResult> intentVnMappingResults = userIntentVnMapping.getIntentVnMappingResult();
+        IntentId intentId = new IntentId(operation.getOperationId().getValue());
+        IntentVnMappingResult intentVnMappingResult = getIntentVnMappingResult(intentVnMappingResults, intentId);
+        List<VirtualResource> virtualResources = intentVnMappingResult.getVirtualResource();
+        VirtualResource virtualResource = virtualResources.get(0);
+        VirtualPathId virtualPathId = new VirtualPathId(virtualResource.getVirtualResourceEntityId().getValue());
+        VirtualPath virtualPath = virtualNetworkHelper.getVirtualPath(virtualPathId);
+
+        if ( null == virtualPath || virtualPath.getVirtualLink().isEmpty() ) {
+            return;
+        }
+
+        List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
+        VnPnMappingResult vnPnMappingResult;
+        PhysicalPathId physicalPathId;
+        PhysicalPath physicalPath;
+
+        for ( org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.path.instance.VirtualLink
+                virtualLink : virtualPath.getVirtualLink() ) {
+            vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults,
+                    new VirtualResourceEntityId(virtualLink.getLinkId().getValue()));
+            physicalPathId = new PhysicalPathId(vnPnMappingResult.getPhysicalResourceEntityId().getValue());
+            physicalPath = physicalNetworkHelper.getPhysicalPath(physicalPathId);
+
+            configFlowTableEntryForOperation(user.getUserId(), nemoFlow,
+                    null, physicalPath, (short)priority, true);
+        }
+
+        return;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param user TODO
+     * @param operation TODO
+     * @param virtualNetwork TODO
+     * @param userIntentVnMapping TODO
+     * @param userVnPnMapping TODO
+     * @param physicalNetwork TODO
+     */
+    private void updateFlowTableForOperationWithGoThroughAction(User user,
+                                                                Operation operation,
+                                                                VirtualNetwork virtualNetwork,
+                                                                UserIntentVnMapping userIntentVnMapping,
+                                                                UserVnPnMapping userVnPnMapping,
+                                                                PhysicalNetwork physicalNetwork) {
+        List<IntentVnMappingResult> intentVnMappingResults = userIntentVnMapping.getIntentVnMappingResult();
+        IntentId intentId = new IntentId(operation.getOperationId().getValue());
+        IntentVnMappingResult intentVnMappingResult = getIntentVnMappingResult(intentVnMappingResults, intentId);
+        List<VirtualResource> virtualResources = intentVnMappingResult.getVirtualResource();
+
+        if ( 1 == virtualResources.size() ) {
+            updateFlowTableForOperationWithGoThroughNormalGroupAction(user, operation,
+                    virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
+        } else {
+            updateFlowTableForOperationWithGoThroughChainGroupAction(user, operation,
+                    virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
+        }
+
+        return;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param user TODO
+     * @param operation TODO
+     * @param virtualNetwork TODO
+     * @param userIntentVnMapping TODO
+     * @param userVnPnMapping TODO
+     * @param physicalNetwork TODO
+     */
+    private void updateFlowTableForOperationWithGoThroughNormalGroupAction(User user,
+                                                                           Operation operation,
+                                                                           VirtualNetwork virtualNetwork,
+                                                                           UserIntentVnMapping userIntentVnMapping,
+                                                                           UserVnPnMapping userVnPnMapping,
+                                                                           PhysicalNetwork physicalNetwork) {
+        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow> nemoFlows =
+                user.getObjects().getFlow();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.FlowId nemoFlowId =
+                new org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.FlowId(operation.getTargetObject().getValue());
+        org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow nemoFlow =
+                getFlow(nemoFlows, nemoFlowId);
+
+        long priority;
+
+        if ( null == operation.getPriority() ) {
+            priority = 1;
+        } else {
+            priority = 1 + operation.getPriority();
+        }
+
+        VirtualNetworkHelper virtualNetworkHelper = virtualNetworkHelpers.get(virtualNetwork.getNetworkId());
+
+        List<IntentVnMappingResult> intentVnMappingResults = userIntentVnMapping.getIntentVnMappingResult();
+        IntentId intentId = new IntentId(operation.getOperationId().getValue());
+        IntentVnMappingResult intentVnMappingResult = getIntentVnMappingResult(intentVnMappingResults, intentId);
+        List<VirtualResource> virtualResources = intentVnMappingResult.getVirtualResource();
+        VirtualResource virtualResource = virtualResources.get(0);
+        VirtualPathId virtualPathId = new VirtualPathId(virtualResource.getVirtualResourceEntityId().getValue());
+        VirtualPath virtualPath = virtualNetworkHelper.getVirtualPath(virtualPathId);
+
+        if ( null == virtualPath || virtualPath.getVirtualLink().isEmpty() ) {
+            return;
+        }
+
+        List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
+        VnPnMappingResult vnPnMappingResult;
+        PhysicalPathId physicalPathId;
+        PhysicalPath physicalPath;
+
+        for ( org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.path.instance.VirtualLink
+                virtualLink : virtualPath.getVirtualLink() ) {
+            vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults,
+                    new VirtualResourceEntityId(virtualLink.getLinkId().getValue()));
+            physicalPathId = new PhysicalPathId(vnPnMappingResult.getPhysicalResourceEntityId().getValue());
+            physicalPath = physicalNetworkHelper.getPhysicalPath(physicalPathId);
+
+            configFlowTableEntryForOperation(user.getUserId(), nemoFlow,
+                    null, physicalPath, (short)priority, true);
+        }
+
+        return;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param user TODO
+     * @param operation TODO
+     * @param virtualNetwork TODO
+     * @param userIntentVnMapping TODO
+     * @param userVnPnMapping TODO
+     * @param physicalNetwork TODO
+     */
+    private void updateFlowTableForOperationWithGoThroughChainGroupAction(User user,
+                                                                          Operation operation,
+                                                                          VirtualNetwork virtualNetwork,
+                                                                          UserIntentVnMapping userIntentVnMapping,
+                                                                          UserVnPnMapping userVnPnMapping,
+                                                                          PhysicalNetwork physicalNetwork) {
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow> nemoFlows =
                 user.getObjects().getFlow();
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.FlowId nemoFlowId =
@@ -1506,8 +1794,8 @@ public class FlowUtils implements AutoCloseable {
                                 physicalPort = physicalNetworkHelper
                                         .getPhysicalPort(physicalLink.getSrcNodeId(), physicalLink.getSrcPortId());
 
-                                configIpTableEntryForOperation(user.getUserId(), nemoFlow,
-                                        physicalPort, physicalPath, (short)priority, true);
+                                configFlowTableEntryForOperation(user.getUserId(), nemoFlow,
+                                        physicalPort, physicalPath, (short) priority, true);
                             }
                         }
 
@@ -1523,8 +1811,8 @@ public class FlowUtils implements AutoCloseable {
                                     vnPnMappingResult.getPhysicalResourceEntityId().getValue());
                             physicalPort = physicalNetworkHelper.getPhysicalPort(physicalNodeId, physicalPortId);
 
-                            configIpTableEntryForOperation(user.getUserId(), nemoFlow,
-                                    physicalPort, physicalPath, (short)priority, true);
+                            configFlowTableEntryForOperation(user.getUserId(), nemoFlow,
+                                    physicalPort, physicalPath, (short) priority, true);
                         }
 
                         layer2ExternalVirtualPort = virtualNetworkHelper
@@ -1539,8 +1827,8 @@ public class FlowUtils implements AutoCloseable {
                                     vnPnMappingResult.getPhysicalResourceEntityId().getValue());
                             physicalPort = physicalNetworkHelper.getPhysicalPort(physicalNodeId, physicalPortId);
 
-                            configIpTableEntryForOperation(user.getUserId(), nemoFlow,
-                                    physicalPort, physicalPath, (short)priority, true);
+                            configFlowTableEntryForOperation(user.getUserId(), nemoFlow,
+                                    physicalPort, physicalPath, (short) priority, true);
                         }
                     }
                 } else if ( VirtualResource.VirtualResourceType.Vport
@@ -1567,8 +1855,8 @@ public class FlowUtils implements AutoCloseable {
                             physicalPort1 = physicalNetworkHelper
                                     .getPhysicalPort(physicalLink.getSrcNodeId(), physicalLink.getSrcPortId());
 
-                            configIpTableEntryForOperation(user.getUserId(), nemoFlow,
-                                    physicalNodeId, physicalPort1, physicalPort, (short)priority, true);
+                            configFlowTableEntryForOperation(user.getUserId(), nemoFlow,
+                                    physicalNodeId, physicalPort1, physicalPort, (short) priority, true);
                         }
                     }
 
@@ -1583,8 +1871,8 @@ public class FlowUtils implements AutoCloseable {
                                 vnPnMappingResult.getPhysicalResourceEntityId().getValue());
                         physicalPort1 = physicalNetworkHelper.getPhysicalPort(physicalNodeId1, physicalPortId1);
 
-                        configIpTableEntryForOperation(user.getUserId(), nemoFlow,
-                                physicalNodeId1, physicalPort1, physicalPort, (short)priority, true);
+                        configFlowTableEntryForOperation(user.getUserId(), nemoFlow,
+                                physicalNodeId1, physicalPort1, physicalPort, (short) priority, true);
                     }
 
                     layer2ExternalVirtualPort = virtualNetworkHelper.getLayer2ExternalVirtualPort(virtualNodeId);
@@ -1598,8 +1886,8 @@ public class FlowUtils implements AutoCloseable {
                                 vnPnMappingResult.getPhysicalResourceEntityId().getValue());
                         physicalPort1 = physicalNetworkHelper.getPhysicalPort(physicalNodeId1, physicalPortId1);
 
-                        configIpTableEntryForOperation(user.getUserId(), nemoFlow,
-                                physicalNodeId1, physicalPort1, physicalPort, (short)priority, true);
+                        configFlowTableEntryForOperation(user.getUserId(), nemoFlow,
+                                physicalNodeId1, physicalPort1, physicalPort, (short) priority, true);
                     }
                 }
             } else {
@@ -1624,8 +1912,8 @@ public class FlowUtils implements AutoCloseable {
                                 vnPnMappingResult.getPhysicalResourceEntityId().getValue());
                         physicalPort = physicalNetworkHelper.getPhysicalPort(physicalNodeId, physicalPortId);
 
-                        configIpTableEntryForOperation(user.getUserId(), nemoFlow,
-                                physicalPort, physicalPath, (short)priority, true);
+                        configFlowTableEntryForOperation(user.getUserId(), nemoFlow,
+                                physicalPort, physicalPath, (short) priority, true);
                     }
                 } else if ( VirtualResource.VirtualResourceType.Vpath == virtualResource1.getVirtualResourceType()
                         && VirtualResource.VirtualResourceType.Vport == virtualResource.getVirtualResourceType() ) {
@@ -1648,8 +1936,8 @@ public class FlowUtils implements AutoCloseable {
                             vnPnMappingResult.getPhysicalResourceEntityId().getValue());
                     physicalPort = physicalNetworkHelper.getPhysicalPort(physicalNodeId, physicalPortId);
 
-                    configIpTableEntryForOperation(user.getUserId(), nemoFlow,
-                            physicalNodeId, physicalPort1, physicalPort, (short)priority, true);
+                    configFlowTableEntryForOperation(user.getUserId(), nemoFlow,
+                            physicalNodeId, physicalPort1, physicalPort, (short) priority, true);
                 } else if ( VirtualResource.VirtualResourceType.Vport == virtualResource1.getVirtualResourceType()
                         && VirtualResource.VirtualResourceType.Vport == virtualResource.getVirtualResourceType() ) {
                     vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults,
@@ -1668,8 +1956,8 @@ public class FlowUtils implements AutoCloseable {
                             vnPnMappingResult.getPhysicalResourceEntityId().getValue());
                     physicalPort = physicalNetworkHelper.getPhysicalPort(physicalNodeId, physicalPortId);
 
-                    configIpTableEntryForOperation(user.getUserId(), nemoFlow,
-                            physicalNodeId1, physicalPort1, physicalPort, (short)priority, true);
+                    configFlowTableEntryForOperation(user.getUserId(), nemoFlow,
+                            physicalNodeId1, physicalPort1, physicalPort, (short) priority, true);
                 }
             }
 
@@ -1960,6 +2248,27 @@ public class FlowUtils implements AutoCloseable {
         for ( MatchItem matchItem : matchItems ) {
             if ( matchItem.getMatchItemName().equals(matchItemName) ) {
                 return matchItem;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param actions TODO
+     * @param actionName TODO
+     * @return TODO
+     */
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.operation.instance.Action getAction(
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.operation.instance.Action> actions,
+            ActionName actionName) {
+        for ( org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.operation.instance.Action
+                action : actions ) {
+            if ( action.getActionName().equals(actionName) ) {
+                return action;
             }
         }
 
@@ -2347,7 +2656,7 @@ public class FlowUtils implements AutoCloseable {
         List<Instruction> instructionList = new LinkedList<Instruction>();
         List<Action> actionList = new LinkedList<Action>();
 
-        EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetType(new EthernetTypeBuilder().setType(new EtherType((long)ETH_TYPE_IP)).build());
+        EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetType(new EthernetTypeBuilder().setType(new EtherType((long) ETH_TYPE_IP)).build());
         EthernetMatch ethernetMatch = ethernetMatchBuilder.build();
 
         MetadataBuilder metadataBuilder = new MetadataBuilder().setMetadata(BigInteger.valueOf(metadatas.get(userId)));
@@ -2538,18 +2847,51 @@ public class FlowUtils implements AutoCloseable {
      * @param userId TODO
      * @param nemoFlow TODO
      * @param physicalNodeId TODO
-     * @param inPhysicalPort TODO
-     * @param outPhysicalPort TODO
-     * @param policyPriority TODO
+     * @param operationPriority TODO
      * @param layer3Forwarding TODO
      */
-    private void configIpTableEntryForOperation(UserId userId,
-                                                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow nemoFlow,
-                                                PhysicalNodeId physicalNodeId,
-                                                PhysicalPort inPhysicalPort,
-                                                PhysicalPort outPhysicalPort,
-                                                short policyPriority,
-                                                boolean layer3Forwarding) {
+    private void configFlowTableEntryForOperation(UserId userId,
+                                                  org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow nemoFlow,
+                                                  PhysicalNodeId physicalNodeId,
+                                                  short operationPriority,
+                                                  boolean layer3Forwarding) {
+        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
+
+        Match match = createMatch(userId, nemoFlow, null);
+        Instructions instructions = new InstructionsBuilder().setInstruction(new ArrayList<Instruction>(0)).build();
+
+        FlowId flowId = new FlowId(UUID.randomUUID().toString());
+        FlowBuilder flowBuilder = baseFlowBuilder().setId(flowId).setTableId(layer3Forwarding ? IP_TABLE_ID : MAC_TABLE_ID);
+        Flow flow = flowBuilder.setPriority(DEFAULT_FLOW_PRIORITY + operationPriority).setMatch(match).setInstructions(instructions).build();
+
+        NodeId nodeId = createNodeId(physicalNodeId);
+        InstanceIdentifier<Flow> flowInsId = generateFlowInsId(userId, nodeId, flow.getTableId(), flow.getId());
+
+        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, flowInsId, flow, true);
+        writeTransaction.submit();
+
+        return;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Zhigang Ji
+     * @param userId TODO
+     * @param nemoFlow TODO
+     * @param physicalNodeId TODO
+     * @param inPhysicalPort TODO
+     * @param outPhysicalPort TODO
+     * @param operationPriority TODO
+     * @param layer3Forwarding TODO
+     */
+    private void configFlowTableEntryForOperation(UserId userId,
+                                                  org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow nemoFlow,
+                                                  PhysicalNodeId physicalNodeId,
+                                                  PhysicalPort inPhysicalPort,
+                                                  PhysicalPort outPhysicalPort,
+                                                  short operationPriority,
+                                                  boolean layer3Forwarding) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         List<Instruction> instructionList = new LinkedList<Instruction>();
         List<Action> actionList = new LinkedList<Action>();
@@ -2594,7 +2936,7 @@ public class FlowUtils implements AutoCloseable {
 
         FlowId flowId = new FlowId(UUID.randomUUID().toString());
         FlowBuilder flowBuilder = baseFlowBuilder().setId(flowId).setTableId(layer3Forwarding ? IP_TABLE_ID : MAC_TABLE_ID);
-        Flow flow = flowBuilder.setPriority(DEFAULT_FLOW_PRIORITY + policyPriority).setMatch(match).setInstructions(instructions).build();
+        Flow flow = flowBuilder.setPriority(DEFAULT_FLOW_PRIORITY + operationPriority).setMatch(match).setInstructions(instructions).build();
 
         NodeId nodeId = createNodeId(physicalNodeId);
         InstanceIdentifier<Flow> flowInsId = generateFlowInsId(userId, nodeId, flow.getTableId(), flow.getId());
@@ -2613,15 +2955,15 @@ public class FlowUtils implements AutoCloseable {
      * @param nemoFlow TODO
      * @param inPhysicalPort TODO
      * @param outPhysicalPath TODO
-     * @param policyPriority TODO
+     * @param operationPriority TODO
      * @param layer3Forwarding TODO
      */
-    private void configIpTableEntryForOperation(UserId userId,
-                                                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow nemoFlow,
-                                                PhysicalPort inPhysicalPort,
-                                                PhysicalPath outPhysicalPath,
-                                                short policyPriority,
-                                                boolean layer3Forwarding) {
+    private void configFlowTableEntryForOperation(UserId userId,
+                                                  org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow nemoFlow,
+                                                  PhysicalPort inPhysicalPort,
+                                                  PhysicalPath outPhysicalPath,
+                                                  short operationPriority,
+                                                  boolean layer3Forwarding) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         PhysicalLink physicalLink = physicalNetworkHelper.getFirstPhysicalLinkOfPhysicalPath(outPhysicalPath);
         List<Instruction> instructionList = new LinkedList<Instruction>();
@@ -2661,7 +3003,7 @@ public class FlowUtils implements AutoCloseable {
 
         FlowId flowId = new FlowId(UUID.randomUUID().toString());
         FlowBuilder flowBuilder = baseFlowBuilder().setId(flowId).setTableId(layer3Forwarding ? IP_TABLE_ID : MAC_TABLE_ID);
-        Flow flow = flowBuilder.setPriority(DEFAULT_FLOW_PRIORITY + policyPriority).setMatch(match).setInstructions(instructions).build();
+        Flow flow = flowBuilder.setPriority(DEFAULT_FLOW_PRIORITY + operationPriority).setMatch(match).setInstructions(instructions).build();
 
         NodeId nodeId = createNodeId(physicalLink.getSrcNodeId());
         InstanceIdentifier<Flow> flowInsId = generateFlowInsId(userId, nodeId, flow.getTableId(), flow.getId());
