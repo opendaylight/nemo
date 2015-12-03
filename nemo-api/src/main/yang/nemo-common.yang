@@ -115,9 +115,21 @@ module nemo-common {
         type unique-id;
     }
 
+    typedef constraint-segment-id {
+        description
+            "A unique ID for a segment of the constraint in an operation.";
+        type unique-id;
+    }
+
     typedef query-condition-id {
         description
             "A unique ID for a condition of the advanced query.";
+        type unique-id;
+    }
+
+    typedef template-instance-id {
+        description
+            "A unique ID for a template instance.";
         type unique-id;
     }
 
@@ -178,6 +190,12 @@ module nemo-common {
         type name;
     }
 
+    typedef constraint-parameter-name {
+        description
+            "A name for a parameter of constraint.";
+        type name;
+    }
+
     typedef user-name {
         description
             "A name for a user.";
@@ -212,6 +230,18 @@ module nemo-common {
         description
             "It describes the role characteristic and responsibility range.";
         type string;
+    }
+
+    typedef template-name {
+        description
+            "A unique name for a template";
+        type name;
+    }
+
+    typedef template-instance-name {
+        description
+            "A unique name for a template instance.";
+        type name;
     }
 
     // *********************

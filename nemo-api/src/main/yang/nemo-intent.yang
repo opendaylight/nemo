@@ -15,6 +15,7 @@ module nemo-intent {
     import nemo-common {prefix nemo-common;}
     import nemo-object {prefix nemo-object;}
     import nemo-operation {prefix nemo-operation;}
+    import nemo-template {prefix nemo-template;}
     import nemo-user {prefix nemo-user;}
 
     revision "2015-10-10" {
@@ -63,6 +64,14 @@ module nemo-intent {
 
         container results {
             // TBD
+        }
+
+        container template-definitions {
+            uses nemo-template:template-definition;
+        }
+
+        container template-instances {
+            uses nemo-template:template-instance;
         }
     }
 

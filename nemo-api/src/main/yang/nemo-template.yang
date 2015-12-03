@@ -1,0 +1,193 @@
+/*
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+module nemo-template {
+    yang-version 1;
+
+    namespace "urn:opendaylight:params:xml:ns:yang:nemo:template";
+    prefix "nemo-template";
+
+    import nemo-common {prefix nemo-common;}
+    import nemo-object {prefix nemo-object;}
+    import nemo-operation {prefix nemo-operation;}
+
+    revision "2015-12-01" {
+        description
+            "Initial revision.";
+    }
+
+    grouping template-definition {
+        description
+            "It represents the node model instance and its metadata.
+             A node model defines a reusable function or template
+             which could be used many times.";
+
+        leaf template-name {
+            description
+                "A unique name for a template.";
+            type nemo-common:template-name;
+            mandatory true;
+        }
+
+        container abstract-intents {
+            description
+                "All abstract intents included in this template.";
+
+            container abstract-objects {
+                description
+                    "The element could be operated and managed by users.
+                     It includes resources to construct users' virtual networks,
+                     and the services in this network. In NEMO project, it is
+                     abstracted into node, connection and flow.";
+
+                list abstract-node {
+                    key "node-id";
+                    uses nemo-object:node-instance;
+                }
+
+                list abstract-connection {
+                    key "connection-id";
+                    uses nemo-object:connection-instance;
+                }
+
+                list abstract-flow {
+                    key "flow-id";
+                    uses nemo-object:flow-instance;
+                }
+            }
+
+            container abstract-operations {
+                description
+                    "The operation is to dynamically adjust the behavior of network,
+                     and it is applied on objects, that is, node, connection and flow.";
+
+                list abstract-operation {
+                    key "operation-id";
+                    uses nemo-operation:operation-instance;
+                }
+            }
+
+            container abstract-results {
+                // TBD
+            }
+        }
+
+        list template-parameter {
+            description
+                "List all the parameters included in the template. That is,
+                 other instance could have different values when instancing the
+                 template.";
+
+            key "parameter-name";
+            leaf parameter-name {
+                description
+                    "The name of the parameter.";
+                type nemo-common:parameter-name;
+                mandatory true;
+            }
+
+            leaf parameter-value-type {
+                description
+                    "List all value types could exist in the parameters.";
+                default string;
+                type enumeration {
+                    enum string {
+                        description
+                            "An string-valued property.";
+                    }
+                    enum int {
+                        description
+                            "An integer-valued property.";
+                    }
+                    enum range {
+                        description
+                            "An integer-range property.";
+                    }
+                }
+            }
+        }
+    }
+
+    grouping template-instance {
+        description
+            "A template instance which put specific values in the parameter list.";
+
+        leaf template-instance-id {
+            description
+                "A unique identifier for the template instance.";
+            type nemo-common:template-instance-id;
+            mandatory true;
+        }
+
+        leaf template-instance-name {
+            description
+                "A unique name for the template instance.";
+            type nemo-common:template-instance-name;
+            mandatory true;
+        }
+
+        leaf template-name {
+            description
+                "The template name instanced by this template instance.";
+            type nemo-common:template-name;
+            mandatory true;
+        }
+
+        list template-parameter {
+            description
+                "All specific parameters putted by this instance.";
+
+            key "parameter-name";
+            leaf parameter-name {
+                description
+                    "The name of the parameter.";
+                type nemo-common:parameter-name;
+                mandatory true;
+            }
+
+            container parameter-values {
+                description
+                    "The values for the parameter.";
+
+                list string-value {
+                    key "value order";
+                    leaf value {
+                        type string;
+                    }
+
+                    leaf order {
+                        type uint32;
+                    }
+                }
+
+                list int-value {
+                    key "value order";
+                    leaf value {
+                        type int64;
+                    }
+
+                    leaf order {
+                        type uint32;
+                    }
+                }
+
+                container range-value {
+                    leaf min {
+                        type int64;
+                        mandatory true;
+                    }
+
+                    leaf max {
+                        type int64;
+                        mandatory true;
+                    }
+                }
+            }
+        }
+    }
+}

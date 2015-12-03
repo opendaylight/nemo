@@ -71,6 +71,58 @@ module nemo-operation {
         }
     }
 
+    container constraint-parameter-definitions {
+        list constraint-parameter-definition {
+            description
+                "Defines the constraint parameter with its metadata.";
+
+            key "parameter-name";
+            leaf parameter-name {
+                description
+                    "A name for the constraint parameter.";
+                type nemo-common:parameter-name;
+                mandatory true;
+            }
+
+            leaf parameter-value-type {
+                description
+                    "A type of value for the constraint parameter.";
+                type enumeration {
+                    enum string {
+                        description
+                            "A string-valued parameter.";
+                    }
+                    enum int {
+                        description
+                            "An integer-valued parameter.";
+                    }
+                    enum range {
+                        description
+                            "An integer-range parameter.";
+                    }
+                }
+            }
+
+            container parameter-match-patterns {
+                description
+                    "Defines the match patterns of the constraint parameter.";
+
+                leaf-list parameter-match-pattern {
+                    type enumeration {
+                        enum less-than;
+                        enum not-less-than;
+                        enum equal;
+                        enum not-equal;
+                        enum greater-than;
+                        enum not-greater-than;
+                        enum between;
+                        enum periodical;
+                    }
+                }
+            }
+        }
+    }
+
     container action-definitions {
         list action-definition {
             description
@@ -188,6 +240,89 @@ module nemo-operation {
         }
     }
 
+    grouping constraint-instance {
+        description
+            "Specific a instance of constraint whose metadata has been filled in.";
+
+        list constraint-segment {
+            description
+                "The segment entities will be composed into a whole constraint entity.
+                 Each segment will be a sub expression of the constraint.";
+
+            key "constraint-segment-id";
+            leaf constraint-segment-id {
+                description
+                    "A unique ID for a constraint segment.";
+                type nemo-common:constraint-segment-id;
+                mandatory true;
+            }
+
+            leaf constraint-parameter-name {
+                description
+                    "A name for a constraint parameter.";
+                type nemo-common:constraint-parameter-name;
+            }
+
+            leaf constraint-parameter-match-pattern {
+                description
+                    "The operator for the constraint parameter and it's target value.";
+                type enumeration {
+                    enum less-than;
+                    enum not-less-than;
+                    enum equal;
+                    enum not-equal;
+                    enum greater-than;
+                    enum not-greater-than;
+                    enum between;
+                    enum periodical;
+                }
+            }
+
+            container constraint-parameter-target-value {
+                description
+                    "The target value of constraint parameter.";
+
+                leaf string-value {
+                    type string;
+                }
+
+                leaf int-value {
+                    type int64;
+                }
+
+                container range-value {
+                    leaf min {
+                        type int64;
+                        mandatory true;
+                    }
+
+                    leaf max {
+                        type int64;
+                        mandatory true;
+                    }
+
+                }
+            }
+
+            leaf precursor-relation-operator {
+                description
+                    "The logical operator between current segment and the next segment.";
+                type enumeration {
+                    enum none;
+                    enum and;
+                    enum or;
+                    enum not;
+                }
+            }
+
+            leaf order {
+                description
+                    "The order of the segment in the whole constraint entity.";
+                type uint32;
+            }
+        }
+    }
+
     grouping action-instance {
         description
             "Specific a action instance whose metadata has been filled in.";
@@ -274,6 +409,7 @@ module nemo-operation {
         }
 
         uses condition-instance;
+        uses constraint-instance;
 
         list action {
             description
