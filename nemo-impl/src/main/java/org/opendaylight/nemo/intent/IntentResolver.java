@@ -15,6 +15,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.nemo.intent.computation.PNComputationUnit;
 import org.opendaylight.nemo.intent.computation.VNComputationUnit;
 import org.opendaylight.nemo.intent.computation.VNMappingUnit;
+import org.opendaylight.nemo.intent.condition.ConditionManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.PhysicalNetwork;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.PhysicalPaths;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.paths.PhysicalPath;
@@ -92,6 +93,11 @@ public class IntentResolver implements AutoCloseable {
     private OperationResolver operationResolver;
 
     /**
+     * The condition manager to resolve and manage the condition in the user's operation.
+     */
+    private ConditionManager conditionManager;
+
+    /**
      * The physical network computation unit.
      */
     private PNComputationUnit pnComputationUnit;
@@ -114,11 +120,13 @@ public class IntentResolver implements AutoCloseable {
         nodeMapper = new NodeMapper(dataBroker);
         connectionMapper = new ConnectionMapper(dataBroker, nodeMapper);
         flowManager = new FlowManager(dataBroker);
-        operationResolver = new OperationResolver(dataBroker);
+        conditionManager = new ConditionManager(this);
 
         pnComputationUnit = new PNComputationUnit(dataBroker);
         vnComputationUnits = new HashMap<UserId, VNComputationUnit>();
         vnMappingUnit = new VNMappingUnit(dataBroker, pnComputationUnit);
+
+        operationResolver = new OperationResolver(dataBroker, conditionManager, vnComputationUnits);
 
         LOG.debug("Initialized the renderer common intent resolver.");
 
@@ -153,6 +161,8 @@ public class IntentResolver implements AutoCloseable {
                 .build();
 
         if ( null != vnComputationUnit ) {
+            conditionManager.clear(userId);
+
             vnComputationUnit.close();
             vnComputationUnits.remove(userId);
 
@@ -347,19 +357,49 @@ public class IntentResolver implements AutoCloseable {
                 }
             }
 
+            List<Operation> operationsApplyingToNode = new LinkedList<Operation>();
+            List<Operation> operationsApplyingToConnection = new LinkedList<Operation>();
+            List<Operation> operationsApplyingToFlow = new LinkedList<Operation>();
+
             if ( null != user.getOperations() ) {
                 List<Operation> operations = user.getOperations().getOperation();
 
                 if ( null != operations ) {
-                    for ( Operation operation : operations ) {
-                        operationResolver.resolveOperation(user, operation, virtualNetwork, userIntentVnMapping);
-                    }
+                    operationResolver.classifyOperations(user, operations, operationsApplyingToNode,
+                            operationsApplyingToConnection, operationsApplyingToFlow);
+                }
+            }
+
+            if ( !operationsApplyingToNode.isEmpty() ) {
+                for ( Operation operation : operationsApplyingToNode ) {
+                    operationResolver.resolveOperation(user, operation, virtualNetwork, userIntentVnMapping);
+                }
+            }
+
+            if ( !operationsApplyingToConnection.isEmpty() ) {
+                for ( Operation operation : operationsApplyingToConnection ) {
+                    operationResolver.resolveOperation(user, operation, virtualNetwork, userIntentVnMapping);
                 }
             }
 
             vnMappingUnit.virtualNetworkMapping(virtualNetwork, userVnPnMapping, physicalPaths);
             vnComputationUnit = new VNComputationUnit(dataBroker, virtualNetwork);
             vnComputationUnits.put(userId, vnComputationUnit);
+
+            int currentVirtualLinkNum = virtualLinks.getVirtualLink().size();
+
+            if ( !operationsApplyingToFlow.isEmpty() ) {
+                for ( Operation operation : operationsApplyingToFlow ) {
+                    operationResolver.resolveOperation(user, operation, virtualNetwork, userIntentVnMapping);
+                }
+            }
+
+            List<VirtualLink> virtualLinkList = virtualLinks.getVirtualLink();
+            List<VirtualLink> unmappedVirtualLinkList =
+                    virtualLinkList.subList(currentVirtualLinkNum, virtualLinkList.size());
+
+            vnMappingUnit.virtualNetworkMapping(virtualNetwork,
+                    unmappedVirtualLinkList, userVnPnMapping, physicalPaths);
 
             LOG.debug("{}", virtualNetwork);
             LOG.debug("{}", userIntentVnMapping);

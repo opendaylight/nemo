@@ -39,13 +39,13 @@ public class NemoEngineModule extends org.opendaylight.yang.gen.v1.urn.opendayli
             public NemoEngine() {
                 rpcRegistration = rpcProviderRegistry.addRpcImplementation(NemoIntentService.class, userManager);
             }
-            
+
             @Override
             public void close() throws Exception {
                 if (null != rpcRegistration) {
                     rpcRegistration.close();
                 }
-                
+
                 if ( null != intentResolver ) {
                     intentResolver.close();
                 }

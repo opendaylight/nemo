@@ -259,26 +259,60 @@ public class VNMappingUnit implements AutoCloseable {
         return;
     }
 
+    /**
+     * TODO
+     *
+     * @param virtualNetwork TODO
+     * @param unmappedVirtualLinks TODO
+     * @param userVnPnMapping TODO
+     * @param physicalPaths TODO
+     * @throws VNMappingException
+     */
+    public void virtualNetworkMapping(VirtualNetwork virtualNetwork, List<VirtualLink> unmappedVirtualLinks,
+                                      UserVnPnMapping userVnPnMapping, List<PhysicalPath> physicalPaths)
+            throws VNMappingException {
+        List<VirtualLink> virtualLinks = virtualNetwork.getVirtualLinks().getVirtualLink();
+        List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
+        PhysicalPath physicalPath;
+        VirtualLink newVirtualLink;
+        VnPnMappingResult vnPnMappingResult;
+        int i = virtualLinks.size() - unmappedVirtualLinks.size();
+
+        for ( VirtualLink virtualLink : unmappedVirtualLinks ) {
+            physicalPath = virtualLinkMapping(virtualNetwork.getNetworkId(), virtualLink, userVnPnMapping);
+
+            if ( null == physicalPath ) {
+                throw new VNMappingException("Failed mapping for the virtual link " +
+                        virtualLink.getLinkId().getValue() + " in the virtual network " +
+                        virtualNetwork.getNetworkId().getValue());
+            }
+
+            physicalPaths.add(physicalPath);
+
+            newVirtualLink = new VirtualLinkBuilder(virtualLink)
+                    .setMetric(physicalPath.getMetric())
+                    .setDelay(physicalPath.getDelay())
+                    .build();
+
+            virtualLinks.set(i++, newVirtualLink);
+
+            vnPnMappingResult = new VnPnMappingResultBuilder()
+                    .setVirtualResourceId(new VirtualResourceId(UUID.randomUUID().toString()))
+                    .setVirtualResourceType(VirtualResourceInstance.VirtualResourceType.Vlink)
+                    .setVirtualResourceEntityId(new VirtualResourceEntityId(virtualLink.getLinkId().getValue()))
+                    .setPhysicalResourceId(new PhysicalResourceId(UUID.randomUUID().toString()))
+                    .setPhysicalResourceType(PhysicalResourceInstance.PhysicalResourceType.Path)
+                    .setPhysicalResourceEntityId(new PhysicalResourceEntityId(physicalPath.getPathId().getValue()))
+                    .build();
+
+            vnPnMappingResults.add(vnPnMappingResult);
+        }
+
+        return;
+    }
+
     @Override
     public void close() throws Exception {
-        for ( Map<PhysicalPortId, ListenerRegistration<DataChangeListener>>
-                physicalPortChangeListenerRegs1 : physicalPortChangeListenerRegs.values() ) {
-            for ( ListenerRegistration<DataChangeListener>
-                    physicalPortChangeListenerReg : physicalPortChangeListenerRegs1.values() ) {
-                if ( null != physicalPortChangeListenerReg ) {
-                    physicalPortChangeListenerReg.close();
-                }
-            }
-        }
-
-        if ( null != physicalNodeChangeListenerReg ) {
-            physicalNodeChangeListenerReg.close();
-        }
-
-        if ( null != physicalLinkChangeListenerReg ) {
-            physicalLinkChangeListenerReg.close();
-        }
-
         return;
     }
 
@@ -292,7 +326,7 @@ public class VNMappingUnit implements AutoCloseable {
      * @return TODO
      */
     private PhysicalPort virtualPortMapping(VirtualNetworkId virtualNetworkId, VirtualNodeId virtualNodeId,
-                                    VirtualPort virtualPort, PhysicalNode physicalNode)
+                                            VirtualPort virtualPort, PhysicalNode physicalNode)
             throws VNMappingException {
         if ( VirtualPort.PortType.Internal == virtualPort.getPortType() ) {
             return null;

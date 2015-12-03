@@ -80,7 +80,7 @@ public class IntentResolverUtils {
      * @param propertyName TODO
      * @return TODO
      */
-    protected static Property getNodeProperty(List<Property> properties, PropertyName propertyName) {
+    public static Property getNodeProperty(List<Property> properties, PropertyName propertyName) {
         if ( null != properties ) {
             for ( Property property : properties ) {
                 if ( property.getPropertyName().equals(propertyName) ) {
@@ -111,7 +111,7 @@ public class IntentResolverUtils {
      * @param intentId TODO
      * @return TODO
      */
-    protected static IntentVnMappingResult getIntentVnMappingResult(
+    public static IntentVnMappingResult getIntentVnMappingResult(
             List<IntentVnMappingResult> intentVnMappingResults, IntentId intentId) {
         for ( IntentVnMappingResult intentVnMappingResult : intentVnMappingResults ) {
             if ( intentVnMappingResult.getIntentId().equals(intentId) ) {
@@ -129,8 +129,8 @@ public class IntentResolverUtils {
      * @param virtualNodeId TODO
      * @return TODO
      */
-    protected static VirtualNode getVirtualNode(List<VirtualNode> virtualNodes,
-                                                VirtualNodeId virtualNodeId) {
+    public static VirtualNode getVirtualNode(List<VirtualNode> virtualNodes,
+                                             VirtualNodeId virtualNodeId) {
         for ( VirtualNode virtualNode : virtualNodes ) {
             if ( virtualNode.getNodeId().equals(virtualNodeId) ) {
                 return virtualNode;
@@ -147,7 +147,7 @@ public class IntentResolverUtils {
      * @param nodeId TODO
      * @return TODO
      */
-    protected static Node getNode(List<Node> nodes, NodeId nodeId) {
+    public static Node getNode(List<Node> nodes, NodeId nodeId) {
         for ( Node node : nodes ) {
             if ( node.getNodeId().equals(nodeId) ) {
                 return node;
@@ -164,7 +164,7 @@ public class IntentResolverUtils {
      * @param propertyName TODO
      * @return TODO
      */
-    protected static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.connection.instance.Property getConnectionProperty(
+    public static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.connection.instance.Property getConnectionProperty(
             List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.connection.instance.Property> properties,
             PropertyName propertyName) {
         if ( null != properties ) {
@@ -207,7 +207,7 @@ public class IntentResolverUtils {
      * @param nodes TODO
      * @return TODO
      */
-    protected static boolean checkAllLayer2OperatingMode(List<SubNode> subNodes, List<Node> nodes) {
+    public static boolean checkAllLayer2OperatingMode(List<SubNode> subNodes, List<Node> nodes) {
         if ( subNodes.isEmpty() ) {
             return false;
         }
@@ -247,7 +247,7 @@ public class IntentResolverUtils {
      * @param nodes TODO
      * @return TODO
      */
-    protected static boolean checkAllLayer3OperatingMode(List<SubNode> subNodes, List<Node> nodes) {
+    public static boolean checkAllLayer3OperatingMode(List<SubNode> subNodes, List<Node> nodes) {
         if ( subNodes.isEmpty() ) {
             return false;
         }
@@ -288,9 +288,9 @@ public class IntentResolverUtils {
      * @param destVirtualNodeId TODO
      * @return TODO
      */
-    protected static VirtualLink getVirtualLink(List<VirtualLink> virtualLinks,
-                                                VirtualNodeId srcVirtualNodeId,
-                                                VirtualNodeId destVirtualNodeId) {
+    public static VirtualLink getVirtualLink(List<VirtualLink> virtualLinks,
+                                             VirtualNodeId srcVirtualNodeId,
+                                             VirtualNodeId destVirtualNodeId) {
         for ( VirtualLink virtualLink : virtualLinks ) {
             if ( virtualLink.getSrcNodeId().equals(srcVirtualNodeId)
                     && virtualLink.getDestNodeId().equals(destVirtualNodeId) ) {
@@ -406,96 +406,6 @@ public class IntentResolverUtils {
     /**
      * TODO
      *
-     * @param actions TODO
-     * @param actionName TODO
-     * @return TODO
-     */
-    protected static Action getAction(List<Action> actions, ActionName actionName) {
-        for ( Action action : actions ) {
-            if ( action.getActionName().equals(actionName) ) {
-                return action;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * TODO
-     *
-     * @param virtualNodes TODO
-     * @param flow TODO
-     * @param nodes TODO
-     * @param intentVnMappingResults TODO
-     * @return TODO
-     */
-    protected static VirtualNode getSourceVirtualRouterOfFlow(List<VirtualNode> virtualNodes,
-                                                              Flow flow, List<Node> nodes,
-                                                              List<IntentVnMappingResult> intentVnMappingResults) {
-        MatchItemName matchItemName = new MatchItemName("src-ip");
-        MatchItem matchItem = getMatchItem(flow.getMatchItem(), matchItemName);
-
-        if ( null == matchItem ) {
-            return null;
-        }
-
-        String matchItemValue = matchItem.getMatchItemValue().getStringValue();
-        VirtualNode virtualNode = getVirtualRouterWithIpPrefix(virtualNodes,
-                matchItemValue, nodes, intentVnMappingResults);
-
-        return virtualNode;
-    }
-
-    /**
-     * TODO
-     *
-     * @param virtualNodes TODO
-     * @param flow TODO
-     * @param nodes TODO
-     * @param intentVnMappingResults TODO
-     * @return TODO
-     */
-    protected static VirtualNode getDestinationVirtualRouterOfFlow(List<VirtualNode> virtualNodes,
-                                                                   Flow flow, List<Node> nodes,
-                                                                   List<IntentVnMappingResult> intentVnMappingResults) {
-        MatchItemName matchItemName = new MatchItemName("dst-ip");
-        MatchItem matchItem = getMatchItem(flow.getMatchItem(), matchItemName);
-
-        if ( null == matchItem ) {
-            return null;
-        }
-
-        String matchItemValue = matchItem.getMatchItemValue().getStringValue();
-        VirtualNode virtualNode = getVirtualRouterWithIpPrefix(virtualNodes,
-                matchItemValue, nodes, intentVnMappingResults);
-
-        return virtualNode;
-    }
-
-    /**
-     * TODO
-     *
-     * @param virtualResources TODO
-     * @return TODO
-     */
-    protected static List<VirtualResource> sortVirtualResources(List<VirtualResource> virtualResources) {
-        if ( virtualResources.isEmpty() || 1 == virtualResources.size() ) {
-            return virtualResources;
-        }
-
-        List<VirtualResource> sortedVirtualResources = new ArrayList<VirtualResource>(virtualResources.size());
-        sortedVirtualResources.addAll(virtualResources);
-
-        for ( VirtualResource virtualResource : virtualResources ) {
-            sortedVirtualResources.set(virtualResource.getOrder().intValue(), virtualResource);
-        }
-
-        return sortedVirtualResources;
-    }
-
-    /**
-     * TODO
-     *
      * @param physicalHosts TODO
      * @param physicalHostId TODO
      * @return TODO
@@ -543,110 +453,5 @@ public class IntentResolverUtils {
         }
 
         return null;
-    }
-
-    /**
-     * TODO
-     *
-     * @param matchItems TODO
-     * @param matchItemName TODO
-     * @return TODO
-     */
-    private static MatchItem getMatchItem(List<MatchItem> matchItems, MatchItemName matchItemName) {
-        if ( null != matchItems ) {
-            for ( MatchItem matchItem : matchItems ) {
-                if ( matchItem.getMatchItemName().equals(matchItemName) ) {
-                    return matchItem;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * TODO
-     *
-     * @param virtualNodes TODO
-     * @param ipPrefix TODO
-     * @param nodes TODO
-     * @param intentVnMappingResults TODO
-     * @return TODO
-     */
-    private static VirtualNode getVirtualRouterWithIpPrefix(List<VirtualNode> virtualNodes,
-                                                            String ipPrefix, List<Node> nodes,
-                                                            List<IntentVnMappingResult> intentVnMappingResults) {
-        NodeType layer2GroupNodeType = new NodeType("l2-group");
-        NodeType externalGroupNodeType = new NodeType("ext-group");
-        PropertyName propertyName = new PropertyName("ip-prefix");
-        Property property;
-        List<StringValue> propertyValues;
-        IntentVnMappingResult intentVnMappingResult;
-        VirtualResource virtualResource;
-        VirtualNodeId virtualNodeId;
-        VirtualNode virtualNode;
-
-        for ( Node node : nodes ) {
-            if ( node.getNodeType().equals(layer2GroupNodeType)
-                    || node.getNodeType().equals(externalGroupNodeType) ) {
-                property = getNodeProperty(node.getProperty(), propertyName);
-
-                if ( null != property ) {
-                    propertyValues = property.getPropertyValues().getStringValue();
-
-                    if ( containPropertyValue(propertyValues, ipPrefix) ) {
-                        intentVnMappingResult = getIntentVnMappingResult(intentVnMappingResults,
-                                new IntentId(node.getNodeId().getValue()));
-
-                        if ( null == intentVnMappingResult ) {
-                            return null;
-                        }
-
-                        virtualResource = intentVnMappingResult.getVirtualResource().get(0);
-
-                        if ( VirtualResource.VirtualResourceType.Vport
-                                == virtualResource.getVirtualResourceType() ) {
-                            virtualNodeId = new VirtualNodeId(
-                                    virtualResource.getParentVirtualResourceEntityId().getValue());
-                        } else if ( VirtualResource.VirtualResourceType.Vnode
-                                == virtualResource.getVirtualResourceType() ) {
-                            virtualNodeId = new VirtualNodeId(
-                                    virtualResource.getVirtualResourceEntityId().getValue());
-                        } else {
-                            return null;
-                        }
-
-                        virtualNode = getVirtualNode(virtualNodes, virtualNodeId);
-
-                        if ( null == virtualNode ) {
-                            return null;
-                        }
-
-                        if ( VirtualNode.NodeType.Vrouter == virtualNode.getNodeType() ) {
-                            return virtualNode;
-                        }
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * TODO
-     *
-     * @param propertyValues TODO
-     * @param propertyValue TODO
-     * @return TODO
-     */
-    private static boolean containPropertyValue(List<StringValue> propertyValues, String propertyValue) {
-        for ( StringValue stringValue : propertyValues ) {
-            if ( stringValue.getValue().equals(propertyValue) ) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
