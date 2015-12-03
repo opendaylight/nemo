@@ -19,8 +19,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -32,11 +32,13 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserRoleName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.RegisterUserInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.user.rev151010.user.roles.UserRole;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
+import com.google.common.base.Optional;
 import com.google.common.util.concurrent.CheckedFuture;
 /**
  * Created by zhangmeng on 2015/11/20.
@@ -44,31 +46,18 @@ import com.google.common.util.concurrent.CheckedFuture;
 public class TenantManageTest extends TestCase {
     private TenantManage tenantManage;
     private DataBroker dataBroker;
-    private List<UserRole> userRoleList;
-    private List<User> usersList ;
+    private Map<UserRoleName, UserRole> userRoles;
+    private Map<UserId, User> users ;
     private User user;
+    @Override
     @Before
     public void setUp() throws Exception {
-        userRoleList = new LinkedList<UserRole>();
-        usersList = new LinkedList<User>();
+        userRoles = new HashMap<UserRoleName, UserRole>();
+        users = new HashMap<UserId, User>();
         user = mock(User.class);
 
         dataBroker = mock(DataBroker.class);
         tenantManage = new TenantManage(dataBroker);
-    }
-
-    @Test
-    public void testGetUserRoleList() throws Exception {
-        Assert.assertNotNull(userRoleList);
-        userRoleList = tenantManage.getUserRoleList();
-        Assert.assertNotEquals(new LinkedList<UserRole>(),userRoleList);
-    }
-
-    @Test
-    public void testGetUsersList() throws Exception {
-        Assert.assertNotNull(usersList);
-        usersList = tenantManage.getUsersList();
-        Assert.assertNotEquals(new LinkedList<User>(),usersList);
     }
 
     @Test
@@ -78,7 +67,7 @@ public class TenantManageTest extends TestCase {
     }
 
     @Test
-    public void testFetchUserRoles() throws Exception {
+    public void testGetUserRoles() throws Exception {
         //ListenableFuture<Optional<UserRoles>> userRolesFuture = mock(ListenableFuture.class);
         CheckedFuture userRolesFuture = mock(CheckedFuture.class);
         ReadOnlyTransaction readOnlyTransaction = mock(ReadOnlyTransaction.class);
@@ -86,20 +75,22 @@ public class TenantManageTest extends TestCase {
 //      any(InstanceIdentifier.class))).thenReturn(userRolesFuture);
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
         when(readOnlyTransaction.read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class))).thenReturn(userRolesFuture);
-        tenantManage.fetchUserRoles();
+        when(userRolesFuture.get()).thenReturn(Optional.absent());
+        tenantManage.getUserRoles();
         verify(dataBroker).newReadOnlyTransaction();
         verify(readOnlyTransaction).read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         Assert.assertNotNull(tenantManage);
     }
 
     @Test
-    public void testFetchUsers() throws Exception {
+    public void testGetUsers() throws Exception {
         CheckedFuture usersFuture = mock(CheckedFuture.class);
         ReadOnlyTransaction readOnlyTransaction = mock(ReadOnlyTransaction.class);
 
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
         when(readOnlyTransaction.read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class))).thenReturn(usersFuture);
-        tenantManage.fetchUsers();
+        when(usersFuture.get()).thenReturn(Optional.absent());
+        tenantManage.getUsers();
         verify(dataBroker).newReadOnlyTransaction();
         verify(readOnlyTransaction).read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         Assert.assertNotNull(tenantManage);
@@ -112,6 +103,7 @@ public class TenantManageTest extends TestCase {
 
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
         when(readOnlyTransaction.read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class))).thenReturn(usersFuture);
+        when(usersFuture.get()).thenReturn(Optional.absent());
         tenantManage.fetchVNSpace(mock(UserId.class));
         verify(dataBroker).newReadOnlyTransaction();
         verify(readOnlyTransaction).read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));

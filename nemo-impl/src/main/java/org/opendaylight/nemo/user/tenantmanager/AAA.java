@@ -36,12 +36,11 @@ public class AAA {
 
     private String checkUser(UserId userId, UserName userName, UserPassword userPassword, UserRoleName userRoleName)
     {
-        tenantManage.fetchUsers();
         final Map<UserId, User> users = tenantManage.getUsers();
         String errorInfo = null;
-        final User user = users.get(userId);
+        final User user = (users != null) ? users.get(userId) : null;
 
-        if (users.containsKey(userId) && user != null) {
+        if (user != null) {
             if (!user.getUserName().equals(userName)) {
                 errorInfo = "The user name is not right.";
             } else if (!user.getUserPassword().equals(userPassword)) {
@@ -49,6 +48,7 @@ public class AAA {
             } else if (!user.getUserRole().equals(userRoleName)) {
                 errorInfo = "The role is not right.";
             }
+
         } else {
             errorInfo = "The user is not exist.";
         }

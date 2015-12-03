@@ -13,15 +13,19 @@
 */
 package org.opendaylight.nemo.user.tenantmanager;
 
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+
 import junit.framework.TestCase;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.user.rev151010.UserInstance;
 
 /**
@@ -43,11 +47,9 @@ public class AAATest extends TestCase {
 
     @Test
     public void testCheckUser() throws Exception {
-        doNothing().when(tenantManage).fetchUsers();
-        when(tenantManage.getUsersList()).thenReturn(null);
+        when(tenantManage.getUsers()).thenReturn(new HashMap<UserId, User>());
         String acutal = aaa.checkUser(userInstance);
         String expected = "The user is not exist.";
-        verify(tenantManage).fetchUsers();
         verify(tenantManage).getUsers();
         Assert.assertNotNull(aaa);
         Assert.assertEquals(expected,acutal);

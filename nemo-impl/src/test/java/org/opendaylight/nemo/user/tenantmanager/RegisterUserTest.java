@@ -14,19 +14,19 @@
 package org.opendaylight.nemo.user.tenantmanager;
 
 
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.LinkedList;
+import java.util.HashMap;
 
 import junit.framework.TestCase;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserRoleName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.RegisterUserInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
@@ -51,15 +51,13 @@ public class RegisterUserTest extends TestCase {
     public void testRegisterUser() throws Exception {
 
         //no data test
-        doNothing().when(tenantManage).fetchUserRoles();
-        when(tenantManage.getUserRoleList()).thenReturn(null);//return nothing
-        doNothing().when(tenantManage).fetchUsers();
-        when(tenantManage.getUsersList()).thenReturn(null);
+        when(tenantManage.getUserRoles()).thenReturn(null);//return nothing
+        when(tenantManage.getUsers()).thenReturn(null);
         registerUser.registerUser(input);
 
         //data exists . and test other branch
-        when(tenantManage.getUserRoleList()).thenReturn(new LinkedList<UserRole>());//return nothing
-        when(tenantManage.getUsersList()).thenReturn(new LinkedList<User>());
+        when(tenantManage.getUserRoles()).thenReturn(new HashMap<UserRoleName, UserRole>());//return nothing
+        when(tenantManage.getUsers()).thenReturn(new HashMap<UserId, User>());
         when(input.getUserRole()).thenReturn(mock(UserRoleName.class));
         registerUser.registerUser(input);
 
