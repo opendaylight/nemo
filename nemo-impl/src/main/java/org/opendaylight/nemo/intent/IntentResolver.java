@@ -13,6 +13,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.nemo.intent.computation.PNComputationUnit;
+import org.opendaylight.nemo.intent.computation.PNResourcesTracker;
 import org.opendaylight.nemo.intent.computation.VNComputationUnit;
 import org.opendaylight.nemo.intent.computation.VNMappingUnit;
 import org.opendaylight.nemo.intent.condition.ConditionManager;
@@ -108,6 +109,11 @@ public class IntentResolver implements AutoCloseable {
     private Map<UserId, VNComputationUnit> vnComputationUnits;
 
     /**
+     * Track the physical resource, re-resolve intent if related physical resource removed.
+     */
+    private PNResourcesTracker pnResourcesTracker;
+
+    /**
      * The virtual network mapping unit.
      */
     private VNMappingUnit vnMappingUnit;
@@ -124,7 +130,8 @@ public class IntentResolver implements AutoCloseable {
 
         pnComputationUnit = new PNComputationUnit(dataBroker);
         vnComputationUnits = new HashMap<UserId, VNComputationUnit>();
-        vnMappingUnit = new VNMappingUnit(dataBroker, pnComputationUnit);
+        pnResourcesTracker = new PNResourcesTracker(dataBroker, this);
+        vnMappingUnit = new VNMappingUnit(dataBroker, pnComputationUnit, pnResourcesTracker);
 
         operationResolver = new OperationResolver(dataBroker, conditionManager, vnComputationUnits);
 
@@ -437,6 +444,10 @@ public class IntentResolver implements AutoCloseable {
             if ( null != vnComputationUnit ) {
                 vnComputationUnit.close();
             }
+        }
+
+        if ( null != pnResourcesTracker ) {
+            pnResourcesTracker.close();
         }
 
         if ( null != vnMappingUnit ) {

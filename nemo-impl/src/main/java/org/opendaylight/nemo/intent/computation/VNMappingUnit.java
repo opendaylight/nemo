@@ -8,29 +8,16 @@
 
 package org.opendaylight.nemo.intent.computation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-
+import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.PhysicalNetwork;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.PhysicalNodeAttributeDefinitions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.PhysicalPortAttributeDefinitions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.attribute.definition.AttributeMatchPatterns;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.attribute.instance.attribute.value.RangeValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.PhysicalLinks;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.PhysicalNodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.links.PhysicalLink;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.nodes.PhysicalNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.paths.PhysicalPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.paths.PhysicalPathBuilder;
@@ -51,23 +38,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.vn.pn.mapping.results.UserVnPnMapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.vn.pn.mapping.results.user.vn.pn.mapping.VnPnMappingResult;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.vn.pn.mapping.results.user.vn.pn.mapping.VnPnMappingResultBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.AttributeName;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.PhysicalNodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.PhysicalPathId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.PhysicalPortId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.PhysicalResourceEntityId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.PhysicalResourceId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.VirtualNetworkId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.VirtualNodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.VirtualResourceEntityId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.VirtualResourceId;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.*;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 /**
  * The virtual network mapping unit implements the following functions:
@@ -90,44 +71,18 @@ public class VNMappingUnit implements AutoCloseable {
     private PNComputationUnit pnComputationUnit;
 
     /**
-     * The registrations for the physical port change listeners.
+     * The physical network resource tracker.
      */
-    private Map<PhysicalNodeId, Map<PhysicalPortId, ListenerRegistration<DataChangeListener>>> physicalPortChangeListenerRegs;
+    private PNResourcesTracker pnResourcesTracker;
 
-    /**
-     * The registration for the physical node change listener.
-     */
-    private ListenerRegistration<DataChangeListener> physicalNodeChangeListenerReg;
-
-    /**
-     * The registration for the physical link change listener.
-     */
-    private ListenerRegistration<DataChangeListener> physicalLinkChangeListenerReg;
-
-    public VNMappingUnit(DataBroker dataBroker, PNComputationUnit pnComputationUnit) {
+    public VNMappingUnit(DataBroker dataBroker,
+                         PNComputationUnit pnComputationUnit,
+                         PNResourcesTracker pnResourcesTracker) {
         super();
 
         this.dataBroker = dataBroker;
         this.pnComputationUnit = pnComputationUnit;
-
-        physicalPortChangeListenerRegs =
-                new HashMap<PhysicalNodeId, Map<PhysicalPortId, ListenerRegistration<DataChangeListener>>>();
-
-        InstanceIdentifier<PhysicalNode> physicalNodeIid = InstanceIdentifier
-                .builder(PhysicalNetwork.class)
-                .child(PhysicalNodes.class)
-                .child(PhysicalNode.class)
-                .build();
-        InstanceIdentifier<PhysicalLink> physicalLinkIid = InstanceIdentifier
-                .builder(PhysicalNetwork.class)
-                .child(PhysicalLinks.class)
-                .child(PhysicalLink.class)
-                .build();
-
-        physicalNodeChangeListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                physicalNodeIid, new PhysicalNodeChangeListener(), DataChangeScope.BASE);
-        physicalLinkChangeListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                physicalLinkIid, new PhysicalLinkChangeListener(), DataChangeScope.BASE);
+        this.pnResourcesTracker = pnResourcesTracker;
 
         LOG.debug("Initialized the virtual network mapping unit.");
 
@@ -161,6 +116,7 @@ public class VNMappingUnit implements AutoCloseable {
         PhysicalNodes physicalNodes = result.get();
         List<PhysicalNode> physicalNodeList = physicalNodes.getPhysicalNode();
 
+        UserId userId = virtualNetwork.getUserId();
         List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
         List<VirtualNode> virtualNodes = virtualNetwork.getVirtualNodes().getVirtualNode();
         List<VirtualPort> virtualPorts;
@@ -172,10 +128,16 @@ public class VNMappingUnit implements AutoCloseable {
             physicalNode = virtualNodeMapping(virtualNetwork.getNetworkId(), virtualNode, physicalNodeList);
 
             if ( null == physicalNode ) {
+                // If mapping failed, reset the user physical resources.
+                pnResourcesTracker.resetResource(userId);
+
                 throw new VNMappingException("Failed mapping for the virtual node " +
                         virtualNode.getNodeId().getValue() + " in the virtual network " +
                         virtualNetwork.getNetworkId().getValue());
             }
+
+            // Keep physical resource.
+            pnResourcesTracker.addPhysicalNode(userId, physicalNode);
 
             virtualPorts = virtualNode.getVirtualPort();
 
@@ -185,11 +147,17 @@ public class VNMappingUnit implements AutoCloseable {
                             virtualNode.getNodeId(), virtualPort, physicalNode);
 
                     if ( null == physicalPort ) {
+                        // If mapping failed, reset the user physical resources.
+                        pnResourcesTracker.resetResource(userId);
+
                         throw new VNMappingException("Failed mapping for the virtual port " +
                                 virtualPort.getPortId().getValue() + " of the virtual node " +
                                 virtualNode.getNodeId().getValue() + " in the virtual network " +
                                 virtualNetwork.getNetworkId().getValue());
                     }
+
+                    // Keep physical resource.
+                    pnResourcesTracker.addPhysicalPort(userId, physicalPort);
 
                     vnPnMappingResult = new VnPnMappingResultBuilder()
                             .setVirtualResourceId(new VirtualResourceId(UUID.randomUUID().toString()))
@@ -227,10 +195,16 @@ public class VNMappingUnit implements AutoCloseable {
             physicalPath = virtualLinkMapping(virtualNetwork.getNetworkId(), virtualLink, userVnPnMapping);
 
             if ( null == physicalPath ) {
+                // If mapping failed, reset the user physical resources.
+                pnResourcesTracker.resetResource(userId);
+
                 throw new VNMappingException("Failed mapping for the virtual link " +
                         virtualLink.getLinkId().getValue() + " in the virtual network " +
                         virtualNetwork.getNetworkId().getValue());
             }
+
+            // Keep physical resource.
+            pnResourcesTracker.addPhysicalPath(userId, physicalPath);
 
             physicalPaths.add(physicalPath);
 
@@ -1073,125 +1047,4 @@ public class VNMappingUnit implements AutoCloseable {
 //            }
 //        }
 //    }
-
-    /**
-     * A listener to change events related to physical ports being
-     * added, removed or updated.
-     *
-     * @author Zhigang Ji
-     */
-    private class PhysicalPortChangeListener implements DataChangeListener {
-        /**
-         * The physical node that the physical port belongs to.
-         */
-        private PhysicalNodeId physicalNodeId;
-
-        public PhysicalPortChangeListener(PhysicalNodeId physicalNodeId) {
-            super();
-
-            this.physicalNodeId = physicalNodeId;
-
-            return;
-        }
-
-        @Override
-        public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-            if ( null == change ) {
-                return;
-            }
-
-            Map<InstanceIdentifier<?>, DataObject> originalData = change.getOriginalData();
-            Map<InstanceIdentifier<?>, DataObject> updatedData = change.getUpdatedData();
-
-            if ( null != updatedData && !updatedData.isEmpty() ) {
-                for ( DataObject dataObject : updatedData.values() ) {
-                    // TODO
-                }
-            }
-
-            Set<InstanceIdentifier<?>> removedPaths = change.getRemovedPaths();
-
-            if ( null != removedPaths && !removedPaths.isEmpty() ) {
-                DataObject dataObject;
-
-                for ( InstanceIdentifier<?> instanceId : removedPaths ) {
-                    dataObject = originalData.get(instanceId);
-
-                    // TODO
-                }
-            }
-        }
-    }
-
-    /**
-     * A listener to change events related to physical nodes being
-     * added, removed or updated.
-     *
-     * @author Zhigang Ji
-     */
-    private class PhysicalNodeChangeListener implements DataChangeListener {
-        @Override
-        public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-            if ( null == change ) {
-                return;
-            }
-
-            Map<InstanceIdentifier<?>, DataObject> originalData = change.getOriginalData();
-            Map<InstanceIdentifier<?>, DataObject> updatedData = change.getUpdatedData();
-
-            if ( null != updatedData && !updatedData.isEmpty() ) {
-                for ( DataObject dataObject : updatedData.values() ) {
-                    // TODO
-                }
-            }
-
-            Set<InstanceIdentifier<?>> removedPaths = change.getRemovedPaths();
-
-            if ( null != removedPaths && !removedPaths.isEmpty() ) {
-                DataObject dataObject;
-
-                for ( InstanceIdentifier<?> instanceId : removedPaths ) {
-                    dataObject = originalData.get(instanceId);
-
-                    // TODO
-                }
-            }
-        }
-    }
-
-    /**
-     * A listener to change events related to physical links being
-     * added, removed or updated.
-     *
-     * @author Zhigang Ji
-     */
-    private class PhysicalLinkChangeListener implements DataChangeListener {
-        @Override
-        public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-            if ( null == change ) {
-                return;
-            }
-
-            Map<InstanceIdentifier<?>, DataObject> originalData = change.getOriginalData();
-            Map<InstanceIdentifier<?>, DataObject> updatedData = change.getUpdatedData();
-
-            if ( null != updatedData && !updatedData.isEmpty() ) {
-                for ( DataObject dataObject : updatedData.values() ) {
-                    // TODO
-                }
-            }
-
-            Set<InstanceIdentifier<?>> removedPaths = change.getRemovedPaths();
-
-            if ( null != removedPaths && !removedPaths.isEmpty() ) {
-                DataObject dataObject;
-
-                for ( InstanceIdentifier<?> instanceId : removedPaths ) {
-                    dataObject = originalData.get(instanceId);
-
-                    // TODO
-                }
-            }
-        }
-    }
 }
