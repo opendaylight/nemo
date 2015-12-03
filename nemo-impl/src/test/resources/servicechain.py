@@ -26,10 +26,7 @@ def register_user(contHost):
 def transaction_begin(contHost):
 	data={
 			"input":{
-					"user-id":"af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
-					"user-name":"user1",
-					"user-password":"abcd",
-					"user-role":"tenant"
+					"user-id":"af4fc2be-e3f4-4388-a8ef-3aabae872f2b"
 					}
 		}
 	post(TRANSACTION_BEGIN % contHost, data)
@@ -37,10 +34,7 @@ def transaction_begin(contHost):
 def transaction_end(contHost):
 	data={
 			"input":{
-					"user-id":"af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
-					"user-name":"user1",
-					"user-password":"abcd",
-					"user-role":"tenant"
+					"user-id":"af4fc2be-e3f4-4388-a8ef-3aabae872f2b"
 					}
 		}
 	post(TRANSACTION_END % contHost, data)
@@ -49,9 +43,6 @@ def transaction_end(contHost):
 def add_headquarter_node(contHost):
 	data={
 		  "input":{
-			  "user-name": "user1",
-			  "user-role": "tenant",
-			  "user-password": "abcd",
 			  "user-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
 			  "objects":{
 			  "node":[
@@ -115,9 +106,6 @@ def add_headquarter_node(contHost):
 def add_site_node(contHost):
 	data={
 			  "input":{
-			      "user-name": "user1",
-				  "user-role": "tenant",
-				  "user-password": "abcd",
 				  "user-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
 				  "objects":{
 				  "node":[
@@ -181,9 +169,6 @@ def add_site_node(contHost):
 def add_firewall_node(contHost):
 	data={
 			  "input":{
-			      "user-name": "user1",
-				  "user-role": "tenant",
-				  "user-password": "abcd",
 				  "user-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
 				  "objects":{
 				  "node":[
@@ -225,9 +210,6 @@ def add_firewall_node(contHost):
 def add_cache_node(contHost):
 	data={
 			  "input":{
-			      "user-name": "user1",
-				  "user-role": "tenant",
-				  "user-password": "abcd",
 				  "user-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
 				  "objects":{
 				  "node":[
@@ -269,9 +251,6 @@ def add_cache_node(contHost):
 def add_chain_node(contHost):
 	data={
 		  "input":{
-		      "user-name": "user1",
-			  "user-role": "tenant",
-			  "user-password": "abcd",
 			  "user-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
 			  "objects":{
 			  "node":[
@@ -298,9 +277,6 @@ def add_chain_node(contHost):
 def add_head_site_connection(contHost):
 	data={
 		 "input": {
-			  "user-name": "user1",
-			  "user-role": "tenant",
-			  "user-password": "abcd",
 			  "user-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
 			  "objects":{
 				  "connection": [
@@ -328,9 +304,6 @@ def add_head_site_connection(contHost):
 def add_head_chain_connection(contHost):
 	data={
 		 "input": {
-			  "user-name": "user1",
-			  "user-role": "tenant",
-			  "user-password": "abcd",
 			  "user-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
 			  "objects":{
 				  "connection": [
@@ -358,9 +331,6 @@ def add_head_chain_connection(contHost):
 def add_site_chain_connection(contHost):
 	data={
 		 "input": {
-			  "user-name": "user1",
-			  "user-role": "tenant",
-			  "user-password": "abcd",
 			  "user-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
 			  "objects":{
 				  "connection": [
@@ -388,9 +358,6 @@ def add_site_chain_connection(contHost):
 def add_flow(contHost):
 	data={
 		 "input": {
-			  "user-name": "user1",
-			  "user-role": "tenant",
-			  "user-password": "abcd",
 			  "user-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
 			  "objects":{
 				  "flow": [
@@ -421,9 +388,6 @@ def add_flow(contHost):
 def add_operation(contHost):
 	data={
 		 "input": {
-			  "user-name": "user1",
-			  "user-role": "tenant",
-			  "user-password": "abcd",
 			  "user-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
 			  "operations":{
 				  "operation": [

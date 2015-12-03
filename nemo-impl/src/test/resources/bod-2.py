@@ -26,10 +26,7 @@ def register_user(contHost):
 def transaction_begin(contHost):
 	data={
 			"input":{
-					"user-id":"14ce424a-3e50-4a2a-ad5c-b29845158c8b",
-					"user-name":"user2",
-					"user-password":"abc",
-					"user-role":"tenant"
+					"user-id":"14ce424a-3e50-4a2a-ad5c-b29845158c8b"
 					}
 		}
 	post(TRANSACTION_BEGIN % contHost, data)
@@ -37,10 +34,7 @@ def transaction_begin(contHost):
 def transaction_end(contHost):
 	data={
 			"input":{
-					"user-id":"14ce424a-3e50-4a2a-ad5c-b29845158c8b",
-					"user-name":"user2",
-					"user-password":"abc",
-					"user-role":"tenant"
+					"user-id":"14ce424a-3e50-4a2a-ad5c-b29845158c8b"				
 					}
 		}
 	post(TRANSACTION_END % contHost, data)
@@ -48,9 +42,6 @@ def transaction_end(contHost):
 def add_server1_host(contHost):
 	data={
 			"input":{
-				 "user-name": "user2",
-				  "user-role": "tenant",
-				  "user-password": "abc",
 				  "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
 				  "objects":{
 						"node":[
@@ -68,9 +59,6 @@ def add_server1_host(contHost):
 def add_server2_host(contHost):
 	data={
 			"input":{
-				 "user-name": "user2",
-				  "user-role": "tenant",
-				  "user-password": "abc",
 				  "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
 				  "objects":{
 						"node":[
@@ -88,9 +76,6 @@ def add_server2_host(contHost):
 def add_vm1_host(contHost):
 	data={
 			"input":{
-				 "user-name": "user2",
-				  "user-role": "tenant",
-				  "user-password": "abc",
 				  "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
 				  "objects":{
 						"node":[
@@ -108,9 +93,6 @@ def add_vm1_host(contHost):
 def add_vm2_host(contHost):
 	data={
 			"input":{
-				 "user-name": "user2",
-				  "user-role": "tenant",
-				  "user-password": "abc",
 				  "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
 				  "objects":{
 						"node":[
@@ -128,9 +110,6 @@ def add_vm2_host(contHost):
 def add_enterpise_node(contHost):
 	data={
 		  "input":{
-			  "user-name": "user2",
-			  "user-role": "tenant",
-			  "user-password": "abc",
 			  "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
 			  "objects":{
 			  "node":[
@@ -194,9 +173,6 @@ def add_enterpise_node(contHost):
 def add_internet_node(contHost):
 	data={
 		  "input":{
-			  "user-name": "user2",
-			  "user-role": "tenant",
-			  "user-password": "abc",
 			  "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
 			  "objects":{
 			  "node":[
@@ -261,9 +237,6 @@ def add_internet_node(contHost):
 def add_dmz_node(contHost):
 	data={
 		  "input":{
-			  "user-name": "user2",
-			  "user-role": "tenant",
-			  "user-password": "abc",
 			  "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
 			  "objects":{
 			  "node":[
@@ -322,9 +295,6 @@ def add_dmz_node(contHost):
 def add_interior_node(contHost):
 	data={
 		  "input":{
-			  "user-name": "user2",
-			  "user-role": "tenant",
-			  "user-password": "abc",
 			  "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
 			  "objects":{
 			  "node":[
@@ -391,9 +361,6 @@ def add_interior_node(contHost):
 def add_enterprise_interior_connection(contHost):
 	data={
 		 "input": {
-			  "user-name": "user2",
-			  "user-role": "tenant",
-			  "user-password": "abc",
 			  "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
 			  "objects":{
 				  "connection": [
@@ -434,9 +401,6 @@ def add_enterprise_interior_connection(contHost):
 def add_interior_dmz_connection(contHost):
 	data={
 		 "input": {
-			  "user-name": "user2",
-			  "user-role": "tenant",
-			  "user-password": "abc",
 			  "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
 			  "objects":{
 				  "connection": [
@@ -464,9 +428,6 @@ def add_interior_dmz_connection(contHost):
 def add_dmz_internet_connection(contHost):
 	data={
 		 "input": {
-			  "user-name": "user2",
-			  "user-role": "tenant",
-			  "user-password": "abc",
 			  "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
 			  "objects":{
 				  "connection": [
@@ -494,9 +455,6 @@ def add_dmz_internet_connection(contHost):
 def update_enterprise_interior_connection(contHost):
 	data={
 		 "input": {
-			  "user-name": "user2",
-			  "user-role": "tenant",
-			  "user-password": "abc",
 			  "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
 			  "objects":{
 				  "connection": [
