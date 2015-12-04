@@ -45,6 +45,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version='${project.version}'>odl-nemo-engine-rest</feature>
     <bundle>mvn:org.opendaylight.nemo/cli-renderer/${project.version}</bundle>
     <configfile finalname='etc/opendaylight/karaf/02-nemo-cli-renderer.xml'>mvn:org.opendaylight.nemo/cli-renderer/${project.version}/xml/config</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-cli-renderer-node-resource.json'>mvn:org.opendaylight.nemo/cli-renderer/${project.version}/json/node-resource</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-cli-renderer-link-resource.json'>mvn:org.opendaylight.nemo/cli-renderer/${project.version}/json/link-resource</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-cli-renderer-host-resource.json'>mvn:org.opendaylight.nemo/cli-renderer/${project.version}/json/host-resource</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-cli-renderer-external-resource.json'>mvn:org.opendaylight.nemo/cli-renderer/${project.version}/json/external-resource</configfile>
   </feature>
   <feature name='odl-nemo-engine-ui' version='${project.version}' description='OpenDaylight :: NEMO :: Engine :: UI'>
     <feature version='${dlux.version}'>odl-dlux-core</feature>

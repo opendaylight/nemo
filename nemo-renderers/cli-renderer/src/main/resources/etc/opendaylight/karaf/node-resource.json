@@ -1,0 +1,311 @@
+{
+    "node": [
+        {
+          "node-id": "HW:NE40E:PE1",
+          "node-type": "router",
+          "attribute":[
+            {
+                "name":"location",
+                "value":"HW:NE40E:PE1"
+            },
+            {
+                "name":"capacity",
+                "value":""
+            }
+          ],
+          "port": [
+            {
+              "port-id": "HW:NE40E:PE1:GE2/0/6",
+              "port-type":"internal",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:PE1:GE2/0/6"
+                }
+              ]
+            },
+            {
+              "port-id": "HW:NE40E:PE1:GE2/0/7",
+              "port-type":"internal",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:PE1:GE2/0/7"
+                }
+              ]
+            },
+            {
+              "port-id": "HW:NE40E:PE1:GE2/0/8",
+              "port-type":"internal",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:PE1:GE2/0/8"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "node-id": "HW:NE40E:PE2",
+          "node-type": "router",
+          "attribute":[
+            {
+                "name":"location",
+                "value":"HW:NE40E:PE2"
+            },
+            {
+                "name":"capacity",
+                "value":""
+            }
+          ],
+          "port": [
+            {
+              "port-id": "HW:NE40E:PE2:GE3/0/1",
+              "port-type":"internal",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:PE2:GE3/0/1"
+                }
+              ]
+            },
+            {
+              "port-id": "HW:NE40E:PE2:GE3/0/2",
+              "port-type":"internal",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:PE2:GE3/0/2"
+                }
+              ]
+            },
+            {
+              "port-id": "HW:NE40E:PE2:GE3/0/3",
+              "port-type":"internal",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:PE2:GE3/0/3"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "node-id": "HW:NE40E:PE3",
+          "node-type": "router",
+          "attribute":[
+            {
+                "name":"location",
+                "value":"HW:NE40E:PE3"
+            },
+            {
+                "name":"capacity",
+                "value":""
+            }
+          ],
+          "port": [
+            {
+              "port-id": "HW:NE40E:PE3:GE1/0/0",
+              "port-type":"internal",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:PE3:GE1/0/0"
+                }
+              ]
+            },
+            {
+              "port-id": "HW:NE40E:PE3:GE1/0/2",
+              "port-type":"internal",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:PE3:GE1/0/2"
+                }
+              ]
+            },
+            {
+              "port-id": "HW:NE40E:PE3:GE1/0/8",
+              "port-type":"internal",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:PE3:GE1/0/8"
+                }
+              ]
+            }
+          ]
+        },   
+        {
+          "node-id": "HW:NE40E:CE1",
+          "node-type": "router",
+          "attribute":[
+            {
+                "name":"location",
+                "value":"HW:NE40E:CE1"
+            },
+            {
+                "name":"capacity",
+                "value":""
+            }
+          ],
+          "port": [
+            {
+              "port-id": "HW:NE40E:CE1:GE1/0/0",
+              "port-type":"external",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:CE1:GE1/0/0"
+                }
+              ]
+            },
+            {
+              "port-id": "HW:NE40E:CE1:GE1/0/6",
+              "port-type":"internal",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:CE1:GE1/0/6"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "node-id": "HW:NE40E:CE2",
+          "node-type": "router",
+          "attribute":[
+            {
+                "name":"location",
+                "value":"HW:NE40E:CE2"
+            },
+            {
+                "name":"capacity",
+                "value":""
+            }
+          ],
+          "port": [
+            {
+              "port-id": "HW:NE40E:CE2:GE3/0/2",
+              "port-type":"external",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:CE2:GE3/0/2"
+                }
+              ]
+            },
+            {
+              "port-id": "HW:NE40E:CE2:GE3/0/3",
+              "port-type":"internal",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:CE2:GE3/0/3"
+                }
+              ]
+            }
+          ] 
+        },
+        {
+          "node-id": "HW:NE40E:CE3",
+          "node-type": "router",
+          "attribute":[
+            {
+                "name":"location",
+                "value":"HW:NE40E:CE3"
+            },
+            {
+                "name":"capacity",
+                "value":""
+            }
+          ],
+          "port": [
+            {
+              "port-id": "HW:NE40E:CE3:GE1/0/0",
+              "port-type":"external",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:CE3:GE1/0/0"
+                }
+              ]
+            },
+            {
+              "port-id": "HW:NE40E:CE3:GE1/0/10",
+              "port-type":"internal",
+              "port-ip-address": "",
+              "port-mac-address":"",
+              "mask": "",
+              "bandwidth":"",
+              "attribute":[
+                {
+                    "name":"location",
+                    "value":"HW:NE40E:CE3:GE1/0/10"
+                }
+              ]
+            }
+          ]
+        }
+
+    ]
+}

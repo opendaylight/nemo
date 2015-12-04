@@ -30,6 +30,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 
   <dependencies>
     <dependency>
+      <groupId>org.jboss.netty</groupId>
+      <artifactId>netty</artifactId>
+      <version>3.2.6.Final</version>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>nemo-api</artifactId>
       <version>${project.version}</version>
@@ -38,6 +43,22 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <groupId>${project.groupId}</groupId>
       <artifactId>nemo-impl</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jettison</groupId>
+      <artifactId>jettison</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -66,6 +87,20 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Export-Package>
+              org.codehaus.jackson,
+              org.codehaus.jackson.*,
+              org.joda.time.*
+            </Export-Package>
+            <Import-Package>*</Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.opendaylight.yangtools</groupId>
         <artifactId>yang-maven-plugin</artifactId>
@@ -115,6 +150,26 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
                   <file>${project.build.directory}/classes/etc/opendaylight/karaf/config.xml</file>
                   <type>xml</type>
                   <classifier>config</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/classes/etc/opendaylight/karaf/node-resource.json</file>
+                  <type>json</type>
+                  <classifier>node-resource</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/classes/etc/opendaylight/karaf/host-resource.json</file>
+                  <type>json</type>
+                  <classifier>host-resource</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/classes/etc/opendaylight/karaf/link-resource.json</file>
+                  <type>json</type>
+                  <classifier>link-resource</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.directory}/classes/etc/opendaylight/karaf/external-resource.json</file>
+                  <type>json</type>
+                  <classifier>external-resource</classifier>
                 </artifact>
               </artifacts>
             </configuration>

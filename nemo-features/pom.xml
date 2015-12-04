@@ -183,6 +183,34 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>cli-renderer</artifactId>
+      <version>${project.version}</version>
+      <classifier>node-resource</classifier>
+      <type>json</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cli-renderer</artifactId>
+      <version>${project.version}</version>
+      <classifier>host-resource</classifier>
+      <type>json</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cli-renderer</artifactId>
+      <version>${project.version}</version>
+      <classifier>link-resource</classifier>
+      <type>json</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cli-renderer</artifactId>
+      <version>${project.version}</version>
+      <classifier>external-resource</classifier>
+      <type>json</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>nemo-ui</artifactId>
       <version>${project.version}</version>
     </dependency>

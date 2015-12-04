@@ -1,0 +1,32 @@
+{
+    "external-network: [
+        {
+          "node-id": "bank-branch1",
+          "access-node-id":"HW:NE40E:CE1",
+          "access-port-id":"HW:NE40E:CE1:GE1/0/0",
+          "layer":"3",
+          "protocol":"static",
+          "mac-address":""
+        },
+        {
+          "node-id": "bank-branch2",
+          "access-node-id":"HW:NE40E:CE2",
+          "access-port-id":"HW:NE40E:CE2:GE3/0/2",
+          "layer":"3",
+          "protocol":"static",
+          "mac-address":""
+        },
+        {
+          "node-id": "bank-DC",
+          "access-node-id":"HW:NE40E:CE3",
+          "access-port-id":"HW:NE40E:CE3:GE1/0/0",
+          "layer":"3",
+          "protocol":"static"          
+          "mac-address":""
+        }
+    ]
+}
+
+
+
+
