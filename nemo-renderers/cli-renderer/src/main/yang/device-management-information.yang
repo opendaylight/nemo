@@ -1,0 +1,66 @@
+/*
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+ 
+module device-management-information {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:device:management:information";
+    prefix "device-mng-info";
+    
+    import nemo-common {prefix nemo-common;}
+    import nemo-engine-common {prefix nemo-engine-common;}
+
+    import ietf-inet-types {prefix inet;}
+
+    revision "2015-11-19" {
+        description
+            "Initial revision.";
+    }
+
+    container device-management-informations{
+        list device-management-information{
+            description
+                "";
+            key "device-id";
+            leaf device-id {
+                description
+                    "A unique ID for a physical device.";
+                type nemo-engine-common:physical-node-id;
+                mandatory true;
+            }
+            
+            leaf management-ip-address {
+                description
+                    "The IP address for device management.";
+                type inet:ip-address;
+                mandatory true;
+            }
+            
+            leaf port-number {
+                description
+                    "The represents a 16-bit port number of an
+                    Internet transport layer protocol.";
+                type inet:port-number;
+            }
+            
+            leaf user-name {
+                description
+                    "A user-visible and unique name for device management account.";
+                type nemo-common:user-name;
+                mandatory true;
+            }
+
+            leaf user-password {
+                description
+                    "The password of for the device management account.";
+                type nemo-common:user-password;
+                mandatory true;
+            }
+        }
+    }
+   
+}
