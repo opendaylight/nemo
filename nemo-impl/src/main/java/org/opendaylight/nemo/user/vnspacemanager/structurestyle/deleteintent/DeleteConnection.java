@@ -38,63 +38,48 @@ public class DeleteConnection {
     private TenantManage tenantManage;
     private static final Logger LOG = LoggerFactory.getLogger(DeleteConnection.class);
 
-    public DeleteConnection(DataBroker dataBroker, TenantManage tenantManage)
-    {
+    public DeleteConnection(DataBroker dataBroker, TenantManage tenantManage){
         this.dataBroker = dataBroker;
         this.tenantManage = tenantManage;
     }
 
-    public String DeleteConnectionHandling(UserId userId, ConnectionId connectionId)
-    {
+    public String DeleteConnectionHandling(UserId userId, ConnectionId connectionId){
         Boolean ConnInstanceExist = false;
         String errorInfo = null;
-
         tenantManage.fetchVNSpace(userId);
         User user = tenantManage.getUser();
 
-        if (user != null)
-        {
-            if (user.getObjects() != null)
-            {
-                if (user.getObjects().getConnection() != null)
-                {
+        if (user != null){
+            if (user.getObjects() != null){
+                if (user.getObjects().getConnection() != null){
                     List<Connection> connectionList = tenantManage.getUser().getObjects().getConnection();
 
-                    for (Connection connection : connectionList)
-                    {
-                        if (connection.getConnectionId().equals(connectionId))
-                        {
+                    for (Connection connection : connectionList){
+                        if (connection.getConnectionId().equals(connectionId)){
                             ConnInstanceExist = true;
                             break;
                         }
                     }
-
-                    if (ConnInstanceExist)
-                    {
+                    if (ConnInstanceExist){
                         DeleteConnInstance(userId, connectionId);
                     }
-                    else
-                    {
-                        errorInfo = "The connection instance"+connectionId.toString()+ "is not exit. Could not be deleted.";
+                    else{
+                        errorInfo = "The connection instance "+connectionId.getValue()+ " is not exit. Could not be deleted.";
                     }
-
                 }
-                else
-                {
+                else{
                     errorInfo = "There are no connection instances in data store.";
                 }
             }
         }
-        else
-        {
+        else{
             errorInfo = "There are no connection instances in data store.";
         }
 
         return errorInfo;
     }
 
-    private void DeleteConnInstance(UserId userId, ConnectionId connectionId)
-    {
+    private void DeleteConnInstance(UserId userId, ConnectionId connectionId){
         WriteTransaction t = dataBroker.newWriteOnlyTransaction();
         UserKey userKey = new UserKey(userId);
         ConnectionKey connectionKey = new ConnectionKey(connectionId);

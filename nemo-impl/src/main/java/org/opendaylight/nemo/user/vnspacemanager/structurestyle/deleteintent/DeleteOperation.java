@@ -38,61 +38,46 @@ public class DeleteOperation {
     private TenantManage tenantManage;
     private static final Logger LOG = LoggerFactory.getLogger(DeleteOperation.class);
 
-    public DeleteOperation(DataBroker dataBroker, TenantManage tenantManage)
-    {
+    public DeleteOperation(DataBroker dataBroker, TenantManage tenantManage){
         this.dataBroker = dataBroker;
         this.tenantManage = tenantManage;
     }
 
-    public String DeleteOperationhandling(UserId userId, OperationId operationId)
-    {
+    public String DeleteOperationhandling(UserId userId, OperationId operationId){
         Boolean OperationExist = false;
         String errorInfo = null;
         tenantManage.fetchVNSpace(userId);
-
         User user = tenantManage.getUser();
 
-        if (user != null)
-        {
-            if (user.getOperations() != null)
-            {
-                if (user.getOperations().getOperation() != null)
-                {
+        if (user != null){
+            if (user.getOperations() != null){
+                if (user.getOperations().getOperation() != null){
                     List<Operation> operationList = tenantManage.getUser().getOperations().getOperation();
-
-                    for (Operation operation : operationList)
-                    {
-                        if (operation.getOperationId().equals(operationId))
-                        {
+                    for (Operation operation : operationList){
+                        if (operation.getOperationId().equals(operationId)){
                             OperationExist = true;
                             break;
                         }
                     }
-
-                    if (OperationExist)
-                    {
+                    if (OperationExist){
                         DeleteOperationInstance(userId,operationId);
                     }
-                    else
-                    {
-                        errorInfo = "The operation instance" +operationId.toString()+"is not exist. Could not be deleted.";
+                    else{
+                        errorInfo = "The operation instance " +operationId.getValue()+" is not exist. Could not be deleted.";
                     }
                 }
-                else
-                {
+                else{
                     errorInfo = "There are no operation instances in the data store.";
                 }
             }
         }
-        else
-        {
+        else{
             errorInfo = "There are no user in the data store.";
         }
         return errorInfo;
     }
 
-    private void DeleteOperationInstance(UserId userId, OperationId operationId)
-    {
+    private void DeleteOperationInstance(UserId userId, OperationId operationId){
         WriteTransaction t = dataBroker.newWriteOnlyTransaction();
         UserKey userKey = new UserKey(userId);
         OperationKey operationKey = new OperationKey(operationId);

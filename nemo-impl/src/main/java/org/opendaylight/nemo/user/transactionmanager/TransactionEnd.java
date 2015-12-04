@@ -14,10 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.int
  * Created by z00293636 on 2015/9/2.
  */
 public class TransactionEnd {
-    public String transactionend(AAA aaa,EndTransactionInput input)
-    {
-        String errorInfo = null;
-        errorInfo = aaa.checkUser(input);
-        return errorInfo;
+    public String transactionend(AAA aaa,EndTransactionInput input){
+        return aaa.checkUser(input);
     }
 }

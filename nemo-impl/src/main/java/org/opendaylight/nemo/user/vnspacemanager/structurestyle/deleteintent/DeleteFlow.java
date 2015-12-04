@@ -38,59 +38,46 @@ public class DeleteFlow {
     private TenantManage tenantManage;
     private static final Logger LOG = LoggerFactory.getLogger(DeleteFlow.class);
 
-    public DeleteFlow(DataBroker dataBroker, TenantManage tenantManage)
-    {
+    public DeleteFlow(DataBroker dataBroker, TenantManage tenantManage){
         this.dataBroker = dataBroker;
         this.tenantManage = tenantManage;
     }
 
-    public String DeleteFlowHandling(UserId userId, FlowId flowId)
-    {
+    public String DeleteFlowHandling(UserId userId, FlowId flowId){
         Boolean FlowInsExist = false;
         tenantManage.fetchVNSpace(userId);
         String errorInfo = null;
         User user = tenantManage.getUser();
 
-        if (user != null)
-        {
-            if (user.getObjects() != null)
-            {
-                if (user.getObjects().getFlow() != null)
-                {
+        if (user != null){
+            if (user.getObjects() != null){
+                if (user.getObjects().getFlow() != null){
                     List<Flow> flowList = tenantManage.getUser().getObjects().getFlow();
-                    for (Flow flow : flowList)
-                    {
-                        if (flow.getFlowId().equals(flowId))
-                        {
+                    for (Flow flow : flowList){
+                        if (flow.getFlowId().equals(flowId)){
                             FlowInsExist = true;
                             break;
                         }
                     }
-
-                    if (FlowInsExist)
-                    {
+                    if (FlowInsExist) {
                         DeleteFlowInstance(userId,flowId);
                     }
-                    else
-                    {
-                        errorInfo = "The flow instance" +flowId.toString()+"is not exist. Could not be deleted.";
+                    else{
+                        errorInfo = "The flow instance " +flowId.getValue()+" is not exist. Could not be deleted.";
                     }
                 }
-                else
-                {
+                else{
                     errorInfo = "There are no flow instances in the data store.";
                 }
             }
         }
-        else
-        {
+        else{
             errorInfo = "There are no user in the data store.";
         }
         return errorInfo;
     }
 
-    private void DeleteFlowInstance(UserId userId, FlowId flowId)
-    {
+    private void DeleteFlowInstance(UserId userId, FlowId flowId){
         WriteTransaction t = dataBroker.newWriteOnlyTransaction();
         UserKey userKey = new UserKey(userId);
         FlowKey flowKey = new FlowKey(flowId);
