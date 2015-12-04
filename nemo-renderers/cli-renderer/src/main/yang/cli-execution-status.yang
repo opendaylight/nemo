@@ -1,0 +1,75 @@
+/*
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+ 
+module cli-execution-status {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:cli:execution:status";
+    prefix "cli-exec-status";
+    
+	import nemo-common {prefix nemo-common;}
+    import nemo-engine-common {prefix nemo-engine-common;}
+    
+    revision "2015-11-19" {
+        description
+            "Initial revision.";
+    }
+
+    container cli-execution-statuses {
+        list cli-execution-status {
+            key "device-id user-id";
+            leaf device-id {
+                description
+                    "A unique ID for a physical device.";
+                type nemo-engine-common:physical-node-id;
+                mandatory true;
+            }
+			
+			leaf user-id {
+                description
+                    "The user ID for the cli.";
+                type nemo-common:user-id;
+            }
+
+            leaf status {
+                description
+                    "Represents the final execution status of 
+                    the entire common lines for the device.";
+                type enumeration {
+                    enum execution-success {
+                        description
+                            "All command lines for the device have been 
+                            successfully executed.";
+                    }
+                    enum execution-failure {
+                        description
+                            "Some errors occurred when the device executed 
+                            the command lines.";
+                    }
+                }
+                mandatory true;
+            }
+            
+            leaf sequence-number{
+                description
+                    "The sequence number of the command line which 
+                    has unsuccessfully executed by the device.
+                    When all command lines have been executed successfully,
+                    the value is zero.";
+                type uint32;
+            }
+            
+            leaf error-message {
+                description
+                    "The human-readable and detailed error message 
+                    about the command lines execution status.";
+                type string;
+            }
+            config false;
+        }
+    }
+}
