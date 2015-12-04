@@ -9,7 +9,12 @@ package org.opendaylight.nemo.user.vnspacemanager.languagestyle;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.nemo.user.tenantmanager.AAA;
+import org.opendaylight.nemo.user.tenantmanager.TenantManage;
+import org.opendaylight.nemo.user.vnspacemanager.languagestyle.NEMOParse.NEMOparser;
+import org.opendaylight.nemo.user.vnspacemanager.languagestyle.NEMOParse.ParseException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.LanguageStyleNemoRequestInput;
+
+import java.io.StringReader;
 
 /**
  * Created by z00293636 on 2015/8/31.
@@ -17,13 +22,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.int
 public class LanguageIntent {
 
     private DataBroker dataBroker;
+    private TenantManage tenantManage;
+    private NEMOparser nemOparser;
 
-    public LanguageIntent(DataBroker dataBroker)
+    public LanguageIntent(DataBroker dataBroker, TenantManage tenantManage)
     {
-       this.dataBroker = dataBroker;
+        this.dataBroker = dataBroker;
+        this.tenantManage = tenantManage;
+        nemOparser = new NEMOparser(new StringReader(""));
     }
 
-    public String LanIntentHandler(AAA aaa, LanguageStyleNemoRequestInput languageStyleNemoRequestInput){
+    public String LanIntentHandler(AAA aaa, LanguageStyleNemoRequestInput languageStyleNemoRequestInput) throws ParseException {
 
         String errorInfo = null;
 
@@ -34,9 +43,9 @@ public class LanguageIntent {
         }
         else
         {
-            //TODO language parse
+            errorInfo = nemOparser.parseNEMO(languageStyleNemoRequestInput.getUserId(),languageStyleNemoRequestInput.getNemoStatement(),dataBroker,tenantManage);
         }
 
-       return null;
+       return errorInfo;
     }
 }
