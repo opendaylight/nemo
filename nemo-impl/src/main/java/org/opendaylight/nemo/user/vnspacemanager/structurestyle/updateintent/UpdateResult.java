@@ -9,8 +9,6 @@ package org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
-import org.opendaylight.nemo.user.vnspacemanager.instancecheck.ResultInstanceCheck;
-import org.opendaylight.nemo.user.vnspacemanager.syntaxcheck.ResultDefinitionCheck;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.Results;
 
@@ -19,36 +17,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.int
  */
 public class UpdateResult {
 
-    private DataBroker dataBroker;
     private TenantManage tenantManage;
-    private ResultDefinitionCheck resultDefinitionCheck;
-    private ResultInstanceCheck resultInstanceCheck;
 
-    public UpdateResult(DataBroker dataBroker, TenantManage tenantManage)
-    {
-        this.dataBroker = dataBroker;
+    public UpdateResult(DataBroker dataBroker, TenantManage tenantManage){
         this.tenantManage = tenantManage;
-        resultDefinitionCheck = new ResultDefinitionCheck();
-        resultInstanceCheck = new ResultInstanceCheck(tenantManage);
     }
 
     public String ResultHandling(UserId userId, Results results)
     {
-        String errorDefinition = resultDefinitionCheck.CheckDefinition(results);
-        String errorInstance = resultInstanceCheck.checkResultInstance(userId,results);
-
-        if (errorDefinition!= null)
-        {
-            return errorDefinition;
-        }
-        else if (errorInstance != null)
-        {
-            return errorInstance;
-        }
-        else
-        {
-            //todo
-        }
         return null;
     }
 }

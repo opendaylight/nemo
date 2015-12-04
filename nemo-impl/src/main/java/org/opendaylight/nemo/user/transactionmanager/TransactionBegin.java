@@ -14,11 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.int
  * Created by z00293636 on 2015/9/2.
  */
 public class TransactionBegin {
-
-    public String transactionbegin(AAA aaa,BeginTransactionInput input)
-    {
-        String errorInfo = null;
-        errorInfo = aaa.checkUser(input);
-        return errorInfo;
+    public String transactionbegin(AAA aaa,BeginTransactionInput input){
+        return aaa.checkUser(input);
     }
 }
