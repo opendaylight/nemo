@@ -9,6 +9,7 @@
 package org.opendaylight.nemo.renderer.cli;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.nemo.renderer.cli.physicalnetwork.PhysicalResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,18 +24,41 @@ public class CliRenderer implements AutoCloseable {
 
     private final DataBroker dataBroker;
 
-    public CliRenderer(DataBroker dataBroker) {
-        super();
+    private final PhysicalResourceLoader physicalResourceLoader;
+    private final CliTrigger cliTrigger;
 
+    /**
+     *
+     * @param dataBroker
+     */
+	public CliRenderer(DataBroker dataBroker) {
+		super();
         this.dataBroker = dataBroker;
 
-        LOG.info("Initialized the NEMO CLI renderer.");
+        LOG.debug("new PhysicalResourceLoader.");
+        physicalResourceLoader = new PhysicalResourceLoader(dataBroker);
 
-        return;
+        LOG.debug("new CliTrigger.");
+        cliTrigger = new CliTrigger(dataBroker);
+
+		LOG.info("Initialized cli renderer.");
+
+		return;
     }
 
-    @Override
+    /**
+     *
+     * @throws Exception
+     */
+	@Override
     public void close() throws Exception {
-        // TODO
+        if (physicalResourceLoader != null){
+            physicalResourceLoader.close();
+        }
+        if (cliTrigger != null){
+            cliTrigger.close();
+        }
+
+		return;
     }
 }
