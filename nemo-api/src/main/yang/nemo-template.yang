@@ -21,11 +21,11 @@ module nemo-template {
             "Initial revision.";
     }
 
-    grouping template-definition {
+    grouping template-definition-grouping {
         description
-            "It represents the node model instance and its metadata.
-             A node model defines a reusable function or template
-             which could be used many times.";
+            "It represents a template definition and its metadata.
+             A template defines a reusable function which could
+             be used many times.";
 
         leaf template-name {
             description
@@ -113,7 +113,7 @@ module nemo-template {
         }
     }
 
-    grouping template-instance {
+    grouping template-instance-grouping {
         description
             "A template instance which put specific values in the parameter list.";
 

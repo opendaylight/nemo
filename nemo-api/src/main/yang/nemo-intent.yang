@@ -67,11 +67,27 @@ module nemo-intent {
         }
 
         container template-definitions {
-            uses nemo-template:template-definition;
+            description
+                "Contains all templates that the user defined. A
+                 template defines a reusable function which could
+                 be used many times.";
+
+            list template-definition {
+                key "template-name";
+                uses nemo-template:template-definition-grouping;
+            }
         }
 
         container template-instances {
-            uses nemo-template:template-instance;
+            description
+                "Contains all template instances that the user configured.
+                 A template instance is to put specific values in the
+                 parameter list of the definition.";
+
+            list template-instance {
+                key "template-instance-id";
+                uses nemo-template:template-instance-grouping;
+            }
         }
     }
 
