@@ -7,23 +7,25 @@
  */
 package org.opendaylight.nemo.user.vnspacemanager.structurestyle.deleteintent;
 
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.Users;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.Objects;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Connection;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.UserKey;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.connection.instance.EndNode;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,62 +39,63 @@ public class DeleteNode {
     private DataBroker dataBroker;
     private TenantManage tenantManage;
     private static final Logger LOG = LoggerFactory.getLogger(DeleteNode.class);
+    private DeleteConnection deleteConnection;
 
-    public DeleteNode(DataBroker dataBroker, TenantManage tenantManage)
-    {
+    public DeleteNode(DataBroker dataBroker, TenantManage tenantManage){
         this.dataBroker = dataBroker;
         this.tenantManage = tenantManage;
+        deleteConnection = new DeleteConnection(dataBroker, tenantManage);
     }
 
-    public String DeleNodeHandling(UserId userId,NodeId nodeId)
-    {
+    public String DeleNodeHandling(UserId userId,NodeId nodeId){
         String errorInfo = null;
         Boolean NodeInstanceExist = false;
-
         tenantManage.fetchVNSpace(userId);
-
         User user = tenantManage.getUser();
-        if (user != null)
-        {
-            if (user.getObjects() != null)
-            {
-                if (user.getObjects().getNode() != null)
-                {
+        if (user != null){
+            if (user.getObjects() != null){
+                if (user.getObjects().getNode() != null){
                     List<Node> nodeList = tenantManage.getUser().getObjects().getNode();
-
-                    for (Node node : nodeList)
-                    {
-                        if (node.getNodeId().equals(nodeId))
-                        {
+                    for (Node node : nodeList){
+                        if (node.getNodeId().equals(nodeId)){
                             NodeInstanceExist = true;
-                            break;
+                            DeleteNodeInstance(userId,nodeId);
+
+                            if (user.getObjects().getConnection()!=null) {
+                                Boolean nodeconn = false;
+                                List<Connection> connectionList = user.getObjects().getConnection();
+                                for (Connection connection : connectionList){
+                                    if (connection.getEndNode() != null){
+                                        for (EndNode endNode : connection.getEndNode()){
+                                            if (endNode.getNodeId().equals(nodeId)){
+                                                nodeconn = true;
+                                            }
+                                        }
+                                        if (nodeconn){
+                                            errorInfo = deleteConnection.DeleteConnectionHandling(userId,connection.getConnectionId());
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                    if (NodeInstanceExist)
-                    {
-                        DeleteNodeInstance(userId,nodeId);
-                    }
-                    else
-                    {
-                        errorInfo = "The node instance" +nodeId.toString()+"is not exist.Could not be deleted";
+                    if (!NodeInstanceExist) {
+                        errorInfo = "The node instance " +nodeId.getValue()+" is not exist.Could not be deleted";
                     }
                 }
-                else
-                {
+                else{
                     errorInfo = "There are no nodes instances in data store.";
                 }
             }
         }
-        else
-        {
+        else{
             errorInfo = "There are no user in data store.";
         }
 
         return errorInfo;
     }
 
-    private void DeleteNodeInstance(UserId userId,NodeId nodeId)
-    {
+    private void DeleteNodeInstance(UserId userId,NodeId nodeId){
         WriteTransaction t = dataBroker.newWriteOnlyTransaction();
         UserKey userKey = new UserKey(userId);
         NodeKey nodeKey = new NodeKey(nodeId);
