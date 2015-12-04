@@ -24,7 +24,6 @@ import java.util.List;
  */
 public class DeleteIntent {
 
-    private DataBroker dataBroker;
     private TenantManage tenantManage;
     private DeleteNode deleteNode;
     private DeleteConnection deleteConnection;
@@ -32,9 +31,7 @@ public class DeleteIntent {
     private DeleteOperation deleteOperation;
     private DeleteResult deleteResult;
 
-    public DeleteIntent(DataBroker dataBroker, TenantManage tenantManage)
-    {
-       this.dataBroker = dataBroker;
+    public DeleteIntent(DataBroker dataBroker, TenantManage tenantManage){
         this.tenantManage = tenantManage;
         deleteNode = new DeleteNode(dataBroker, tenantManage);
         deleteConnection = new DeleteConnection(dataBroker,tenantManage);
@@ -43,26 +40,18 @@ public class DeleteIntent {
         deleteResult = new DeleteResult();
     }
 
-    public String styleNemoDeleteOutput(AAA aaa,StructureStyleNemoDeleteInput styleNemoDeleteInput)
-    {
+    public String styleNemoDeleteOutput(AAA aaa,StructureStyleNemoDeleteInput styleNemoDeleteInput){
         String errorInfo = null;
 
         errorInfo = aaa.checkUser(styleNemoDeleteInput);
-
-        if (errorInfo != null)
-        {
+        if (errorInfo != null){
             return errorInfo;
         }
-
-        else
-        {
-            if (styleNemoDeleteInput.getObjects() != null)
-            {
-                if (styleNemoDeleteInput.getObjects().getNode() != null && errorInfo == null)
-                {
+        else{
+            if (styleNemoDeleteInput.getObjects() != null){
+                if (styleNemoDeleteInput.getObjects().getNode() != null && errorInfo == null){
                     List<NodeId> nodeIdList= styleNemoDeleteInput.getObjects().getNode();
-                    for (NodeId nodeId : nodeIdList)
-                    {
+                    for (NodeId nodeId : nodeIdList){
                         errorInfo = deleteNode.DeleNodeHandling(styleNemoDeleteInput.getUserId(), nodeId);
                         if (errorInfo != null) {
                             break;
@@ -70,61 +59,46 @@ public class DeleteIntent {
                     }
                     return errorInfo;
                 }
-
-                if (styleNemoDeleteInput.getObjects().getConnection() != null && errorInfo == null)
-                {
+                if (styleNemoDeleteInput.getObjects().getConnection() != null && errorInfo == null){
                     List<ConnectionId> connectionIdList = styleNemoDeleteInput.getObjects().getConnection();
-                    for (ConnectionId connectionId : connectionIdList)
-                    {
+                    for (ConnectionId connectionId : connectionIdList){
                         errorInfo = deleteConnection.DeleteConnectionHandling(styleNemoDeleteInput.getUserId(),connectionId);
-                        if (errorInfo != null)
-                        {
+                        if (errorInfo != null){
                             break;
                         }
                     }
                     return errorInfo;
                 }
-
-                if (styleNemoDeleteInput.getObjects().getFlow() != null && errorInfo == null)
-                {
+                if (styleNemoDeleteInput.getObjects().getFlow() != null && errorInfo == null){
                     List<FlowId> flowIdList = styleNemoDeleteInput.getObjects().getFlow();
-                    for (FlowId flowId : flowIdList )
-                    {
+                    for (FlowId flowId : flowIdList ){
                         errorInfo = deleteFlow.DeleteFlowHandling(styleNemoDeleteInput.getUserId(),flowId);
-                        if (errorInfo != null)
-                        {
+                        if (errorInfo != null){
                             break;
                         }
                     }
                     return errorInfo;
                 }
             }
-        if (styleNemoDeleteInput.getOperations() != null)
-        {
-            if (styleNemoDeleteInput.getOperations().getOperation() != null && errorInfo == null)
-            {
+        if (styleNemoDeleteInput.getOperations() != null){
+            if (styleNemoDeleteInput.getOperations().getOperation() != null && errorInfo == null){
                 List<OperationId> operationIdList = styleNemoDeleteInput.getOperations().getOperation();
-                for (OperationId operationId : operationIdList)
-                {
+                for (OperationId operationId : operationIdList){
                     errorInfo = deleteOperation.DeleteOperationhandling(styleNemoDeleteInput.getUserId(),operationId);
-                    if (errorInfo != null)
-                    {
+                    if (errorInfo != null){
                         break;
                     }
                 }
                 return errorInfo;
             }
         }
-
-        if (styleNemoDeleteInput.getResults() != null)
-        {
+        if (styleNemoDeleteInput.getResults() != null){
             Results results = styleNemoDeleteInput.getResults();
             errorInfo = deleteResult.DeleteResultHandling(styleNemoDeleteInput.getUserId(),results);
-            if (errorInfo != null)
-            {
+            if (errorInfo != null){
                 return errorInfo;
             }
-        }
+           }
         }
         return null;
     }

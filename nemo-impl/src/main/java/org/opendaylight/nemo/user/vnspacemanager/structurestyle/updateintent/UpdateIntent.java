@@ -24,7 +24,6 @@ import java.util.List;
  */
 public class UpdateIntent {
 
-    private DataBroker dataBroker;
     private TenantManage tenantManage;
     private UpdateNode updateNode;
     private UpdateConnection updateConnection;
@@ -32,9 +31,7 @@ public class UpdateIntent {
     private UpdateOperation updateOperation;
     private UpdateResult updateResult;
 
-    public UpdateIntent(DataBroker dataBroker, TenantManage tenantManage)
-    {
-        this.dataBroker = dataBroker;
+    public UpdateIntent(DataBroker dataBroker, TenantManage tenantManage){
         this.tenantManage = tenantManage;
         updateNode = new UpdateNode(dataBroker,tenantManage);
         updateConnection = new UpdateConnection(dataBroker,tenantManage);
@@ -44,82 +41,62 @@ public class UpdateIntent {
     }
 
     public String updateIntent(AAA aaa,StructureStyleNemoUpdateInput structureStyleNemoUpdateInput){
-
         String erroInfo = null;
 
         erroInfo = aaa.checkUser(structureStyleNemoUpdateInput);
 
-        if (erroInfo != null)
-        {
+        if (erroInfo != null){
             return erroInfo;
         }
-        else
-        {
-            if(structureStyleNemoUpdateInput.getObjects() != null)
-            {
-                if (structureStyleNemoUpdateInput.getObjects().getNode() != null && erroInfo == null)
-                {
+        else{
+            if(structureStyleNemoUpdateInput.getObjects() != null){
+                if (structureStyleNemoUpdateInput.getObjects().getNode() != null && erroInfo == null){
                     List<Node> nodeList= structureStyleNemoUpdateInput.getObjects().getNode();
-                    for (Node node : nodeList )
-                    {
+                    for (Node node : nodeList ){
                         erroInfo = updateNode.NodeHandling(structureStyleNemoUpdateInput.getUserId(), node);
-                        if (erroInfo != null)
-                        {
+                        if (erroInfo != null){
                             break;
                         }
                     }
                 }
-                if (structureStyleNemoUpdateInput.getObjects().getConnection() != null && erroInfo == null)
-                {
+                if (structureStyleNemoUpdateInput.getObjects().getConnection() != null && erroInfo == null){
                     List<Connection> connectionList = structureStyleNemoUpdateInput.getObjects().getConnection();
-                    for (Connection connection : connectionList)
-                    {
+                    for (Connection connection : connectionList){
                         erroInfo = updateConnection.ConnectionHandling(structureStyleNemoUpdateInput.getUserId(), connection);
-                        if (erroInfo != null)
-                        {
+                        if (erroInfo != null){
                             break;
                         }
                     }
                 }
 
-                if (structureStyleNemoUpdateInput.getObjects().getFlow() != null && erroInfo == null)
-                {
+                if (structureStyleNemoUpdateInput.getObjects().getFlow() != null && erroInfo == null){
                     List<Flow> flowList = structureStyleNemoUpdateInput.getObjects().getFlow();
-                    for (Flow flow : flowList)
-                    {
+                    for (Flow flow : flowList){
                         erroInfo = updateFlow.FlowHandling(structureStyleNemoUpdateInput.getUserId(),flow);
-                        if (erroInfo != null)
-                        {
+                        if (erroInfo != null) {
                             break;
                         }
                     }
                 }
             }
 
-        if (structureStyleNemoUpdateInput.getOperations() != null)
-            {
-                if (structureStyleNemoUpdateInput.getOperations().getOperation() != null && erroInfo == null)
-                {
+        if (structureStyleNemoUpdateInput.getOperations() != null){
+                if (structureStyleNemoUpdateInput.getOperations().getOperation() != null && erroInfo == null){
                     List<Operation> operationList =structureStyleNemoUpdateInput.getOperations().getOperation();
-                    for (Operation operation : operationList)
-                    {
+                    for (Operation operation : operationList){
                         erroInfo = updateOperation.OperationHandling(structureStyleNemoUpdateInput.getUserId(), operation);
-                        if (erroInfo !=null)
-                        {
+                        if (erroInfo !=null){
                             break;
                         }
                     }
                 }
             }
 
-        else if (structureStyleNemoUpdateInput.getResults() != null)
-            {
-                if ( structureStyleNemoUpdateInput.getResults() != null && erroInfo == null)
-                {
+        else if (structureStyleNemoUpdateInput.getResults() != null){
+                if ( structureStyleNemoUpdateInput.getResults() != null && erroInfo == null){
                     Results results = structureStyleNemoUpdateInput.getResults();
                     erroInfo = updateResult.ResultHandling(structureStyleNemoUpdateInput.getUserId(), results);
-                    if (erroInfo != null)
-                    {
+                    if (erroInfo != null){
                         //todo
                     }
                 }
