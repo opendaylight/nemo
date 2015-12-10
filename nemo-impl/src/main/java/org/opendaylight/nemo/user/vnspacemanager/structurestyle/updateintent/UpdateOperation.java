@@ -61,14 +61,14 @@ public class UpdateOperation {
 
     private DataBroker dataBroker;
     private TenantManage tenantManage;
-    private final SettableFuture<List<ActionDefinition>> actionDefinitionListFuture =  SettableFuture.create();
-    private final SettableFuture<List<ConditionParameterDefinition>> conditionParameterDefinitionListFuture = SettableFuture.create();
+    private GetDefinitions getDefinitions;
     private ValueCheck valueCheck;
     private static final Logger LOG = LoggerFactory.getLogger(UpdateOperation.class);
 
     public UpdateOperation(DataBroker dataBroker, TenantManage tenantManage){
         this.dataBroker = dataBroker;
         this.tenantManage = tenantManage;
+        getDefinitions = new GetDefinitions(dataBroker);
         valueCheck = new ValueCheck();
     }
 
@@ -182,8 +182,6 @@ public class UpdateOperation {
     }
 
     private String checkDefinition(Operation operation){
-        fetchActionDefinitions();
-        fetchConditionParaDefinitions();
         String errorInfo = null;
 
         if (operation.getAction() != null )
@@ -199,9 +197,7 @@ public class UpdateOperation {
 
     private String checkAction(Operation operation){
         String errorInfo = null;
-
-        fetchActionDefinitions();
-        Map<ActionName, ActionDefinition> actionDefinitionMap = getActionDefinition();
+        Map<ActionName, ActionDefinition> actionDefinitionMap = getDefinitions.getActionDefinition();
         if (operation.getAction()!=null){
             if (actionDefinitionMap.isEmpty()){
                 return "The action type has not been defined.";
@@ -239,8 +235,7 @@ public class UpdateOperation {
 
     private String checkCondition(Operation operation){
         String errorInfo = null;
-        fetchConditionParaDefinitions();
-        Map<ParameterName, ConditionParameterDefinition> conditionParameterDefinitionMap = getParameterMatchPattern();
+        Map<ParameterName, ConditionParameterDefinition> conditionParameterDefinitionMap = getDefinitions.getConditionParameterDefinition();
         if (operation.getConditionSegment()!=null){
             if (conditionParameterDefinitionMap.isEmpty()){
                 return "This condition has not been defined in data store.";
@@ -320,87 +315,5 @@ public class UpdateOperation {
             }
         }
         return errorInfo;
-    }
-
-    private void fetchActionDefinitions(){
-        InstanceIdentifier<ActionDefinitions> actiondefinitionId = InstanceIdentifier.builder(ActionDefinitions.class).build();
-        ListenableFuture<Optional<ActionDefinitions>> actiondefinitionFuture = dataBroker.newReadOnlyTransaction().read(LogicalDatastoreType.CONFIGURATION, actiondefinitionId);
-        Futures.addCallback(actiondefinitionFuture, new FutureCallback<Optional<ActionDefinitions>>() {
-            @Override
-            public void onSuccess(Optional<ActionDefinitions> result) {
-                setActionDefinitionListFuture( result.get().getActionDefinition());
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                LOG.error("Can not read action definition information.", t);
-            }
-        });
-        return ;
-    }
-
-    private void fetchConditionParaDefinitions(){
-        InstanceIdentifier<ConditionParameterDefinitions> conditionparadefinitionId = InstanceIdentifier.builder(ConditionParameterDefinitions.class).build();
-        ListenableFuture<Optional<ConditionParameterDefinitions>> conditionparadefinitionFuture = dataBroker.newReadOnlyTransaction().read(LogicalDatastoreType.CONFIGURATION, conditionparadefinitionId);
-        Futures.addCallback(conditionparadefinitionFuture, new FutureCallback<Optional<ConditionParameterDefinitions>>() {
-            @Override
-            public void onSuccess(Optional<ConditionParameterDefinitions> result) {
-               setConditionParameterDefinitionListFuture(result.get().getConditionParameterDefinition());
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                LOG.error("Can not read condition parameter definition information.", t);
-            }
-        });
-        return ;
-    }
-
-    private void setConditionParameterDefinitionListFuture(List<ConditionParameterDefinition> conditionParameterDefinitions){
-        this.conditionParameterDefinitionListFuture.set(conditionParameterDefinitions);
-    }
-
-    private void setActionDefinitionListFuture(List<ActionDefinition> actionDefinitions){
-        this.actionDefinitionListFuture.set(actionDefinitions);
-    }
-
-    private List<ConditionParameterDefinition> getConditionParameterDefinitionList(){
-        try{
-            return conditionParameterDefinitionListFuture.get(1, TimeUnit.SECONDS);
-        }catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.error("Cannot read role information.", e);
-            return null;
-        }
-    }
-
-    private List<ActionDefinition> getActionDefinitionList(){
-        try{
-            return actionDefinitionListFuture.get(1, TimeUnit.SECONDS);
-        }catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.error("Cannot read role information.", e);
-            return null;
-        }
-    }
-
-    private Map<ParameterName, ConditionParameterDefinition> getParameterMatchPattern(){
-        List<ConditionParameterDefinition> conditionParameterDefinitions = getConditionParameterDefinitionList();
-        Map<ParameterName, ConditionParameterDefinition> conditionParameterDefinitionMap = new HashMap<ParameterName, ConditionParameterDefinition>();
-        if (conditionParameterDefinitions!=null){
-            for (ConditionParameterDefinition conditionParameterDefinition : conditionParameterDefinitions){
-                conditionParameterDefinitionMap.put(conditionParameterDefinition.getParameterName(),conditionParameterDefinition);
-            }
-        }
-        return conditionParameterDefinitionMap;
-    }
-
-    private Map<ActionName, ActionDefinition> getActionDefinition(){
-        List<ActionDefinition> actionDefinitions = getActionDefinitionList();
-        Map<ActionName,ActionDefinition> actionDefinitionMap = new HashMap<ActionName, ActionDefinition>();
-        if (actionDefinitionMap!=null){
-            for (ActionDefinition actionDefinition : actionDefinitions){
-                actionDefinitionMap.put(actionDefinition.getActionName(),actionDefinition);
-            }
-        }
-        return actionDefinitionMap;
     }
 }

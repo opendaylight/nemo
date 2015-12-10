@@ -43,7 +43,7 @@ public class UpdateIntent {
     public String updateIntent(AAA aaa,StructureStyleNemoUpdateInput structureStyleNemoUpdateInput){
         String erroInfo = null;
 
-        erroInfo = aaa.checkUser(structureStyleNemoUpdateInput);
+        erroInfo = aaa.checkUser(structureStyleNemoUpdateInput.getUserId());
 
         if (erroInfo != null){
             return erroInfo;

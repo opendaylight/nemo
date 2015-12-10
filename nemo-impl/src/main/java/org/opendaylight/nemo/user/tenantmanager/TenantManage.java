@@ -8,11 +8,8 @@
 package org.opendaylight.nemo.user.tenantmanager;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
@@ -31,12 +28,13 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 
 /**
  * Created by z00293636 on 2015/8/29.
@@ -46,8 +44,6 @@ import com.google.common.util.concurrent.SettableFuture;
 public class TenantManage {
     private static final Logger LOG = LoggerFactory.getLogger(TenantManage.class);
     private DataBroker dataBroker;
-    private final SettableFuture<List<UserRole>> userRoleListFuture = SettableFuture.create();
-    private final SettableFuture<List<User>> usersListFuture = SettableFuture.create();
     private User user;
 
     public TenantManage(DataBroker dataBroker)
@@ -55,68 +51,9 @@ public class TenantManage {
         this.dataBroker = dataBroker;
     }
 
-    private void setUserRoleList(List<UserRole> userRoleList)
-    {
-        this.userRoleListFuture.set(userRoleList);
-    }
-
-    private void setUserList(List<User> userList)
-    {
-        this.usersListFuture.set(userList);
-    }
-
     private void setUser(User user)
     {
         this.user = user;
-    }
-
-    public List<UserRole> getUserRoleList() {
-        try {
-            return userRoleListFuture.get(1, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.error("Cannot read role information.", e);
-            return null;
-        }
-    }
-
-    /**
-     *
-     * @return Map from UserRoleName to UserRole.  If no roles exist, an empty (not-null) map is returned.
-     */
-    public Map<UserRoleName, UserRole> getUserRoles() {
-        final Map<UserRoleName, UserRole> map = new HashMap<>();
-        final List<UserRole> userRoleList = getUserRoleList();
-        if (userRoleList != null) {
-            for (UserRole role : userRoleList) {
-                map.put(role.getRoleName(), role);
-            }
-        }
-        return map;
-    }
-
-    public List<User> getUsersList() {
-        try {
-            return usersListFuture.get(1, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.error("Cannot read user information.", e);
-            return null;
-        }
-    }
-
-    /**
-     *
-     * @return Map from UserId to User.  If no users exist, an empty (not-null) map is returned.
-     */
-    public Map<UserId, User> getUsers()
-    {
-        final Map<UserId, User> map = new HashMap<>();
-        final List<User> userList = getUsersList();
-        if (userList != null) {
-            for (User user : userList) {
-                map.put(user.getUserId(), user);
-            }
-        }
-        return map;
     }
 
     public User getUser()
@@ -124,52 +61,77 @@ public class TenantManage {
         return user;
     }
 
-    public void fetchUserRoles(){
+    /**
+     *
+     * @return null if an error was encountered, or an empty map if there was no
+     *         error but no data was retrieved.
+     */
+    public Map<UserRoleName, UserRole> getUserRoles() {
 
         InstanceIdentifier<UserRoles> userRolesInsId = InstanceIdentifier.builder(UserRoles.class).build();
-        ListenableFuture<Optional<UserRoles>> userRolesFuture = this.dataBroker.newReadOnlyTransaction().read(LogicalDatastoreType.CONFIGURATION, userRolesInsId);
-        Futures.addCallback(userRolesFuture, new FutureCallback<Optional<UserRoles>>() {
-            @Override
-            public void onSuccess(Optional<UserRoles> result)
-            {
-                setUserRoleList(result.get().getUserRole());
-            }
+        ListenableFuture<Optional<UserRoles>> userRolesFuture = this.dataBroker.newReadOnlyTransaction().read(
+                LogicalDatastoreType.CONFIGURATION, userRolesInsId);
 
+        final Optional<UserRoles> userRolesOpt;
+        try {
+            // TODO: consider time out here?
+            userRolesOpt = userRolesFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Cannot read role information.", e);
+            return null;
+        }
+
+        // TODO: change to Java 8 lambda expressions
+        return userRolesOpt.transform(new Function<UserRoles, Map<UserRoleName, UserRole>>() {
             @Override
-            public void onFailure(Throwable t)
-            {
-                LOG.error("Can not read role information.", t);
+            public Map<UserRoleName, UserRole> apply(UserRoles input) {
+                return Maps.uniqueIndex(input.getUserRole(), new Function<UserRole, UserRoleName>() {
+                    @Override
+                    public UserRoleName apply(UserRole role) {
+                        return role.getRoleName();
+                    }
+                });
             }
-        });
+        }).or(new HashMap<UserRoleName, UserRole>());
     }
 
-    public void fetchUsers(){
+    /**
+    *
+    * @return null if an error was encountered, or an empty map if there was no
+    *         error but no data was retrieved.
+    */
+    public Map<UserId, User> getUsers() {
         InstanceIdentifier<Users> usersInsId = InstanceIdentifier.builder(Users.class).build();
-        ListenableFuture<Optional<Users>> usersFuture = dataBroker.newReadOnlyTransaction().read(LogicalDatastoreType.CONFIGURATION, usersInsId);
-        Futures.addCallback(usersFuture, new FutureCallback<Optional<Users>>() {
-            @Override
-            public void onSuccess(Optional<Users> result)
-            {
-                setUserList(result.get().getUser());
-            }
+        ListenableFuture<Optional<Users>> usersFuture = dataBroker.newReadOnlyTransaction().read(
+                LogicalDatastoreType.CONFIGURATION, usersInsId);
 
+        final Optional<Users> usersOpt;
+        try {
+            // TODO: consider time out here?
+            usersOpt = usersFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("Cannot read user information.", e);
+            return null;
+        }
+
+        // TODO: change to Java 8 lambda expressions
+        return usersOpt.transform(new Function<Users, Map<UserId, User>>() {
             @Override
-            public void onFailure(Throwable t)
-            {
-                LOG.error("Can not read users information.", t);
+            public Map<UserId, User> apply(Users input) {
+                return Maps.uniqueIndex(input.getUser(), new Function<User, UserId>() {
+                    @Override
+                    public UserId apply(User user) {
+                        return user.getUserId();
+                    }
+                });
             }
-        });
+        }).or(new HashMap<UserId, User>());
     }
 
     public void fetchVNSpace(UserId userId)
     {
-        fetchUsers();
         final Map<UserId, User> users = getUsers();
-
-        User user = users.get(userId);
-        if (users.containsKey(userId) && user != null) {
-            setUser(user);
-        }
+        setUser((users != null) ? users.get(userId) : null);
     }
 
     public void addUser(RegisterUserInput registerUserInput){
@@ -177,13 +139,6 @@ public class TenantManage {
         if (registerUserInput.getUserId() != null)
         {
             User user = new UserBuilder(registerUserInput).build();
-//            UserBuilder userBuilder = new UserBuilder();
-//            userBuilder.setUserId(registerUserInput.getUserId());
-//            userBuilder.setUserName(registerUserInput.getUserName());
-//            userBuilder.setUserPassword(registerUserInput.getUserPassword());
-//            userBuilder.setUserRole(registerUserInput.getUserRole());
-//
-//            User user = userBuilder.build();
             UserKey userKey = new UserKey(registerUserInput.getUserId());
 
             InstanceIdentifier<User> userid = InstanceIdentifier.builder(Users.class).child(User.class, userKey).build();

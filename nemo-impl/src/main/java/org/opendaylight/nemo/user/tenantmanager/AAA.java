@@ -7,14 +7,10 @@
  */
 package org.opendaylight.nemo.user.tenantmanager;
 
-import java.util.Map;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserName;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserPassword;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserRoleName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.user.rev151010.UserInstance;
+
+import java.util.Map;
 
 /**
  * Created by z00293636 on 2015/8/29.
@@ -30,28 +26,16 @@ public class AAA {
         this.tenantManage = tenantManage;
     }
 
-    public String checkUser(UserInstance user) {
-        return checkUser(user.getUserId(), user.getUserName(), user.getUserPassword(), user.getUserRole());
-    }
-
-    private String checkUser(UserId userId, UserName userName, UserPassword userPassword, UserRoleName userRoleName)
+    public String checkUser(UserId userId)
     {
-        tenantManage.fetchUsers();
         final Map<UserId, User> users = tenantManage.getUsers();
         String errorInfo = null;
-        final User user = users.get(userId);
+        final User user = (users != null) ? users.get(userId) : null;
 
-        if (users.containsKey(userId) && user != null) {
-            if (!user.getUserName().equals(userName)) {
-                errorInfo = "The user name is not right.";
-            } else if (!user.getUserPassword().equals(userPassword)) {
-                errorInfo = "The password is not right.";
-            } else if (!user.getUserRole().equals(userRoleName)) {
-                errorInfo = "The role is not right.";
-            }
-        } else {
+        if (user == null) {
             errorInfo = "The user is not exist.";
         }
+
         return errorInfo;
     }
 }

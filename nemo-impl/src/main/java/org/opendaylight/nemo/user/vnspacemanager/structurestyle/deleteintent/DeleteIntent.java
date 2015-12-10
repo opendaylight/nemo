@@ -43,7 +43,7 @@ public class DeleteIntent {
     public String styleNemoDeleteOutput(AAA aaa,StructureStyleNemoDeleteInput styleNemoDeleteInput){
         String errorInfo = null;
 
-        errorInfo = aaa.checkUser(styleNemoDeleteInput);
+        errorInfo = aaa.checkUser(styleNemoDeleteInput.getUserId());
         if (errorInfo != null){
             return errorInfo;
         }

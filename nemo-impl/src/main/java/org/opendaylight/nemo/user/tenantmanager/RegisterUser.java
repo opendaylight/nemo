@@ -30,12 +30,10 @@ public class RegisterUser {
     {
         String errorInfo = null;
 
-        tenantManage.fetchUserRoles();
         Map<UserRoleName, UserRole> userRoles = tenantManage.getUserRoles();
-        tenantManage.fetchUsers();
         Map<UserId, User> users = tenantManage.getUsers();
 
-        if (userRoles.isEmpty())
+        if (userRoles == null || userRoles.isEmpty())
         {
             errorInfo = "There are no roles be defined.";
         }
@@ -43,7 +41,7 @@ public class RegisterUser {
         {
             if (userRoles.containsKey(input.getUserRole()))
             {
-                if (users.containsKey(input.getUserId()))
+                if (users != null && users.containsKey(input.getUserId()))
                 {
                     errorInfo = "The user has been registered.";
                 }
@@ -57,7 +55,7 @@ public class RegisterUser {
                 errorInfo = "The role is not defined in the data store.";
             }
         }
+
         return errorInfo;
     }
-
 }

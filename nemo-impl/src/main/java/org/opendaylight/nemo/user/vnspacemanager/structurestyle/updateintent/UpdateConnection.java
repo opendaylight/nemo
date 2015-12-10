@@ -52,12 +52,13 @@ public class UpdateConnection {
 
     private DataBroker dataBroker;
     private TenantManage tenantManage;
-    private final SettableFuture<List<ConnectionDefinition>> connectionDefinitionListFuture = SettableFuture.create();
+    private GetDefinitions getDefinitions;
     private static final Logger LOG = LoggerFactory.getLogger(UpdateConnection.class);
 
     public UpdateConnection(DataBroker dataBroker, TenantManage tenantManage){
         this.dataBroker = dataBroker;
         this.tenantManage = tenantManage;
+        getDefinitions = new GetDefinitions(dataBroker);
     }
 
     public String ConnectionHandling(UserId userId, Connection connection){
@@ -161,8 +162,7 @@ public class UpdateConnection {
 
     private String checkDefinition(Connection connection){
         String errorInfo = null;
-        fetchConnectionDefinitionList();
-        Map<ConnectionType, ConnectionDefinition> connectionDefinitionMap = getConnectionDefinition();
+        Map<ConnectionType, ConnectionDefinition> connectionDefinitionMap = getDefinitions.getConnectionDefinition();
         if (connectionDefinitionMap.isEmpty()){
             return "This type of connection has not been defined.";
         }
@@ -265,47 +265,5 @@ public class UpdateConnection {
             }
         }
         return errorInfo;
-    }
-
-    private void fetchConnectionDefinitionList(){
-        InstanceIdentifier<ConnectionDefinitions> connectiondefinitionId = InstanceIdentifier.builder(ConnectionDefinitions.class).build();
-        ListenableFuture<Optional<ConnectionDefinitions>> connectiondefinitionFuture = dataBroker.newReadOnlyTransaction().read(LogicalDatastoreType.CONFIGURATION, connectiondefinitionId);
-        Futures.addCallback(connectiondefinitionFuture, new FutureCallback<Optional<ConnectionDefinitions>>() {
-            @Override
-            public void onSuccess(Optional<ConnectionDefinitions> result) {
-                setConnectionDefinitionListFuture(result.get().getConnectionDefinition());
-
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                LOG.error("Can not read connection definition information.", t);
-            }
-        });
-        return;
-    }
-
-    private void setConnectionDefinitionListFuture(List<ConnectionDefinition> connectionDefinitionList){
-        this.connectionDefinitionListFuture.set(connectionDefinitionList);
-    }
-
-    private List<ConnectionDefinition> getConnectionDefinitionList(){
-        try{
-            return connectionDefinitionListFuture.get(1, TimeUnit.SECONDS);
-        }catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.error("Cannot read role information.", e);
-            return null;
-        }
-    }
-
-    private Map<ConnectionType, ConnectionDefinition> getConnectionDefinition(){
-        List<ConnectionDefinition> connectionDefinitionList = getConnectionDefinitionList();
-        Map<ConnectionType, ConnectionDefinition> connectionDefinitionMap = new HashMap<ConnectionType, ConnectionDefinition>();
-        if (connectionDefinitionList!=null){
-            for (ConnectionDefinition connectionDefinition : connectionDefinitionList){
-                connectionDefinitionMap.put(connectionDefinition.getConnectionType(),connectionDefinition);
-            }
-        }
-        return connectionDefinitionMap;
     }
 }
