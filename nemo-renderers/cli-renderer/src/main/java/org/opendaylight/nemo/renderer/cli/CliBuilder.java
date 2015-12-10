@@ -39,9 +39,7 @@ import java.util.*;
  *
  * @author Shixing Liu
  */
-
 public class CliBuilder implements AutoCloseable {
-
     private static final Logger LOG = LoggerFactory.getLogger(CliBuilder.class);
 
     private final DataBroker dataProvider;
@@ -54,14 +52,16 @@ public class CliBuilder implements AutoCloseable {
      * @param dataProvider
      */
     public CliBuilder(DataBroker dataProvider) {
-
         super();
+
         this.dataProvider = dataProvider;
 
         LOG.info("New TelnetUtils.");
         telnetUtils = new TelnetUtils();
 
         LOG.info("Initialized CliBuilder.");
+
+		return;
     }
 
     /**
@@ -70,8 +70,10 @@ public class CliBuilder implements AutoCloseable {
      */
     public void init(List<PhysicalNode> physicalNodes) {
         for ( PhysicalNode physicalNode : physicalNodes ) {
-            //TODO:
+            // TODO:
         }
+
+		return;
     }
 
     /**
@@ -116,7 +118,6 @@ public class CliBuilder implements AutoCloseable {
         return  vnPnMappingResultforNode;
     }
 
-
     /**
      *
      * @param connection
@@ -145,7 +146,6 @@ public class CliBuilder implements AutoCloseable {
         //System.out.println("isConnectTwoExtGroup = "+ isTwoExtGroup.booleanValue());
         return  isTwoExtGroup;
     }
-
 
     /**
      *
@@ -201,7 +201,6 @@ public class CliBuilder implements AutoCloseable {
         return  physicalPortId;
     }
 
-
     /**
      *
      * @param physicalLinkId
@@ -229,7 +228,6 @@ public class CliBuilder implements AutoCloseable {
         return  physicalNodeId;
     }
 
-
     /**
      *
      * @param physicalLinkId
@@ -256,7 +254,6 @@ public class CliBuilder implements AutoCloseable {
         }
         return  physicalPortId;
     }
-
 
     /**
      *
@@ -333,7 +330,6 @@ public class CliBuilder implements AutoCloseable {
 
         return physicalPath1;
     }
-
 
     /**
      *
@@ -488,7 +484,6 @@ public class CliBuilder implements AutoCloseable {
         return  peersOfPEs;
     }
 
-
     /**
      *
      * @param oneNode
@@ -513,7 +508,6 @@ public class CliBuilder implements AutoCloseable {
         System.out.println("isInPeersList() = Boolean.FALSE");
         return  Boolean.FALSE;
     }
-
 
     /**
      *
@@ -551,7 +545,6 @@ public class CliBuilder implements AutoCloseable {
         return  Boolean.TRUE;
     }
 
-
     /**
      *
      * @param physicalNodeId
@@ -588,7 +581,6 @@ public class CliBuilder implements AutoCloseable {
         }
         return  template;
     }
-
 
     /**
      *
@@ -832,7 +824,6 @@ public class CliBuilder implements AutoCloseable {
 
     }
 
-
     /**
      *
      * @param user
@@ -939,17 +930,16 @@ public class CliBuilder implements AutoCloseable {
         }
     }
 
-
     /**
      *
      * @throws Exception
      */
+	@Override
     public void close() throws Exception {
-
         if (telnetUtils != null){
             telnetUtils.close();
         }
+
+		return;
     }
-
-
 }

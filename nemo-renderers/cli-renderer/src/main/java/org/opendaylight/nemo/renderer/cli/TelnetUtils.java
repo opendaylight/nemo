@@ -9,28 +9,21 @@
 package org.opendaylight.nemo.renderer.cli;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.*;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.handler.codec.string.StringDecoder;
 import org.jboss.netty.handler.codec.string.StringEncoder;
-import org.jboss.netty.channel.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Shixing Liu
  */
 public class TelnetUtils implements AutoCloseable {
-
     private static final Logger LOG = LoggerFactory.getLogger(TelnetUtils.class);
 
     private static Boolean ClearOver = Boolean.TRUE;
@@ -43,7 +36,6 @@ public class TelnetUtils implements AutoCloseable {
      *
      */
     public TelnetUtils(){
-
         LOG.info("TelnetUtils constructor");
     }
 
@@ -52,7 +44,9 @@ public class TelnetUtils implements AutoCloseable {
      * @throws Exception
      */
     public void close() throws Exception {
+        // TODO
 
+		return;
     }
 
     /**
@@ -209,14 +203,13 @@ public class TelnetUtils implements AutoCloseable {
     /**
      *
      */
-    private static class ClientHandlerForClearOldConfig extends SimpleChannelUpstreamHandler  {
+    private static class ClientHandlerForClearOldConfig extends SimpleChannelUpstreamHandler {
         @Override
         public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
         }
 
         @Override
         public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)throws Exception {
-
             String str = (String)(e.getMessage());
             System.out.println(e.getMessage());
             if(str.contains("Username")){
@@ -262,7 +255,6 @@ public class TelnetUtils implements AutoCloseable {
      *
      */
     private static void sendNewConfig(){
-
         ChannelFactory factory = new NioClientSocketChannelFactory(
                 Executors.newCachedThreadPool(),
                 Executors.newCachedThreadPool());
@@ -293,7 +285,6 @@ public class TelnetUtils implements AutoCloseable {
         bootstrap.connect(new InetSocketAddress(ipAddress, 23));
     }
 
-
     /**
      *
      * @param deviceName
@@ -314,14 +305,13 @@ public class TelnetUtils implements AutoCloseable {
     /**
      *
      */
-    private static class ClientHandlerForSendNewConfig extends SimpleChannelUpstreamHandler  {
+    private static class ClientHandlerForSendNewConfig extends SimpleChannelUpstreamHandler {
         @Override
         public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
         }
 
         @Override
         public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-
             String str = (String)(e.getMessage());
             System.out.println(e.getMessage());
             if(str.contains("Username")){
@@ -348,6 +338,4 @@ public class TelnetUtils implements AutoCloseable {
             e.getChannel().close();
         }
     }
-
-
 }
