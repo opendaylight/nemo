@@ -23,22 +23,17 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <name>${project.artifactId}</name>
 
   <properties>
+    <liblldp.version>0.10.0-SNAPSHOT</liblldp.version>
+    <openflowplugin.version>0.2.0-SNAPSHOT</openflowplugin.version>
     <jacoco.version>0.7.2.201409121644</jacoco.version>
     <sonar.jacoco.reportPath>target/code-coverage/jacoco.exec</sonar.jacoco.reportPath>
     <sonar.jacoco.itReportPath>target/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
-    <openflowplugin.version>0.2.0-SNAPSHOT</openflowplugin.version>
-    <liblldp.version>0.10.0-SNAPSHOT</liblldp.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.opendaylight.mdsal.model</groupId>
       <artifactId>yang-ext</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>openflowplugin-extension-nicira</artifactId>
-      <version>${openflowplugin.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller.model</groupId>
@@ -54,6 +49,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <artifactId>commons-net</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>openflowplugin-extension-nicira</artifactId>
+      <version>${openflowplugin.version}</version>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>nemo-api</artifactId>
       <version>${project.version}</version>
@@ -62,20 +62,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <groupId>${project.groupId}</groupId>
       <artifactId>nemo-impl</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -92,6 +78,21 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <dependency>
       <groupId>org.codehaus.jettison</groupId>
       <artifactId>jettison</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
