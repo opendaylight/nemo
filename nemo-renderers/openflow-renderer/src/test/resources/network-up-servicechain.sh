@@ -42,6 +42,12 @@ ofprotocol unix:/tmp/sw4 tcp:127.0.0.1:6633 --fail=closed --listen=ptcp:6664 1> 
 
 sleep 5
 
+########## lldp ##########
+dpctl unix:/tmp/sw1 flow-mod cmd=add,table=0,idle=0,hard=0,prio=65535 eth_type=0x88cc apply:output=ctrl:0xff
+dpctl unix:/tmp/sw2 flow-mod cmd=add,table=0,idle=0,hard=0,prio=65535 eth_type=0x88cc apply:output=ctrl:0xff
+dpctl unix:/tmp/sw3 flow-mod cmd=add,table=0,idle=0,hard=0,prio=65535 eth_type=0x88cc apply:output=ctrl:0xff
+dpctl unix:/tmp/sw4 flow-mod cmd=add,table=0,idle=0,hard=0,prio=65535 eth_type=0x88cc apply:output=ctrl:0xff
+
 exit 0
 
 
