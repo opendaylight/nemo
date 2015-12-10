@@ -151,7 +151,6 @@ public class VNComputationUnit implements AutoCloseable {
 
         List<VirtualLink> virtualLinks = virtualNetwork.getVirtualLinks().getVirtualLink();
 
-
         for ( VirtualLink virtualLink : virtualLinks ) {
             routingAlgorithm.addEdge(new Edge(virtualLink));
         }
@@ -442,7 +441,6 @@ public class VNComputationUnit implements AutoCloseable {
             Map<InstanceIdentifier<?>, DataObject> createdData = change.getCreatedData();
 
             if ( null != createdData && !createdData.isEmpty() ) {
-
                 boolean needRerouting = false;
 
                 for ( DataObject dataObject : createdData.values() ) {

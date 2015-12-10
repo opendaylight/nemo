@@ -31,7 +31,6 @@ public class NemoEngineModule extends org.opendaylight.yang.gen.v1.urn.opendayli
         final RpcProviderRegistry rpcProviderRegistry = getRpcRegistryDependency();
 
         final class NemoEngine implements AutoCloseable {
-
             private final IntentResolver intentResolver = new IntentResolver(dataBroker);
             private final UserManager userManager = new UserManager(dataBroker, intentResolver);
             private final RpcRegistration<NemoIntentService> rpcRegistration;
