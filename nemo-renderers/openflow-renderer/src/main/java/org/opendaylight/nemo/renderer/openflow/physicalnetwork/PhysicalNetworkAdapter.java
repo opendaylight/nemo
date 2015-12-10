@@ -200,9 +200,12 @@ public class PhysicalNetworkAdapter {
     protected void ofNodeAdded(Node node) {
         log.debug("OF node added: {}.", node.getKey());
         String strNodeId = node.getId().getValue();
-        //add default flow entry.
-        physicalFlowUtils.configArpPEntry(strNodeId);
-        physicalFlowUtils.configLLDPEntry(strNodeId);
+        // Add default flow entry. - Don't do this here, because it will
+        // result in that the openflow plugin can't discover the topology.
+        // Flow entries for LLDP are deployed manually through a shell script.
+        // Flow entries for ARP are added in class FlowUtils.
+//        physicalFlowUtils.configArpPEntry(strNodeId);
+//        physicalFlowUtils.configLLDPEntry(strNodeId);
 
         PhysicalNodeId nodeId = new PhysicalNodeId(strNodeId);
         PhysicalNodeBuilder nodeBuilder = new PhysicalNodeBuilder();
@@ -347,7 +350,7 @@ public class PhysicalNetworkAdapter {
         synchronized (mutex) {
             physicalLinkSet.add(linkBuilder.build());
             if (!running) {
-                phyTimer.schedule(new PhyTransmit(), 10, 100);
+                phyTimer.schedule(new PhyTransmit(), 10, 500);
                 running = true;
             }
         }
@@ -373,10 +376,12 @@ public class PhysicalNetworkAdapter {
                 for (PhysicalLink physicalLink : physicalLinkSet) {
                     handleLink(physicalLink);
                 }
-                if (physicalLinkSet.size() == 0) {
-                    phyTimer.cancel();
-                    running = false;
-                }
+                // Cancel timer. - Don't cancel timer, because this will result in
+                // that some physical links aren't wrote into data store sometimes.
+//                if (physicalLinkSet.size() == 0) {
+//                    phyTimer.cancel();
+//                    running = false;
+//                }
             }
         }
 
