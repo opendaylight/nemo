@@ -33,6 +33,7 @@ public class CliRenderer implements AutoCloseable {
      */
 	public CliRenderer(DataBroker dataBroker) {
 		super();
+
         this.dataBroker = dataBroker;
 
         LOG.debug("new PhysicalResourceLoader.");
@@ -43,7 +44,7 @@ public class CliRenderer implements AutoCloseable {
 
 		LOG.info("Initialized cli renderer.");
 
-		return;
+        return;
     }
 
     /**
@@ -55,6 +56,7 @@ public class CliRenderer implements AutoCloseable {
         if (physicalResourceLoader != null){
             physicalResourceLoader.close();
         }
+
         if (cliTrigger != null){
             cliTrigger.close();
         }

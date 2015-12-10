@@ -9,23 +9,12 @@
 package org.opendaylight.nemo.renderer.cli;
 
 import com.google.common.base.Optional;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import com.google.common.util.concurrent.CheckedFuture;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.PhysicalNetwork;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.PhysicalNodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.nodes.PhysicalNode;
@@ -37,30 +26,28 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.intent.vn.mapping.results.UserIntentVnMapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.intent.vn.mapping.results.UserIntentVnMappingKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.vn.pn.mapping.results.UserVnPnMapping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.VirtualNetworkId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.VirtualNetworkId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.Users;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.UserKey;
-
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 
 /**
  *
  * @author Shixing Liu
  */
 public class CliTrigger implements AutoCloseable {
-
     private static final Logger LOG = LoggerFactory.getLogger(CliTrigger.class);
+
     private final DataBroker dataProvider;
     private ListenerRegistration<DataChangeListener> userVnPnMappingChangeListenerReg;
     private final CliBuilder cliBuilder;
@@ -70,13 +57,14 @@ public class CliTrigger implements AutoCloseable {
      * @param dataProvider
      */
     public CliTrigger(DataBroker dataProvider) {
-
         super();
 
         this.dataProvider = dataProvider;
         cliBuilder = new CliBuilder(dataProvider);
-        //register  listener
+
+        // Register listener
         registerUserVnPnMappingListener();
+
         LOG.info("Initialized CliTrigger.");
     }
 
@@ -213,7 +201,7 @@ public class CliTrigger implements AutoCloseable {
 
 
     /**
-     *
+     * A listener implementation.
      */
     private class UserVnPnMappingChangeListener implements DataChangeListener {
 
@@ -266,7 +254,7 @@ public class CliTrigger implements AutoCloseable {
                         UserVnPnMapping userVnPnMapping = (UserVnPnMapping)dataObject;
                         UserId userId = userVnPnMapping.getUserId();
 
-                        //TO DO :flowUtils.deleteFlowEntries(userId);??????
+                        // TODO: flowUtils.deleteFlowEntries(userId);??????
 
                         User user = getUser(userId);
                         VirtualNetwork virtualNetwork = getVirtualNetwork(userId);
@@ -288,7 +276,6 @@ public class CliTrigger implements AutoCloseable {
             Map<InstanceIdentifier<?>, DataObject> originalData = change.getOriginalData();
             Set<InstanceIdentifier<?>> removedPaths = change.getRemovedPaths();
             if ( null != removedPaths && !removedPaths.isEmpty() ) {
-
                 DataObject dataObject;
 
                 for ( InstanceIdentifier<?> instanceId : removedPaths ) {
@@ -296,19 +283,18 @@ public class CliTrigger implements AutoCloseable {
                     if ( null != dataObject && dataObject instanceof UserVnPnMapping ) {
                         UserVnPnMapping userVnPnMapping = (UserVnPnMapping)dataObject;
 
-                        //TO DO
-                        //flowUtils.deleteFlowEntries(userVnPnMapping.getUserId());
+                        // TODO
+                        // flowUtils.deleteFlowEntries(userVnPnMapping.getUserId());
                     }
                 }
             }
-            return;
 
+            return;
         }
     }
 
-
+    @Override
     public void close() throws Exception {
-
         if ( null != this.userVnPnMappingChangeListenerReg ) {
             this.userVnPnMappingChangeListenerReg.close();
         }
@@ -316,5 +302,7 @@ public class CliTrigger implements AutoCloseable {
         if(null != this.cliBuilder){
             this.cliBuilder.close();
         }
+
+		return;
     }
 }
