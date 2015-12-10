@@ -40,6 +40,8 @@ ofprotocol unix:/tmp/sw3 tcp:127.0.0.1:6633 --fail=closed --listen=ptcp:6663 1> 
 ofdatapath -i sw4-eth1,eth3 punix:/tmp/sw4 -d 000000000004 1> /tmp/sw4-ofd.log 2> /tmp/sw4-ofd.log &
 ofprotocol unix:/tmp/sw4 tcp:127.0.0.1:6633 --fail=closed --listen=ptcp:6664 1> /tmp/sw4-ofp.log 2> /tmp/sw4-ofp.log &
 
+sleep 5
+
 exit 0
 
 
