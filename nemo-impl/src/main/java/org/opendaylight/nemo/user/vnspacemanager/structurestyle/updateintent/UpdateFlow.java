@@ -50,14 +50,15 @@ public class UpdateFlow {
 
     private DataBroker dataBroker;
     private TenantManage tenantManage;
+    private GetDefinitions getDefinitions;
     private ValueCheck valueCheck;
-    private final SettableFuture<List<MatchItemDefinition>> matchItemDefinitionListFuture = SettableFuture.create();
     private static final Logger LOG = LoggerFactory.getLogger(UpdateFlow.class);
 
     public UpdateFlow(DataBroker dataBroker, TenantManage tenantManage)
     {
         this.dataBroker = dataBroker;
         this.tenantManage = tenantManage;
+        getDefinitions = new GetDefinitions(dataBroker);
         valueCheck = new ValueCheck();
     }
 
@@ -149,8 +150,7 @@ public class UpdateFlow {
 
     private String checkDefinition(Flow flow){
         String errorInfo = null;
-        fetchMatchItemDefinitions();
-        Map<MatchItemName, MatchItemDefinition> matchItemDefinitionMap =getMatchItemDefinition();
+        Map<MatchItemName, MatchItemDefinition> matchItemDefinitionMap =getDefinitions.getMatchItemDefinition();
 
         if (flow.getMatchItem() != null)
         {
@@ -195,49 +195,5 @@ public class UpdateFlow {
             }
         }
         return errorInfo;
-    }
-
-    private void fetchMatchItemDefinitions(){
-        InstanceIdentifier<MatchItemDefinitions> matchitemdefinitionId = InstanceIdentifier.builder(MatchItemDefinitions.class).build();
-        ListenableFuture<Optional<MatchItemDefinitions>> matchitemdefinitionFuture = dataBroker.newReadOnlyTransaction().read(LogicalDatastoreType.CONFIGURATION, matchitemdefinitionId);
-        Futures.addCallback(matchitemdefinitionFuture, new FutureCallback<Optional<MatchItemDefinitions>>() {
-            @Override
-            public void onSuccess(Optional<MatchItemDefinitions> result) {
-                setMatchItemDefinitionListFuture(result.get().getMatchItemDefinition());
-                return;
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                LOG.error("Can not read match item definition information.", t);
-
-                return;
-            }
-        });
-        return ;
-    }
-
-    private void setMatchItemDefinitionListFuture(List<MatchItemDefinition> matchItemDefinitionList){
-        this.matchItemDefinitionListFuture.set(matchItemDefinitionList);
-    }
-
-    private List<MatchItemDefinition> getMatchItemDefinitionList(){
-        try{
-            return matchItemDefinitionListFuture.get(1, TimeUnit.SECONDS);
-        }catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LOG.error("Cannot read role information.", e);
-            return null;
-        }
-    }
-
-    private Map<MatchItemName, MatchItemDefinition> getMatchItemDefinition(){
-        List<MatchItemDefinition> matchItemDefinitions = getMatchItemDefinitionList();
-        Map<MatchItemName, MatchItemDefinition> matchItemDefinitionMap = new HashMap<MatchItemName, MatchItemDefinition>();
-        if (matchItemDefinitions!=null){
-            for (MatchItemDefinition matchItemDefinition : matchItemDefinitions){
-                matchItemDefinitionMap.put(matchItemDefinition.getMatchItemName(),matchItemDefinition);
-            }
-        }
-        return matchItemDefinitionMap;
     }
 }

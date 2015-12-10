@@ -52,13 +52,14 @@ public class UpdateNode {
 
     private DataBroker dataBroker;
     private TenantManage tenantManage;
-    private final SettableFuture<List<NodeDefinition>> nodeDefinitionListFuture = SettableFuture.create();
+    private GetDefinitions getDefinitions;
     private ValueCheck valueCheck;
     private static final Logger LOG = LoggerFactory.getLogger(UpdateNode.class);
 
     public UpdateNode(DataBroker dataBroker,TenantManage tenantManage){
         this.dataBroker = dataBroker;
         this.tenantManage = tenantManage;
+        getDefinitions = new GetDefinitions(dataBroker);
         valueCheck = new ValueCheck();
     }
 
@@ -129,8 +130,7 @@ public class UpdateNode {
 
     private String checkDefinition(Node node){
         String errorInfo = null;
-        fetchNodeDefinitions();
-        final Map<NodeType, NodeDefinition> map = getNodeDefinitions();
+        final Map<NodeType, NodeDefinition> map = getDefinitions.getNodeDefinition();
         if (map.isEmpty()){
             return "This type of Node has not been defined.";
         }
@@ -286,47 +286,4 @@ public class UpdateNode {
         }
         return errorInfo;
     }
-
-    private void fetchNodeDefinitions(){
-        InstanceIdentifier<NodeDefinitions> nodedefinitionId = InstanceIdentifier.builder(NodeDefinitions.class).build();
-        ListenableFuture<Optional<NodeDefinitions>> nodedefinitionFuture = dataBroker.newReadOnlyTransaction().read(LogicalDatastoreType.CONFIGURATION, nodedefinitionId);
-        Futures.addCallback(nodedefinitionFuture, new FutureCallback<Optional<NodeDefinitions>>() {
-            @Override
-            public void onSuccess(Optional<NodeDefinitions> result){
-               setNodeDefinitionListFuture(result.get().getNodeDefinition());
-            }
-
-            @Override
-            public void onFailure(Throwable t){
-                LOG.error("Can not read node definitions information.", t);
-            }
-        });
-        return ;
-    }
-
-    private void setNodeDefinitionListFuture(List<NodeDefinition> nodeDefinitionList) {
-        this.nodeDefinitionListFuture.set(nodeDefinitionList);
-    }
-
-   private List<NodeDefinition> getNodeDefinitionList(){
-       try{
-           return nodeDefinitionListFuture.get(1, TimeUnit.SECONDS);
-       }catch (InterruptedException | ExecutionException | TimeoutException e) {
-           LOG.error("Cannot read role information.", e);
-           return null;
-       }
-   }
-
-    private Map<NodeType, NodeDefinition> getNodeDefinitions(){
-        final Map<NodeType, NodeDefinition> nodeDefinitionMap = new HashMap<NodeType, NodeDefinition>();
-        final List<NodeDefinition> nodeDefinitionList = getNodeDefinitionList();
-        if (nodeDefinitionList!=null){
-            for (NodeDefinition nodeDefinition : nodeDefinitionList){
-                nodeDefinitionMap.put(nodeDefinition.getNodeType(),nodeDefinition);
-            }
-        }
-        return nodeDefinitionMap;
-    }
-
 }
-

@@ -308,7 +308,10 @@ module nemo-intent {
             "Begin a transaction for the user";
 
         input {
-            uses nemo-user:user-instance;
+            leaf user-id {
+                type nemo-common:user-id;
+                mandatory true;
+            }
         }
 
         output {
@@ -321,7 +324,10 @@ module nemo-intent {
             "Commit the user's current transaction";
 
         input {
-            uses nemo-user:user-instance;
+            leaf user-id {
+                type nemo-common:user-id;
+                mandatory true;
+            }
         }
 
         output {
@@ -334,7 +340,10 @@ module nemo-intent {
             "Create, update or delete an intent of a user through an NEMO statement";
 
         input {
-            uses nemo-user:user-instance;
+            leaf user-id {
+                type nemo-common:user-id;
+                mandatory true;
+            }
 
             leaf nemo-statement {
                 type string;
@@ -352,7 +361,11 @@ module nemo-intent {
              which are described as json or xml format.";
 
         input {
-            uses nemo-user:user-instance;
+            leaf user-id {
+                type nemo-common:user-id;
+                mandatory true;
+            }
+
             uses user-intent;
         }
 
@@ -366,7 +379,10 @@ module nemo-intent {
             "Delete some intents of a user from the user repository";
 
         input {
-            uses nemo-user:user-instance;
+            leaf user-id {
+                type nemo-common:user-id;
+                mandatory true;
+            }
 
             container objects {
                 leaf-list node {
@@ -404,7 +420,10 @@ module nemo-intent {
              according to several advanced query conditions.";
 
         input {
-            uses nemo-user:user-instance;
+            leaf user-id {
+                type nemo-common:user-id;
+                mandatory true;
+            }
 
             list query-condition {
                 key "query-condition-id";
