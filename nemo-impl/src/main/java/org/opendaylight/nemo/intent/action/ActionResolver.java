@@ -249,20 +249,45 @@ public class ActionResolver {
         List<VirtualNode> virtualNodes = virtualNetwork.getVirtualNodes().getVirtualNode();
         List<IntentVnMappingResult> intentVnMappingResults = userIntentVnMapping.getIntentVnMappingResult();
 
-        VirtualNode virtualNode = ActionResolverUtils
+        VirtualNode sourceVirtualNode = ActionResolverUtils
                 .getSourceVirtualRouterOfFlow(virtualNodes, flow, nodes, intentVnMappingResults);
 
-        if ( null == virtualNode ) {
+        if ( null == sourceVirtualNode ) {
             throw new IntentResolutionException("Can not get the source virtual node " +
                     "of the flow " + flow.getFlowId().getValue() + ".");
         }
+
+        VirtualNode destinationVirtualNode = ActionResolverUtils
+                .getDestinationVirtualRouterOfFlow(virtualNodes, flow, nodes, intentVnMappingResults);
+
+        if ( null == destinationVirtualNode ) {
+            throw new IntentResolutionException("Can not get the destination virtual node " +
+                    "of the flow " + flow.getFlowId().getValue() + ".");
+        }
+
+        VNComputationUnit vnComputationUnit = vnComputationUnits.get(user.getUserId());
+
+        if ( null == vnComputationUnit ) {
+            throw new IntentResolutionException("Can not get the virtual network computation " +
+                    "unit for the user " + user.getUserId().getValue() + ".");
+        }
+
+        VirtualPath virtualPath = vnComputationUnit
+                .computePath(sourceVirtualNode.getNodeId(), destinationVirtualNode.getNodeId());
+
+        if ( null == virtualPath || virtualPath.getVirtualLink().isEmpty() ) {
+            throw new IntentResolutionException("Can not compute an available virtual path in " +
+                    "the virtual network for the flow " + flow.getFlowId().getValue() + ".");
+        }
+
+        virtualNetwork.getVirtualPaths().getVirtualPath().add(virtualPath);
 
         List<VirtualResource> virtualResources = new ArrayList<VirtualResource>(1);
 
         VirtualResource virtualResource = new VirtualResourceBuilder()
                 .setVirtualResourceId(new VirtualResourceId(UUID.randomUUID().toString()))
-                .setVirtualResourceType(VirtualResource.VirtualResourceType.Vnode)
-                .setVirtualResourceEntityId(new VirtualResourceEntityId(virtualNode.getNodeId().getValue()))
+                .setVirtualResourceType(VirtualResource.VirtualResourceType.Vpath)
+                .setVirtualResourceEntityId(new VirtualResourceEntityId(virtualPath.getPathId().getValue()))
                 .setOrder(0L)
                 .build();
         virtualResources.add(virtualResource);
