@@ -127,7 +127,11 @@ public class UserManager implements NemoIntentService {
                         intentResolver.resolveIntent(input.getUserId());
                         outputBuilder.setResultCode(Ok).setMessage("The transaction ends.");
                     }
-                    catch (IntentResolutionException | VNMappingException e){
+                    catch (IntentResolutionException e){
+                        e.printStackTrace();
+                        outputBuilder.setResultCode(Error).setMessage(e.getMessage());
+                    }
+                    catch (VNMappingException e){
                         e.printStackTrace();
                         outputBuilder.setResultCode(Error).setMessage(e.getMessage());
                     }
@@ -162,7 +166,11 @@ public class UserManager implements NemoIntentService {
                 informresolver = true;
             }
         }
-        catch (ParseException | NumberFormatException e) {
+        catch (ParseException e) {
+            e.printStackTrace();
+            outputBuilder.setResultCode(Error).setMessage(e.getMessage());
+        }
+        catch (NumberFormatException e) {
             e.printStackTrace();
             outputBuilder.setResultCode(Error).setMessage(e.getMessage());
         }

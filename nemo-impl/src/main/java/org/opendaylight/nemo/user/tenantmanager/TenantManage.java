@@ -76,7 +76,10 @@ public class TenantManage {
         try {
             // TODO: consider time out here?
             userRolesOpt = userRolesFuture.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            LOG.error("Cannot read role information.", e);
+            return null;
+        } catch (ExecutionException e) {
             LOG.error("Cannot read role information.", e);
             return null;
         }
@@ -109,7 +112,10 @@ public class TenantManage {
         try {
             // TODO: consider time out here?
             usersOpt = usersFuture.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            LOG.error("Cannot read user information.", e);
+            return null;
+        } catch (ExecutionException e) {
             LOG.error("Cannot read user information.", e);
             return null;
         }

@@ -109,7 +109,9 @@ public class VNMappingUnit implements AutoCloseable {
 
         try {
             result = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, physicalNodesIid).get();
-        } catch ( InterruptedException | ExecutionException exception ) {
+        } catch ( InterruptedException exception ) {
+            throw new VNMappingException("Can not read the physical nodes.");
+        } catch ( ExecutionException exception ) {
             throw new VNMappingException("Can not read the physical nodes.");
         }
 
@@ -561,7 +563,10 @@ public class VNMappingUnit implements AutoCloseable {
         try {
             result = readOnlyTransaction.read(LogicalDatastoreType.CONFIGURATION,
                     physicalPortAttributeDefinitionIid).get();
-        } catch ( InterruptedException | ExecutionException exception ) {
+        } catch ( InterruptedException exception ) {
+            throw new VNMappingException("Can not read the physical port attribute definition " +
+                    "with attribute name " + attribute.getAttributeName().getValue() + ".");
+        } catch ( ExecutionException exception ) {
             throw new VNMappingException("Can not read the physical port attribute definition " +
                     "with attribute name " + attribute.getAttributeName().getValue() + ".");
         }
@@ -628,7 +633,10 @@ public class VNMappingUnit implements AutoCloseable {
         try {
             result = readOnlyTransaction.read(LogicalDatastoreType.CONFIGURATION,
                     physicalNodeAttributeDefinitionIid).get();
-        } catch ( InterruptedException | ExecutionException exception ) {
+        } catch ( InterruptedException exception ) {
+            throw new VNMappingException("Can not read the physical node attribute definition " +
+                    "with attribute name " + attribute.getAttributeName().getValue() + ".");
+        } catch ( ExecutionException exception ) {
             throw new VNMappingException("Can not read the physical node attribute definition " +
                     "with attribute name " + attribute.getAttributeName().getValue() + ".");
         }

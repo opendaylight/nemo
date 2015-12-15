@@ -179,7 +179,10 @@ public class IntentResolver implements AutoCloseable {
 
             try {
                 result = readWriteTransaction.read(LogicalDatastoreType.CONFIGURATION, userVnPnMappingIid).get();
-            } catch ( InterruptedException | ExecutionException exception ) {
+            } catch ( InterruptedException exception ) {
+                throw new IntentResolutionException("Can not read the vn-pn mapping results for the user " +
+                        userId.getValue() + ".");
+            } catch ( ExecutionException exception ) {
                 throw new IntentResolutionException("Can not read the vn-pn mapping results for the user " +
                         userId.getValue() + ".");
             }
@@ -220,7 +223,10 @@ public class IntentResolver implements AutoCloseable {
 
         try {
             result = readWriteTransaction.read(LogicalDatastoreType.CONFIGURATION, userIid).get();
-        } catch ( InterruptedException | ExecutionException exception ) {
+        } catch ( InterruptedException exception ) {
+            throw new IntentResolutionException("Can not read the data of the user " +
+                    userId.getValue() + ".");
+        } catch ( ExecutionException exception ) {
             throw new IntentResolutionException("Can not read the data of the user " +
                     userId.getValue() + ".");
         }

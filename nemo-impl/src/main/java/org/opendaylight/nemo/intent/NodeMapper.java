@@ -158,7 +158,9 @@ public class NodeMapper {
 
         try {
             result = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, physicalHostsIid).get();
-        } catch ( InterruptedException | ExecutionException exception ) {
+        } catch ( InterruptedException exception ) {
+            throw new IntentResolutionException("Can not read the physical hosts.");
+        } catch ( ExecutionException exception ) {
             throw new IntentResolutionException("Can not read the physical hosts.");
         }
 

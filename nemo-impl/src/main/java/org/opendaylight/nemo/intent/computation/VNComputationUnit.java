@@ -352,7 +352,12 @@ public class VNComputationUnit implements AutoCloseable {
 
             try {
                 result = readWriteTransaction.read(LogicalDatastoreType.CONFIGURATION, virtualRouteIid).get();
-            } catch ( InterruptedException | ExecutionException exception ) {
+            } catch ( InterruptedException exception ) {
+                LOG.error("Can not read the virtual route from the virtual node {} to {}.",
+                        route.getKey().getSrcNodeId().getValue(), route.getKey().getDestNodeId().getValue());
+
+                continue;
+            } catch ( ExecutionException exception ) {
                 LOG.error("Can not read the virtual route from the virtual node {} to {}.",
                         route.getKey().getSrcNodeId().getValue(), route.getKey().getDestNodeId().getValue());
 

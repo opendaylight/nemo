@@ -117,7 +117,9 @@ public class PNComputationUnit implements AutoCloseable {
 
         try {
             result = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, physicalNodesIid).get();
-        } catch ( InterruptedException | ExecutionException exception ) {
+        } catch ( InterruptedException exception ) {
+            throw new RuntimeException("Can not read the physical nodes.");
+        } catch ( ExecutionException exception ) {
             throw new RuntimeException("Can not read the physical nodes.");
         }
 
@@ -139,7 +141,9 @@ public class PNComputationUnit implements AutoCloseable {
 
         try {
             result1 = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, physicalLinksIid).get();
-        } catch ( InterruptedException | ExecutionException exception ) {
+        } catch ( InterruptedException exception ) {
+            throw new RuntimeException("Can not read the physical links.");
+        } catch ( ExecutionException exception ) {
             throw new RuntimeException("Can not read the physical links.");
         }
 
