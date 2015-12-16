@@ -1,0 +1,202 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html"; charset="utf-8" />
+    <title>nemo-ui-en</title>
+    <link href="src/app/nemo/css/jquery-ui.min.css" rel="stylesheet" />
+    <link href="src/app/nemo/css/nemo_user_main.css" rel="stylesheet" />
+    <link href="src/app/nemo/css/nemo_main.css" rel="stylesheet" />
+
+    <!-- // <script src="src/app/nemo/module/migrate_js.js"></script> -->
+    <script src="src/app/nemo/js/Nemo_Main.js"></script>
+    <script src="src/app/nemo/module/keyWords.js"></script>
+    <script src="src/app/nemo/module/migrate.js"></script>
+    <!-- SFC -->
+    <!-- // <script src="src/app/nemo/module/test/servicechain_userJson.js"></script>  -->
+    <!-- Bod -->
+     <!-- // <script src="src/app/nemo/module/test/bod_userJson.js"></script>  -->
+
+    <script src="src/app/nemo/js/Nemo_Annouce_vis.js"></script>
+    <script src="src/app/nemo/js/phyNetwork.js"></script>
+    <script src="src/app/nemo/js/intentTopo.js"></script>
+    <script src="src/app/nemo/js/vnMapping.js"></script>
+    <script src="src/app/nemo/js/virNetwork.js"></script>
+
+    <script>
+   
+        function guid() {
+            function S4() {
+                return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+            }
+            return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+        }
+
+        jQuery(document).ready(function ($) {
+        var userNames=['myuser1','myuser2','myuser3'];
+        jQuery.ajax({
+            url: "/restconf/config/nemo-intent:users/",
+            type: "GET",
+            async: false,
+            dataType: "json",
+            success: function(data) {
+                console.log(data);
+            userNames=[];
+            var data_list=data["users"]["user"];
+            for (var item in data_list) {
+            userNames[data_list[item]['user-id']]=data_list[item]['user-name'];           
+            }
+            },
+            error: function(data) {
+                console.log(data);
+            }
+        });
+        //add useruame to select 
+        $("#selectUser select").empty();
+        for(var item in userNames){
+            $("#selectUser select").append('<option value="'+item+'">'+userNames[item]+'</option>');
+        }
+        
+
+        $(".tabs ul li[aria-controls='PhyNet']").click(function(){
+             analy_topo(physicalData);
+             create_physical_topo();
+        });
+        
+        $(".tabs ul li[aria-controls='PhyNet']").click();
+
+        $(".tabs ul li[aria-controls='intent_info']").click(function(){
+            //alert('intent_topo');
+            var userId=$("#selectUser option:selected").val();
+            console.log(userId);
+
+            // SFC
+            //userId='af4fc2be-e3f4-4388-a8ef-3aabae872f2b';
+            //Bod
+            //userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
+             //if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
+            console.log(userId);
+            var user_data = getIntentInfoById(userId);
+          // console.log(JSON.stringify(user_data));
+            analyjson_topo(user_data);
+            parseNemoLan(user_data);
+        //set keyWords style
+        $("#nemo_str_show p").each(function(){
+            var $res=$(this);
+            keyWords.forEach(function(item,index,array){
+                // console.log(item);
+                $res.html($res.html().replace(item,"<span class='keyWords'>"+item+"</span>"));
+            });
+        });
+    });
+
+        $(".tabs ul li[aria-controls='VirNet']").click(function(){
+            // alert('VirNet');
+           // var virtualData=getVirtualJson();
+            var userId=$("#selectUser option:selected").val();
+
+            // SFC
+            //userId='af4fc2be-e3f4-4388-a8ef-3aabae872f2b';
+            //Bod
+            //userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
+
+             //if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
+            console.log(userId);
+            // virtualData=virtualJson;
+            create_virtual_topo(getVirtualInfoById(userId),getIntentInfoById(userId),getMappingResultById(userId));
+        });
+        $(".tabs ul li[aria-controls='Mapping']").click(function(){
+            // alert('Mapping');
+        });
+
+         // $(".tabs ul li[aria-controls='intent_info']").click();
+
+        $('#selectUser input[type=button]').click(function(){
+            // $(".tabs ul li[aria-controls='intent_info']").trigger('click');
+            $('a[href="#intent_info"]').click();
+            var userId=$("#selectUser option:selected").val();
+            
+            // SFC
+            //userId='af4fc2be-e3f4-4388-a8ef-3aabae872f2b';
+            //Bod
+            //userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
+
+            //if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
+            var user_data = getIntentInfoById(userId);
+          // console.log(JSON.stringify(user_data));
+            analyjson_topo(user_data);
+            parseNemoLan(user_data);
+        //set keyWords style
+           $("#nemo_str_show p").each(function(){
+            var $res=$(this);
+            keyWords.forEach(function(item,index,array){
+                // console.log(item);
+                $res.html($res.html().replace(item,"<span class='keyWords'>"+item+"</span>"));
+            });
+            // console.log($res.html());
+        });
+
+            // alert(userName);
+    });
+        });
+    </script>
+</head>
+<body>
+      <div class="header">
+        <p>Hello Admin!</p>
+        <div id='selectUser'>
+            <p>Tenant:</p>
+            <select value="intentUser">
+            </select>
+            <input type="button" class='btn_' value='Query'/></div>
+      </div>
+
+        <div class="group">
+                <div class="tabs">
+                    <ul>
+                        <li><a href="#PhyNet">Physical Network</a></li>
+                        <li><a href="#intent_info">NEMO Intent</a></li>
+                        <li><a href="#VirNet">Virtual Network</a></li>
+                        <li><a href="#Mapping">VN-PN Mapping</a></li>
+                    </ul>
+                <div id='PhyNet'>
+                    <div id="phy_graph"></div>
+                </div>
+
+                <div id="intent_info">
+                     <div id="intent_topo">
+                    <svg id="service_svg"  width="800" height="560"  viewBox="100 40 900 780" style='display:none'>
+                    <defs>
+                    <marker id="idArrow" viewBox="0 0 20 20" refX="0" refY="10" markerUnits="strokeWidth" markerWidth="6" markerHeight="15" orient="auto"><path d="M 0 0 L 20 10 L0 20 z"fill="purple"stroke="black"/> </marker>
+                    <marker id="idtext" viewBox="0 0 120 50" refX="0" refY="0" markerUnits="strokeWidth" markerWidth="20" markerHeight="20"  orient="auto"><text style="font-family:sans-serif; font-size:14pt;"  x="20" y="20">text</text></marker>  
+                    </defs>
+                    </svg>
+
+                    <svg id="service_svg2"  width="800" height="560"  viewBox="100 40 900 780">
+                    <defs>
+                    <marker id="idArrow2" viewBox="0 0 20 20" refX="0" refY="10" markerUnits="strokeWidth" markerWidth="6" markerHeight="15" orient="auto"><path d="M 0 0 L 20 10 L0 20 z"fill="purple"stroke="black"/> </marker>
+                    <marker id="idtext2" viewBox="0 0 120 50" refX="0" refY="0" markerUnits="strokeWidth" markerWidth="20" markerHeight="20"  orient="auto"><text style="font-family:sans-serif; font-size:14pt;"  x="20" y="20">text</text></marker>  
+                    </defs>
+                    </svg>
+                   </div>
+                    
+                   <div class="tabs">
+                    <ul>
+                        <li><a href="#nemo_str_show">NEMO Language</a></li>
+                    </ul>
+                    <div id="nemo_str_show"></div>
+                   </div>
+               </div>
+
+               <div id="VirNet"><div id="vir_graph"></div></div>
+               <div id="Mapping"></div>
+        </div>
+
+
+        <!-- dialog start -->
+        <div id="dialog" title="info" style='display:none;'>
+            <p>
+            <!-- Create By LiuTong , 2015-12-06   -->
+            </p>
+        </div>
+        <!-- dialog end -->
+</body>
+</html>

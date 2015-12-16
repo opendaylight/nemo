@@ -12,13 +12,11 @@
       <property name="angularJs" value="app.nemo"/>
        <property name="cssDependencies">
             <list>
-                 <value>src/app/nemo/css/nemo_main.css</value>
+                 <!--value>src/app/nemo/css/nemo_main.css</value>
                  <value>src/app/nemo/css/NE.css</value>
                  <value>src/app/nemo/css/SI.css</value>
                  <value>src/app/nemo/css/SP.css</value>
-                 <value>src/app/nemo/css/jquery-ui.min.css</value>
-
-
+                 <value>src/app/nemo/css/jquery-ui.min.css</value-->
             </list>
        </property>
 

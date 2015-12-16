@@ -1,0 +1,105 @@
+*{margin:0;padding: 0;outline:none;}
+body{
+	/*width:1200px;*/
+	height: 1000px;
+	background-color: rgb(57,57,57);
+	color: black;
+	font-size: 18px;
+}
+div{border-radius: 5px;}
+.header{
+	box-sizing:border-box;
+	width:1000px;
+	height: 50px;
+	margin: 5px auto;
+	padding-top:10px;
+	padding-left:20px; 
+	/*margin-top: 5px;*/
+	font-family: verdana,Geneva,Arial,sans-serif;
+	text-shadow:3px 3px 1px #aaa;
+	font-size: 20px;
+    background: #eee;
+    /*background:-webkit-gradient(linear, 0% 20%, 100% 100%, from(#eee), to(#aaa));*/
+    /*background:-webkit-gradient(linear, 45% 20%, 0% 100%, from(#aaa), to(#eee));*/
+    /*background:-moz-linear-gradient(left,#eee, #aaa);*/
+    /*background:-webkit-gradient(linear, 20% 0%, 100% 0%, color-stop(0.3,#aaa),color-stop(0.5,#bbb),color-stop(1,#444444));*/
+}
+.group{
+    width:1000px;
+	height: 700px;
+	margin: 0px auto;
+	background: #ccc;
+	/*border: 2px solid yellow;*/
+}
+#intent_info{
+
+}
+#intent_topo{
+	/*box-sizing:border-box;*/
+	width: 900px;
+	margin: 10px auto;
+	background: #eee;
+	padding-left: 45px;
+	padding-top: 45px;
+	/*border: 1px solid #aaa;*/
+}
+#intent_info #service_svg{
+   /*margin: 0px auto;*/
+}
+svg{
+	background-color: #fff;
+}
+.down{
+	margin-bottom: 10px;
+}
+#nemo_str_show{
+	height: 200px !important;
+	/*border: 2px solid red;*/
+	overflow: scroll !important;
+	font-size: 16px;
+	/*window*/
+	/*line-height: 20px;
+	width:900px !important;*/
+
+	/*linux*/
+	
+	width:990px !important;
+	line-height: 10px;
+	
+	font-weight: bold;
+}
+#nemo_str_show p{
+	white-space:nowrap;
+	/*margin-left: 5px;*/
+}
+#nemo_str_show span.keyWords{
+	color:red;
+}
+/*jquery ui tab css start*/
+/*tab ui li active font color*/
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
+  color: #eb8f00;
+  text-decoration: none;
+}
+/*tab ui li*/
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
+  border: 1px solid #fbd850;
+  background: #fff url("../images/ui-bg_glass_65_ffffff_1x400.png") 50% 50% repeat-x;
+  font-weight: bold;
+  color: #eb8f00;
+}
+.ui-widget-header {
+  border: 1px solid #ccc;
+  background: #ccc url("../images/ui-bg_gloss-wave_35_f6a828_500x100.png") 50% 50% repeat-x;
+  color: #fff;
+  font-weight: bold;
+}
+.ui-widget-content {
+  border: 1px solid #ddd;
+  background: #eee url("../images/ui-bg_highlight-soft_100_eeeeee_1x100.png") 50% top repeat-x;
+  color: #333;
+}
+/*jquery ui tab css end*/
+div#pageContent {
+  height: 1000px;
+}
