@@ -18,10 +18,7 @@ import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.nemo.renderer.openflow.physicalnetwork.PhyConfigLoader;
 import org.opendaylight.nemo.renderer.openflow.utils.ARP;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpPrefix;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.*;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.mpls.ttl._case.DecMplsTtl;
@@ -48,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
@@ -85,6 +83,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
@@ -103,6 +103,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.links.VirtualLink;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.nodes.VirtualNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.paths.VirtualPath;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.paths.VirtualPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.node.instance.VirtualPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.intent.vn.mapping.results.UserIntentVnMapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.intent.mapping.result.rev151010.intent.vn.mapping.results.user.intent.vn.mapping.IntentVnMappingResult;
@@ -1516,12 +1517,17 @@ public class FlowUtils implements AutoCloseable {
             priority = 1 + operation.getPriority();
         }
 
+        VirtualNetworkHelper virtualNetworkHelper = virtualNetworkHelpers.get(virtualNetwork.getNetworkId());
+
         List<IntentVnMappingResult> intentVnMappingResults = userIntentVnMapping.getIntentVnMappingResult();
         IntentId intentId = new IntentId(operation.getOperationId().getValue());
         IntentVnMappingResult intentVnMappingResult = getIntentVnMappingResult(intentVnMappingResults, intentId);
         List<VirtualResource> virtualResources = intentVnMappingResult.getVirtualResource();
         VirtualResource virtualResource = virtualResources.get(0);
-        VirtualNodeId virtualNodeId = new VirtualNodeId(virtualResource.getVirtualResourceEntityId().getValue());
+        VirtualPathId virtualPathId = new VirtualPathId(virtualResource.getVirtualResourceEntityId().getValue());
+        VirtualPath virtualPath = virtualNetworkHelper.getVirtualPath(virtualPathId);
+        VirtualLink virtualLink = virtualNetworkHelper.getFirstVirtualLinkOfVirtualPath(virtualPath);
+        VirtualNodeId virtualNodeId = virtualLink.getSrcNodeId();
 
         List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
         VnPnMappingResult vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults,
@@ -3602,7 +3608,9 @@ public class FlowUtils implements AutoCloseable {
             List<VirtualPath> virtualPaths = virtualNetwork.getVirtualPaths().getVirtualPath();
 
             for ( VirtualPath virtualPath : virtualPaths ) {
-                virtualPathMap.put(virtualPath.getPathId(), virtualPath);
+//                virtualPathMap.put(virtualPath.getPathId(), virtualPath);
+                virtualPathMap.put(virtualPath.getPathId(),
+                        sortVirtualLinksOfVirtualPath(virtualPath));
             }
 
             List<VirtualArp> virtualArps = virtualNetwork.getVirtualArps().getVirtualArp();
@@ -3688,6 +3696,47 @@ public class FlowUtils implements AutoCloseable {
             }
 
             return false;
+        }
+
+        protected VirtualLink getFirstVirtualLinkOfVirtualPath(VirtualPath virtualPath) {
+//            for ( org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.path.instance.VirtualLink
+//                    virtualLink : virtualPath.getVirtualLink() ) {
+//                if ( 0 == virtualLink.getOrder() ) {
+//                    return virtualLinkMap.get(virtualLink.getLinkId());
+//                }
+//            }
+//
+//            return null;
+
+            if ( virtualPath.getVirtualLink().isEmpty() ) {
+                return null;
+            }
+
+            VirtualLinkId virtualLinkId = virtualPath.getVirtualLink().get(0).getLinkId();
+
+            return virtualLinkMap.get(virtualLinkId);
+        }
+
+        private VirtualPath sortVirtualLinksOfVirtualPath(VirtualPath virtualPath) {
+            if ( virtualPath.getVirtualLink().isEmpty()
+                    || 1 == virtualPath.getVirtualLink().size() ) {
+                return virtualPath;
+            }
+
+            List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.path.instance.VirtualLink> sortedVirtualLinks =
+                    new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.path.instance.VirtualLink>(virtualPath.getVirtualLink().size());
+            sortedVirtualLinks.addAll(virtualPath.getVirtualLink());
+
+            for ( org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.path.instance.VirtualLink
+                    virtualLink : virtualPath.getVirtualLink() ) {
+                sortedVirtualLinks.set(virtualLink.getOrder().intValue(), virtualLink);
+            }
+
+            VirtualPath virtualPath1 = new VirtualPathBuilder(virtualPath)
+                    .setVirtualLink(sortedVirtualLinks)
+                    .build();
+
+            return virtualPath1;
         }
     }
 
