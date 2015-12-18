@@ -103,8 +103,11 @@ public class NEMOparserTest extends TestCase {
     public void testInit() throws Exception{
         Field field = simpleCharStreamClass.getDeclaredField("inputStream");
         Field field1 = nemOparserTokenManagerClass.getDeclaredField("input_stream");
+        Field field2 = class1.getDeclaredField("jj_initialized_once");
+        field2.setAccessible(true);
         field1.setAccessible(true);
         field.setAccessible(true);
+        field2.set(class1,false);
         field.set(simpleCharStreamClass, null);
         field1.set(nemOparserTokenManagerClass, null);
         nemOparser = new NEMOparser(inputStream,null);
