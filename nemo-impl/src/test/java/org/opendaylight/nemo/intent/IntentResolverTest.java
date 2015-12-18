@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.opendaylight.nemo.intent;
 
 import junit.framework.TestCase;
@@ -59,12 +66,15 @@ import org.slf4j.LoggerFactory;
 import com.google.common.util.concurrent.CheckedFuture;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.Map;
+import java.util.HashMap;
+import java.lang.reflect.Field;  
+import java.lang.reflect.Method; 
+
 
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
-/**
- * Created by zhangmeng on 2015/11/25.
- */
+
 public class IntentResolverTest extends TestCase {
     private IntentResolver intentResolver;
     private DataBroker dataBroker;
@@ -97,12 +107,61 @@ public class IntentResolverTest extends TestCase {
 
     @Test
     public void testResolveIntent() throws Exception {
-//        UserId userId = mock(UserId.class);
-//
-//        when(userId.getValue()).thenReturn(new String());
-//        intentResolver.resolveIntent(userId);
+        UserId userId = mock(UserId.class);
+        VNComputationUnit vnComputationUnit = mock(VNComputationUnit.class);
+        
+        Map<UserId, VNComputationUnit> vnComputationUnits = new HashMap<UserId, VNComputationUnit>();
+        
+        Class<IntentResolver> class1 = IntentResolver.class;
+        Field field = class1.getDeclaredField("vnComputationUnits");
+        field.setAccessible(true);
+        
+        //vnComputationUnits.put(userId, vnComputationUnit);
+        field.set(intentResolver,vnComputationUnits);
+        
+        when(userId.getValue()).thenReturn(new String("00000000-0000-0000-0000-000000000000"));
+        
+        /*
+        CheckedFuture Future = mock(CheckedFuture.class);
+        ReadWriteTransaction readWriteTransaction = mock(ReadWriteTransaction.class);
+        when(dataBroker.newReadWriteTransaction()).thenReturn(readWriteTransaction);
+        when(readWriteTransaction.read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class))).thenReturn(Future); 
+        
+        UserVnPnMapping userVnPnMapping = mock(UserVnPnMapping.class);
+        Optional<UserVnPnMapping> result = Optional.of(userVnPnMapping);
+        when(Future.get()).thenReturn(result);
+        */
+        
+        
+        CheckedFuture Future1 = mock(CheckedFuture.class);
+        ReadWriteTransaction readWriteTransaction1 = mock(ReadWriteTransaction.class);
+        when(dataBroker.newReadWriteTransaction()).thenReturn(readWriteTransaction1);
+        when(readWriteTransaction1.read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class))).thenReturn(Future1); 
+        
+        User user = mock(User.class);
+        Optional<User> result1 = Optional.of(user);
+        when(Future1.get()).thenReturn(result1);
+        
+        try
+    	{
+        	intentResolver.resolveIntent(userId);
+    	}
+    	catch(IntentResolutionException ex)
+    	{
+    		Assert.assertEquals(ex.getMessage(),contains(""));
+    		
+    	}
+        
+        //Optional<User> result1 = Optional.of(user);
+        //Optional<User> result1 = mock(Optional.class);
+        //when(result1.get()).thenReturn(user);
+        
+        //Optional<UserVnPnMapping> result = new 
+        //when(result.isPresent()).thenReturn(true);
+        //intentResolver.resolveIntent(userId);
     }
-
+    
+    
     @Test
     public void testClose() throws Exception {
         intentResolver.close();
