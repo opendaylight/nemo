@@ -1,4 +1,3 @@
-var keyWords=['Create','Import','Host','Node','Connection','Flow','Operation','Type','Endnodes','Property','Contain','Match','Target','Action'];
 var userinfo ={
   "users": {
     "user": [
@@ -1022,7 +1021,7 @@ var virtualJson={
     ]
   }
 }
-var MappingJson={
+var VnMappingJson={
   "intent-vn-mapping-results": {
     "user-intent-vn-mapping": [
       {
@@ -1164,6 +1163,154 @@ var MappingJson={
           }
         ],
         "virtual-network-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b"
+      }
+    ]
+  }
+}
+var PnMappingJson={
+  "vn-pn-mapping-results": {
+    "user-vn-pn-mapping": [
+      {
+        "virtual-network-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
+        "vn-pn-mapping-result": [
+          {
+            "virtual-resource-entity-id": "9b65b6f6-9c92-46e2-86f3-933676206e1d",
+            "parent-physical-resource-entity-id": "openflow:4",
+            "parent-virtual-resource-entity-id": "44305036-d993-4976-abfa-1e82c3b75a51",
+            "virtual-resource-id": "910be96e-d7e7-4f14-a2fe-b5478bd583bc",
+            "physical-resource-id": "2f01db70-a8aa-4fcd-b883-5602f5125bc5",
+            "physical-resource-entity-id": "openflow:4:2",
+            "physical-resource-type": "port",
+            "virtual-resource-type": "vport"
+          },
+          {
+            "virtual-resource-entity-id": "0450b59e-91c2-42f2-9697-80970d4ed026",
+            "virtual-resource-id": "d94f7999-f9e2-49c6-ad0d-99a5af8b21a9",
+            "physical-resource-id": "01603373-1388-4190-a050-80237c58ae37",
+            "physical-resource-entity-id": "64b3082a-7ddb-40fd-84fa-f53790805136",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "894146c9-06a8-4236-8119-1de3e506b623",
+            "virtual-resource-id": "9b412958-fb19-410b-b4fb-8cda3f6c3e71",
+            "physical-resource-id": "a3f6817a-93dc-4867-930f-3190ef70c674",
+            "physical-resource-entity-id": "openflow:2",
+            "physical-resource-type": "node",
+            "virtual-resource-type": "vnode"
+          },
+          {
+            "virtual-resource-entity-id": "08d94078-3886-4a90-86a4-2ddd29ffda96",
+            "virtual-resource-id": "3a88f440-2311-4558-ba9e-0ce6eea3e2c1",
+            "physical-resource-id": "0273520a-a23c-4b4d-8839-98a6fbedd1d2",
+            "physical-resource-entity-id": "openflow:3",
+            "physical-resource-type": "node",
+            "virtual-resource-type": "vnode"
+          },
+          {
+            "virtual-resource-entity-id": "7a90c045-e399-4fb6-b49e-e2c413470de5",
+            "parent-physical-resource-entity-id": "openflow:3",
+            "parent-virtual-resource-entity-id": "08d94078-3886-4a90-86a4-2ddd29ffda96",
+            "virtual-resource-id": "c03b4d15-db09-4513-8c95-7e4051560d50",
+            "physical-resource-id": "6cda0d4e-fc8b-46e1-9580-a196a081483e",
+            "physical-resource-entity-id": "openflow:3:4",
+            "physical-resource-type": "port",
+            "virtual-resource-type": "vport"
+          },
+          {
+            "virtual-resource-entity-id": "050a588d-db12-4aa1-abe1-eaa313c35147",
+            "virtual-resource-id": "4ab1d100-bdc7-4eb1-b033-368d109cfce2",
+            "physical-resource-id": "6f69aff7-ba44-4460-95ad-1f8fa7a834ff",
+            "physical-resource-entity-id": "54ef405b-7b11-400e-8711-9b8c8e978b64",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "44305036-d993-4976-abfa-1e82c3b75a51",
+            "virtual-resource-id": "d7590227-441d-4cb8-a3bd-bf59c51f3a2c",
+            "physical-resource-id": "3d514751-7cb5-4bf2-87bb-4c1ab372b497",
+            "physical-resource-entity-id": "openflow:4",
+            "physical-resource-type": "node",
+            "virtual-resource-type": "vnode"
+          },
+          {
+            "virtual-resource-entity-id": "85f17105-afd4-4c2a-88d1-6249138c19af",
+            "virtual-resource-id": "63538a62-2a11-4e15-8807-494152d5b8c2",
+            "physical-resource-id": "3202b6f6-0ed4-41d5-bf0e-517f92dac129",
+            "physical-resource-entity-id": "b014a856-cca5-4906-b964-fc8fc20d5e49",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "69a46c69-196d-44d8-979d-59d9f7fcb602",
+            "parent-physical-resource-entity-id": "openflow:2",
+            "parent-virtual-resource-entity-id": "894146c9-06a8-4236-8119-1de3e506b623",
+            "virtual-resource-id": "d3595475-0c37-438e-8e07-08881bcaf198",
+            "physical-resource-id": "93f0bb6b-6ffe-480c-9d89-5bb039283310",
+            "physical-resource-entity-id": "openflow:2:2",
+            "physical-resource-type": "port",
+            "virtual-resource-type": "vport"
+          },
+          {
+            "virtual-resource-entity-id": "6270a5e1-58e1-4fc3-adce-189fd2974312",
+            "virtual-resource-id": "77cf97be-f334-440a-a8e0-1fbae2f51c7f",
+            "physical-resource-id": "e7eeb731-8f70-4c82-b687-241f386f5d7c",
+            "physical-resource-entity-id": "64b921cd-45cd-4fa0-8d79-c11c2a2ccdcf",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "8100299f-6056-44b8-8090-2fcba7b12613",
+            "virtual-resource-id": "c51c3c99-6caf-4148-b5c7-ffaffdef558b",
+            "physical-resource-id": "4da6cd9c-9296-4200-b23c-712fd1dd228e",
+            "physical-resource-entity-id": "3b0c9693-be27-4483-b26a-5c4f003d3bd8",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "6fa0ecb5-2286-4a61-bf89-a9aa77ac7329",
+            "virtual-resource-id": "aa54c1a2-4393-4127-b527-5cdecd0e93ad",
+            "physical-resource-id": "a73d8c4f-17f0-4aa8-ab5f-c47f45bf91b0",
+            "physical-resource-entity-id": "openflow:1",
+            "physical-resource-type": "node",
+            "virtual-resource-type": "vnode"
+          },
+          {
+            "virtual-resource-entity-id": "30607b91-7ba5-4840-8d2c-e5dbfee42017",
+            "virtual-resource-id": "e4bf7c05-d5af-45fd-a729-a2687918e668",
+            "physical-resource-id": "ec7e30a7-a48a-4996-bfd5-29334eeb46b7",
+            "physical-resource-entity-id": "caa9dc02-e8b2-4642-8ce1-ed8c25baf7a4",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "686e631a-016f-42c2-b496-10574354807e",
+            "virtual-resource-id": "aef8dbca-c55b-4f7b-9003-4b47d0534c76",
+            "physical-resource-id": "0026c3c3-f47c-4cb9-8903-045598909f06",
+            "physical-resource-entity-id": "e1e351a7-0e5d-424b-9015-051e7608ab2f",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "c4b88cd3-a0eb-4508-bc44-4539f8093e16",
+            "parent-physical-resource-entity-id": "openflow:1",
+            "parent-virtual-resource-entity-id": "6fa0ecb5-2286-4a61-bf89-a9aa77ac7329",
+            "virtual-resource-id": "452e1a62-4719-47f4-944f-b0b7a511fbbc",
+            "physical-resource-id": "3bc46d3f-9563-4bf3-a7da-476380415e07",
+            "physical-resource-entity-id": "openflow:1:1",
+            "physical-resource-type": "port",
+            "virtual-resource-type": "vport"
+          },
+          {
+            "virtual-resource-entity-id": "7c4ace2f-dfad-4ba7-8d05-b778550f809c",
+            "virtual-resource-id": "f470b3d9-7589-4df4-ba3a-a5ef9056257b",
+            "physical-resource-id": "375499ba-4348-4d43-b45f-ea342f2995c0",
+            "physical-resource-entity-id": "afe85a50-c5b1-4849-8d49-f1db58d40087",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          }
+        ],
+        "user-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b"
       }
     ]
   }

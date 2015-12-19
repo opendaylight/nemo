@@ -56,7 +56,7 @@ function getVirtualInfoById(user_id,Data){
  	}
 }
 
-var virtual_nodes=[];
+var virtual_nodes=[];//virtual_node_id----->[vid_node_id,virtual_node_name]
 function create_virtual_topo(topo_data,intentinfo,mappinginfo)
 {
 	nodes_vir.clear();
@@ -66,14 +66,14 @@ function create_virtual_topo(topo_data,intentinfo,mappinginfo)
 	var vitrual_network=topo_data;
 	if(vitrual_network!=null)
 	{	
-		var vitrual_nodes=vitrual_network["virtual-nodes"]["virtual-node"];
-		for(var i in vitrual_nodes)
+		var vitrual_nodes_js=vitrual_network["virtual-nodes"]["virtual-node"];
+		for(var i in vitrual_nodes_js)
 		{
-			virtual_nodes[vitrual_nodes[i]["node-id"]]=(+i+1);		
+			virtual_nodes[vitrual_nodes_js[i]["node-id"]]=[(+i+1),vitrual_nodes_js[i]["node-type"]+(+i+1)];		
 			nodes_vir.add({
             id: +i+1,
-            label: vitrual_nodes[i]["node-type"],
-            group: vitrual_nodes[i]["node-type"],
+            label: vitrual_nodes_js[i]["node-type"]+(+i+1),
+            group: vitrual_nodes_js[i]["node-type"],
             radius:20
         });
 
@@ -83,8 +83,8 @@ function create_virtual_topo(topo_data,intentinfo,mappinginfo)
        for(var j in vitrual_links){
        	   edges_vir.add({
             id: +j+1,
-            from: virtual_nodes[vitrual_links[j]["src-node-id"]],
-            to: virtual_nodes[vitrual_links[j]["dest-node-id"]],
+            from: virtual_nodes[vitrual_links[j]["src-node-id"]][0],
+            to: virtual_nodes[vitrual_links[j]["dest-node-id"]][0],
             length:150,
             width:2,
             color:{color:'ff4e00',highlight:'ff4e00',hover:'ff4e00'}
@@ -162,15 +162,16 @@ console.log(virtual_nodes);
 function drawOthers(virtualData,intentData,mappingData){
 	console.log();
 	var user_nodes=intentData['objects']['node'];
-	var intentNodes=[];
+	var intentNodes=[];//intent_node_id(physical host or node id)------>[intent_node_type,intent_node_name]
 		for (var i in user_nodes) {
 			intentNodes[user_nodes[i]['node-id']]=[user_nodes[i]['node-type'],user_nodes[i]['node-name']];
 		};
 	var mapping_nodes=mappingData['intent-vn-mapping-result'];
-	var mappingNodes=[];
+	var mappingNodes=[];//intent-id(physical host or node id)------>virtual_node_id
 		for (var i in mapping_nodes) {
 			if(mapping_nodes[i]['intent-type']=='node')
 			{
+				if(mapping_nodes[i]['virtual-resource'][0]['parent-virtual-resource-entity-id'])
 				mappingNodes[mapping_nodes[i]['intent-id']]=mapping_nodes[i]['virtual-resource'][0]['parent-virtual-resource-entity-id'];
 			}
 		};
@@ -178,7 +179,7 @@ function drawOthers(virtualData,intentData,mappingData){
 	console.log(mappingNodes);
 	var nodelen= nodes_vir.get().length;
 	for(var item in intentNodes){
-		virtual_nodes[item]=nodelen+1;
+		virtual_nodes[item]=[parseInt(nodelen+1),'external-node'];
 		if(intentNodes[item][0]=='host'){
 			nodes_vir.add({
             id: ++nodelen,
@@ -232,17 +233,91 @@ function drawOthers(virtualData,intentData,mappingData){
 				delete virtual_nodes[item];
 			}
 	}
+	console.log(virtual_nodes);
 	for(var item in mappingNodes){
+		// console.log(virtual_nodes[item]);
+		if(!virtual_nodes[item]) continue;
 		var edgeslen=edges_vir.get().length;
 		 edges_vir.add({
             id: ++edgeslen,
-            from: virtual_nodes[item],
-            to: virtual_nodes[mappingNodes[item]],
+            from: virtual_nodes[item][0],
+            to: virtual_nodes[mappingNodes[item]][0],
             length:150
         });
 	}
 }
 
+var creataVirtualTables={
+createVirtualNodeTable:function (id,Data){
+	// if(!Data) Data=VirtualDatas;
+	if(!Data) return;
+	var virtualnodes=[];
+	// virtualnodes=virtual_nodes;
+	virtualnodes=[];
+	var virtualNodes=Data['virtual-nodes']['virtual-node'];
+	console.log(virtualnodes);
+	for(var item in virtualNodes){
+		//virtualnodes[virtualNodes[item]['node-id']]=[virtual_nodes[virtualNodes[item]['node-id']]]
+		var virTableInfo={};
+		virTableInfo.virtual_node_id=virtualNodes[item]['node-id'];
+		virTableInfo.virtual_node_name=virtual_nodes[virtualNodes[item]['node-id']][1];
+		virTableInfo.internal_port_number='';
+		virTableInfo.external_port_number='';
+		var virtualPort=virtualNodes[item]['virtual-port'];
+		if(!virtualPort){virtualnodes.push(virTableInfo);continue;}
+		var interPort=exterPort=0;
+		for(var i in virtualPort){
+			if(virtualPort[i]['port-type']=='internal') interPort++;
+			if(virtualPort[i]['port-type']=='external') exterPort++;
+		}
+		virTableInfo.internal_port_number=interPort;
+		virTableInfo.external_port_number=exterPort;
+		virtualnodes.push(virTableInfo);
+
+	}
+		console.log(virtualnodes);
+ 	// var Mynode=Data['virtual-network']['virtual-nodes']['virtual-node'];
+ 	// for(var i in Mynode){
+ 	// 	if(true)
+ 	// 	virtualnodes[Mynode[i]['node-id']]=Mynode[i]['node-type'];
+ 	// }
+ 	// console.log(virtualnodes);
+ 	jQuery("#"+id).find('tr:gt(1)').empty();
+ 	for(var item in virtualnodes){		
+ 		// if(virtualnodes[item][1]!='external-node'){}
+
+ 	    var $tr='<tr><td>'+virtualnodes[item].virtual_node_id+'</td><td>'+virtualnodes[item].virtual_node_name+'</td>'
+ 		$tr+='<td>'+'virtual '+virtualnodes[item].virtual_node_name.substring(1,virtualnodes[item].virtual_node_name.length-1)+'</td>'
+ 		$tr+='<td>'+virtualnodes[item].internal_port_number+'</td><td>'+virtualnodes[item].external_port_number+'</td>'
+ 		$tr+='</tr>'
+ 		jQuery("#"+id).append($tr);
+ 	}
+},
+
+createVirtualLinkTable:function (id,Data){
+	// if(!Data) Data=VirtualDatas;
+	if(!Data) return;
+	var virtuallinks=[];//virtual_link_id---->[src-node-id,dest-node-id,metric,bandwidth,delay]
+
+ 	var mylink=Data['virtual-links']['virtual-link'];
+ 	for(var i in mylink){
+ 		if(!mylink[i]['metric'])
+ 		virtuallinks[mylink[i]['link-id']]=[mylink[i]['src-node-id'],mylink[i]['dest-node-id'],'',mylink[i]['bandwidth'],mylink[i]['delay']];
+ 	    else
+ 		virtuallinks[mylink[i]['link-id']]=[mylink[i]['src-node-id'],mylink[i]['dest-node-id'],mylink[i]['metric'],mylink[i]['bandwidth'],mylink[i]['delay']];
+
+ 	}
+ 	console.log(virtuallinks);
+ 	jQuery("#"+id).find('tr:gt(1)').empty();
+ 	for(var item in virtuallinks){
+ 		var $tr='<tr><td>'+item+'</td><td>'+virtual_nodes[virtuallinks[item][0]][1]+'-'+virtual_nodes[virtuallinks[item][1]][1]+'</td>'
+ 		 $tr+='<td>'+virtual_nodes[virtuallinks[item][0]][1]+'<td>'+virtual_nodes[virtuallinks[item][1]][1]+'</td>';
+ 		 $tr+='<td>'+virtuallinks[item][3]+'kbps'+'</td><td>'+virtuallinks[item][4]+'ms'+'</td>';
+ 		 $tr+='</tr>'
+ 		jQuery("#"+id).append($tr);
+ 	}
+}
+}
 
 
 

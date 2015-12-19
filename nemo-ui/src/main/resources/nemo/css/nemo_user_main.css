@@ -75,10 +75,11 @@ svg{
 #nemo_str_show span.keyWords{
 	color:red;
 }
+
 /*jquery ui tab css start*/
 /*tab ui li active font color*/
 .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
-  color: #eb8f00;
+  color: #eb8f00 !important;
   text-decoration: none;
 }
 /*tab ui li*/

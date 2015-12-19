@@ -6,10 +6,10 @@
     <link href="src/app/nemo/css/nemo_user_main.css" rel="stylesheet" />
     <link href="src/app/nemo/css/nemo_main.css" rel="stylesheet" />
 
-    <!-- // <script src="src/app/nemo/module/migrate_js.js"></script> -->
+     <!-- // <script src="src/app/nemo/module/migrate_js.js"></script> -->
     <script src="src/app/nemo/js/Nemo_Main.js"></script>
     <script src="src/app/nemo/module/keyWords.js"></script>
-    <script src="src/app/nemo/module/migrate.js"></script>
+    <!-- // <script src="src/app/nemo/module/migrate.js"></script> -->
     <!-- SFC -->
     <!-- // <script src="src/app/nemo/module/test/servicechain_userJson.js"></script>  -->
     <!-- Bod -->
@@ -31,7 +31,7 @@
         }
 
         jQuery(document).ready(function ($) {
-        var userNames=['myuser1','myuser2','myuser3'];
+        var userNames=['--default--'];
         jQuery.ajax({
             url: "/restconf/config/nemo-intent:users/",
             type: "GET",
@@ -59,8 +59,10 @@
         $(".tabs ul li[aria-controls='PhyNet']").click(function(){
              analy_topo(physicalData);
              create_physical_topo();
+             creataPhysicalTables.createPhyicalNodeTable('phyNodeTab',null)
+             creataPhysicalTables.createPhyicalLinkTable('phyLinkTab',null)
         });
-        
+
         $(".tabs ul li[aria-controls='PhyNet']").click();
 
         $(".tabs ul li[aria-controls='intent_info']").click(function(){
@@ -73,41 +75,60 @@
             //Bod
             //userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
              //if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
+            $('#service_svg2').empty();
+            $("#nemo_str_show").empty();
             console.log(userId);
+            if(!IntentInfos) return;
             var user_data = getIntentInfoById(userId);
-          // console.log(JSON.stringify(user_data));
+            if(!user_data) return;
+
             analyjson_topo(user_data);
             parseNemoLan(user_data);
         //set keyWords style
         $("#nemo_str_show p").each(function(){
             var $res=$(this);
             keyWords.forEach(function(item,index,array){
-                // console.log(item);
                 $res.html($res.html().replace(item,"<span class='keyWords'>"+item+"</span>"));
             });
         });
     });
 
         $(".tabs ul li[aria-controls='VirNet']").click(function(){
-            // alert('VirNet');
            // var virtualData=getVirtualJson();
             var userId=$("#selectUser option:selected").val();
-
+            jQuery('#vir_graph').empty();
+            jQuery("#virNodeTab").find('tr:gt(1)').empty();
+            jQuery("#virLinkTab").find('tr:gt(1)').empty();
             // SFC
             //userId='af4fc2be-e3f4-4388-a8ef-3aabae872f2b';
             //Bod
             //userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
 
-             //if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
-            console.log(userId);
+            //if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
             // virtualData=virtualJson;
-            create_virtual_topo(getVirtualInfoById(userId),getIntentInfoById(userId),getMappingResultById(userId));
-        });
-        $(".tabs ul li[aria-controls='Mapping']").click(function(){
-            // alert('Mapping');
-        });
 
-         // $(".tabs ul li[aria-controls='intent_info']").click();
+            if(!IntentInfos||!MappingResults||!VirtualDatas) return;
+            if(!getVirtualInfoById(userId)||!getIntentInfoById(userId)||!getMappingResultById(userId)) return;
+            create_virtual_topo(getVirtualInfoById(userId),getIntentInfoById(userId),getMappingResultById(userId));
+            creataVirtualTables.createVirtualNodeTable('virNodeTab',getVirtualInfoById(userId));
+            creataVirtualTables.createVirtualLinkTable('virLinkTab',getVirtualInfoById(userId));
+        });
+         // $(".tabs ul li[aria-controls='Mapping']").click();
+        $(".tabs ul li[aria-controls='Mapping']").click(function(){
+            var userId=$("#selectUser option:selected").val();
+            //if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
+            jQuery("#mapVirNodeTab").find('tr:gt(1)').empty();
+            jQuery("#mapVirLinkTab").find('tr:gt(1)').empty();
+            if(!physicalData||!PnMappingResults||!VirtualDatas) return;
+            var virtualData = getVirtualInfoById(userId);
+            if(!virtualData) return;
+            if(!getPnMappingResultById(userId)) return;
+            // console.log(createMappingTables);
+              createMappingTables.createVirtualNodeTable('mapVirNodeTab',virtualData);
+            // console.log(linkArray);
+              createMappingTables.createVirtualLinkTable('mapVirLinkTab',virtualData,getPnMappingResultById(userId),physicalData);
+            // getPaths(linkArray,getPnMappingResultById(userId,PnMappingJson),physicalJson);
+        });
 
         $('#selectUser input[type=button]').click(function(){
             // $(".tabs ul li[aria-controls='intent_info']").trigger('click');
@@ -120,8 +141,9 @@
             //userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
 
             //if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
+            if(!intent_info) return;
             var user_data = getIntentInfoById(userId);
-          // console.log(JSON.stringify(user_data));
+            if(!user_data) return;
             analyjson_topo(user_data);
             parseNemoLan(user_data);
         //set keyWords style
@@ -131,11 +153,10 @@
                 // console.log(item);
                 $res.html($res.html().replace(item,"<span class='keyWords'>"+item+"</span>"));
             });
-            // console.log($res.html());
         });
 
-            // alert(userName);
     });
+
         });
     </script>
 </head>
@@ -159,17 +180,29 @@
                     </ul>
                 <div id='PhyNet'>
                     <div id="phy_graph"></div>
+                    <div id='physicalTables'>
+                         <table id="phyNodeTab" border='1'>
+                    <caption>Physical Node</caption>
+                       <tr>
+                        <th>Physical Node ID</th><th>Physical Node Type</th>
+                        <th>Internal Physical Port Number</th><th>External Physical Port Number</th>
+                        </tr>
+                   </table>
+
+                    <table id="phyLinkTab" border='1'>
+                    <caption>Physical Link</caption>
+                       <tr>
+                        <th>Physical Link ID</th><th>Source Physical Node</th>
+                       <th>Destination Physical Node</th><th>Metric</th>
+                       <th>Bandwidth</th> <th>Delay</th>
+                       </tr>
+                   </table>
+                    </div>
                 </div>
 
                 <div id="intent_info">
                      <div id="intent_topo">
-                    <svg id="service_svg"  width="800" height="560"  viewBox="100 40 900 780" style='display:none'>
-                    <defs>
-                    <marker id="idArrow" viewBox="0 0 20 20" refX="0" refY="10" markerUnits="strokeWidth" markerWidth="6" markerHeight="15" orient="auto"><path d="M 0 0 L 20 10 L0 20 z"fill="purple"stroke="black"/> </marker>
-                    <marker id="idtext" viewBox="0 0 120 50" refX="0" refY="0" markerUnits="strokeWidth" markerWidth="20" markerHeight="20"  orient="auto"><text style="font-family:sans-serif; font-size:14pt;"  x="20" y="20">text</text></marker>  
-                    </defs>
-                    </svg>
-
+                    
                     <svg id="service_svg2"  width="800" height="560"  viewBox="100 40 900 780">
                     <defs>
                     <marker id="idArrow2" viewBox="0 0 20 20" refX="0" refY="10" markerUnits="strokeWidth" markerWidth="6" markerHeight="15" orient="auto"><path d="M 0 0 L 20 10 L0 20 z"fill="purple"stroke="black"/> </marker>
@@ -186,8 +219,45 @@
                    </div>
                </div>
 
-               <div id="VirNet"><div id="vir_graph"></div></div>
-               <div id="Mapping"></div>
+               <div id="VirNet">
+                <div id="vir_graph"></div>
+                <div id='virtualTables'>
+                         <table id="virNodeTab" border='1'>
+                    <caption>Virtual Node</caption>
+                       <tr>
+                        <th>Virtual Node ID</th><th>Virtual Node Name</th>
+                        <th>Virtual Node Type</th>
+                        <th>Internal Virtual Port Number</th><th>External Virtual Port Number</th>
+                        </tr>
+                   </table>
+
+                    <table id="virLinkTab" border='1'>
+                    <caption>Virtual Link</caption>
+                       <tr>
+                        <th>Virtual Link ID</th><th>Virtual Link Name</th>
+                        <th>Source Virtual Node</th>
+                       <th>Destination Virtual Node</th>
+                       <!-- <th>Metric</th> -->
+                       <th>Bandwidth</th> <th>Delay</th>
+                       </tr>
+                   </table>
+                    </div>
+               </div>
+               <div id="Mapping">
+                   <table id="mapVirNodeTab" border='1'>
+                    <caption>Virtual Node Mapping Table</caption>
+                       <tr><th>Virtual Node</th><th>Physical Node</th></tr>
+                   </table>
+
+                    <table id="mapVirLinkTab" border='1'>
+                    <caption>Virtual Link Mapping Table</caption>
+                       <tr>
+                        <th>Virtual Link</th><th>Source Virtual Node</th>
+                       <th>Destination Virtual Node</th><th>Physical Path</th>
+                       <th>Physical Nodes passed by Path</th>
+                       </tr>
+                   </table>
+               </div>
         </div>
 
 

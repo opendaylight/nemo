@@ -1,4 +1,5 @@
 var physicalJson=null;
-var user_info=null;
+var userinfo=null;
 var virtualJson=null;
-var MappingJson=null;
+var VnMappingJson=null;
+var PnMappingJson=null;

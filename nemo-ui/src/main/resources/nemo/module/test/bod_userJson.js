@@ -1,4 +1,3 @@
-var keyWords=['Create','Import','Host','Node','Connection','Flow','Operation','Type','Endnodes','Property','Contain','Match','Target','Action'];
 var userinfo ={
   "users": {
     "user": [
@@ -293,18 +292,12 @@ var userinfo ={
             }
           ]
         }
-      },
-      {
-        "user-id": "64af5353-9b5d-46e2-6bda-072c3a94a591",
-        "user-role": "tenant",
-        "user-password": "q",
-        "user-name": "q"
       }
     ]
   }
 }
 //console.log(userinfo);
-var physicalJson= {
+var physicalJson={
   "physical-network": {
     "physical-hosts": {
       "physical-host": [
@@ -361,118 +354,6 @@ var physicalJson= {
     "physical-nodes": {
       "physical-node": [
         {
-          "node-id": "openflow:1",
-          "attribute": [
-            {
-              "attribute-name": "location",
-              "attribute-value": {
-                "string-value": "openflow:1"
-              }
-            }
-          ],
-          "node-type": "switch",
-          "physical-port": [
-            {
-              "port-id": "openflow:1:1",
-              "attribute": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:1:1"
-                  }
-                }
-              ],
-              "port-type": "external",
-              "mac-address": "22:37:1D:6B:94:E5",
-              "bandwidth": 10240
-            },
-            {
-              "port-id": "openflow:1:2",
-              "attribute": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:1:2"
-                  }
-                }
-              ],
-              "port-type": "external",
-              "mac-address": "46:8E:D7:44:14:CC",
-              "bandwidth": 10240
-            },
-            {
-              "port-id": "openflow:1:3",
-              "attribute": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:1:3"
-                  }
-                }
-              ],
-              "port-type": "internal",
-              "mac-address": "02:34:9F:53:DD:05",
-              "bandwidth": 10240
-            }
-          ]
-        },
-        {
-          "node-id": "openflow:2",
-          "attribute": [
-            {
-              "attribute-name": "location",
-              "attribute-value": {
-                "string-value": "openflow:2"
-              }
-            }
-          ],
-          "node-type": "switch",
-          "physical-port": [
-            {
-              "port-id": "openflow:2:3",
-              "attribute": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:2:3"
-                  }
-                }
-              ],
-              "port-type": "internal",
-              "mac-address": "66:EC:EA:63:EC:AD",
-              "bandwidth": 10240
-            },
-            {
-              "port-id": "openflow:2:2",
-              "attribute": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:2:2"
-                  }
-                }
-              ],
-              "port-type": "external",
-              "mac-address": "00:0C:29:98:7E:13",
-              "bandwidth": 10240
-            },
-            {
-              "port-id": "openflow:2:1",
-              "attribute": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:2:1"
-                  }
-                }
-              ],
-              "port-type": "external",
-              "mac-address": "C2:0D:AE:D8:3C:56",
-              "bandwidth": 10240
-            }
-          ]
-        },
-        {
           "node-id": "openflow:3",
           "attribute": [
             {
@@ -482,65 +363,7 @@ var physicalJson= {
               }
             }
           ],
-          "node-type": "router",
-          "physical-port": [
-            {
-              "port-id": "openflow:3:1",
-              "attribute": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:3:1"
-                  }
-                }
-              ],
-              "port-type": "internal",
-              "mac-address": "4A:EB:B6:F8:E1:9C",
-              "bandwidth": 10240
-            },
-            {
-              "port-id": "openflow:3:2",
-              "attribute": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:3:2"
-                  }
-                }
-              ],
-              "port-type": "internal",
-              "mac-address": "8A:0F:06:EA:40:07",
-              "bandwidth": 10240
-            },
-            {
-              "port-id": "openflow:3:3",
-              "attribute": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:3:3"
-                  }
-                }
-              ],
-              "port-type": "internal",
-              "mac-address": "EA:76:A0:D3:8D:F8",
-              "bandwidth": 10240
-            },
-            {
-              "port-id": "openflow:3:4",
-              "attribute": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:3:4"
-                  }
-                }
-              ],
-              "port-type": "external",
-              "mac-address": "00:0C:29:98:7E:1D",
-              "bandwidth": 10240
-            }
-          ]
+          "node-type": "router"
         },
         {
           "node-id": "openflow:4",
@@ -552,37 +375,31 @@ var physicalJson= {
               }
             }
           ],
-          "node-type": "router",
-          "physical-port": [
+          "node-type": "router"
+        },
+        {
+          "node-id": "openflow:1",
+          "attribute": [
             {
-              "port-id": "openflow:4:2",
-              "attribute": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:4:2"
-                  }
-                }
-              ],
-              "port-type": "external",
-              "mac-address": "00:0C:29:98:7E:27",
-              "bandwidth": 10240
-            },
-            {
-              "port-id": "openflow:4:1",
-              "attribute": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:4:1"
-                  }
-                }
-              ],
-              "port-type": "internal",
-              "mac-address": "9A:E4:DE:B1:B2:11",
-              "bandwidth": 10240
+              "attribute-name": "location",
+              "attribute-value": {
+                "string-value": "openflow:1"
+              }
             }
-          ]
+          ],
+          "node-type": "switch"
+        },
+        {
+          "node-id": "openflow:2",
+          "attribute": [
+            {
+              "attribute-name": "location",
+              "attribute-value": {
+                "string-value": "openflow:2"
+              }
+            }
+          ],
+          "node-type": "switch"
         }
       ]
     },
@@ -592,22 +409,11 @@ var physicalJson= {
           "link-id": "openflow:4:2",
           "loss-rate": 1,
           "delay": 1,
-          "dest-port-id": "openflow:2:2",
+          "dest-port-id": "openflow:3:4",
           "src-port-id": "openflow:4:2",
-          "dest-node-id": "openflow:2",
+          "dest-node-id": "openflow:3",
           "bandwidth": 10240,
           "src-node-id": "openflow:4"
-        },
-        {
-          "link-id": "openflow:2:3",
-          "loss-rate": 1,
-          "delay": 1,
-          "src-port-id": "openflow:2:3",
-          "dest-node-id": "openflow:3",
-          "metric": 1,
-          "dest-port-id": "openflow:3:2",
-          "bandwidth": 10240,
-          "src-node-id": "openflow:2"
         },
         {
           "link-id": "openflow:4:1",
@@ -621,17 +427,6 @@ var physicalJson= {
           "src-node-id": "openflow:4"
         },
         {
-          "link-id": "openflow:3:1",
-          "loss-rate": 1,
-          "delay": 1,
-          "src-port-id": "openflow:3:1",
-          "dest-node-id": "openflow:1",
-          "metric": 1,
-          "dest-port-id": "openflow:1:3",
-          "bandwidth": 10240,
-          "src-node-id": "openflow:3"
-        },
-        {
           "link-id": "openflow:1:3",
           "loss-rate": 1,
           "delay": 1,
@@ -641,6 +436,28 @@ var physicalJson= {
           "dest-port-id": "openflow:3:1",
           "bandwidth": 10240,
           "src-node-id": "openflow:1"
+        },
+        {
+          "link-id": "openflow:2:3",
+          "loss-rate": 1,
+          "delay": 1,
+          "src-port-id": "openflow:2:3",
+          "dest-node-id": "openflow:3",
+          "metric": 1,
+          "dest-port-id": "openflow:3:2",
+          "bandwidth": 10240,
+          "src-node-id": "openflow:2"
+        },
+        {
+          "link-id": "openflow:3:1",
+          "loss-rate": 1,
+          "delay": 1,
+          "src-port-id": "openflow:3:1",
+          "dest-node-id": "openflow:1",
+          "metric": 1,
+          "dest-port-id": "openflow:1:3",
+          "bandwidth": 10240,
+          "src-node-id": "openflow:3"
         },
         {
           "link-id": "openflow:3:3",
@@ -678,9 +495,9 @@ var physicalJson= {
           "link-id": "openflow:3:4",
           "loss-rate": 1,
           "delay": 1,
-          "dest-port-id": "openflow:2:2",
+          "dest-port-id": "openflow:4:2",
           "src-port-id": "openflow:3:4",
-          "dest-node-id": "openflow:2",
+          "dest-node-id": "openflow:4",
           "bandwidth": 10240,
           "src-node-id": "openflow:3"
         }
@@ -689,185 +506,19 @@ var physicalJson= {
     "physical-paths": {
       "physical-path": [
         {
-          "path-id": "41068e63-c61d-414f-93b3-4109db13b39a",
-          "delay": 0,
-          "physical-link": [
-            {
-              "link-id": "openflow:2:3",
-              "order": 0
-            }
-          ],
-          "metric": 1,
-          "bandwidth": 0
-        },
-        {
-          "path-id": "8c71bff9-7b13-4842-9109-1cda48865160",
-          "delay": 0,
-          "physical-link": [
-            {
-              "link-id": "openflow:3:2",
-              "order": 1
-            },
-            {
-              "link-id": "openflow:1:3",
-              "order": 0
-            }
-          ],
-          "metric": 2,
-          "bandwidth": 0
-        },
-        {
-          "path-id": "456ad088-8610-4154-bf14-6e1ad236edaa",
-          "delay": 0,
-          "physical-link": [
-            {
-              "link-id": "openflow:2:3",
-              "order": 0
-            },
-            {
-              "link-id": "openflow:3:1",
-              "order": 1
-            }
-          ],
-          "metric": 2,
-          "bandwidth": 0
-        },
-        {
-          "path-id": "5d9fd420-e20c-4ddd-97c7-0fe85d06ea17",
-          "delay": 0,
-          "physical-link": [
-            {
-              "link-id": "openflow:3:2",
-              "order": 0
-            }
-          ],
-          "metric": 1,
-          "bandwidth": 0
-        },
-        {
-          "path-id": "d86e2725-b848-4ce8-904a-967f9e083577",
+          "path-id": "847ce4e6-d631-4d90-b2f3-dcfd56dbce3a",
           "delay": 0,
           "metric": 0,
           "bandwidth": 0
         },
         {
-          "path-id": "397a6c45-b87f-4e67-865a-7ca9f4b12975",
-          "delay": 0,
-          "physical-link": [
-            {
-              "link-id": "openflow:3:1",
-              "order": 0
-            }
-          ],
-          "metric": 1,
-          "bandwidth": 0
-        },
-        {
-          "path-id": "e98cd5ca-361a-4b8d-a6a6-7088a8a8514d",
+          "path-id": "4ce046d2-0c20-43c7-b7f8-fa441e07d443",
           "delay": 0,
           "metric": 0,
           "bandwidth": 0
         },
         {
-          "path-id": "aefbb3a4-d71c-4bb3-8298-a4ec9123e973",
-          "delay": 0,
-          "physical-link": [
-            {
-              "link-id": "openflow:2:3",
-              "order": 0
-            },
-            {
-              "link-id": "openflow:3:1",
-              "order": 1
-            }
-          ],
-          "metric": 2,
-          "bandwidth": 0
-        },
-        {
-          "path-id": "b8dc0a4d-319a-49fd-92a0-ad8b70c58cb4",
-          "delay": 0,
-          "physical-link": [
-            {
-              "link-id": "openflow:1:3",
-              "order": 0
-            }
-          ],
-          "metric": 1,
-          "bandwidth": 0
-        },
-        {
-          "path-id": "9559b3ce-356c-4989-b87f-023ddc39f15b",
-          "delay": 0,
-          "physical-link": [
-            {
-              "link-id": "openflow:3:2",
-              "order": 1
-            },
-            {
-              "link-id": "openflow:1:3",
-              "order": 0
-            }
-          ],
-          "metric": 2,
-          "bandwidth": 0
-        },
-        {
-          "path-id": "dffd6c72-39d6-43b5-95c0-139b7c06cb81",
-          "delay": 0,
-          "physical-link": [
-            {
-              "link-id": "openflow:2:3",
-              "order": 0
-            }
-          ],
-          "metric": 1,
-          "bandwidth": 0
-        },
-        {
-          "path-id": "dea9decf-7713-44ad-9276-0c49624f8c20",
-          "delay": 0,
-          "metric": 0,
-          "bandwidth": 0
-        },
-        {
-          "path-id": "36768acc-2cdd-4e64-8db5-27b753a36e81",
-          "delay": 0,
-          "metric": 0,
-          "bandwidth": 0
-        },
-        {
-          "path-id": "264b59f1-3316-484a-bf5e-0d1412668a13",
-          "delay": 0,
-          "physical-link": [
-            {
-              "link-id": "openflow:3:2",
-              "order": 0
-            }
-          ],
-          "metric": 1,
-          "bandwidth": 0
-        },
-        {
-          "path-id": "299eb64e-dbb4-4cc6-b1d7-bc694034052b",
-          "delay": 0,
-          "physical-link": [
-            {
-              "link-id": "openflow:3:3",
-              "order": 0
-            }
-          ],
-          "metric": 1,
-          "bandwidth": 128
-        },
-        {
-          "path-id": "18ccd1d0-4d60-47f1-a5da-92dbf2cc5a24",
-          "delay": 0,
-          "metric": 0,
-          "bandwidth": 0
-        },
-        {
-          "path-id": "d181589e-d067-4b71-9991-ba26248e0cd4",
+          "path-id": "6657f46b-edd2-47fe-b3fc-7b5aa16c7b97",
           "delay": 0,
           "physical-link": [
             {
@@ -879,7 +530,23 @@ var physicalJson= {
           "bandwidth": 128
         },
         {
-          "path-id": "fc0c1384-8c1e-4a44-815f-b2c9c2749bfc",
+          "path-id": "7b875b56-ce40-4fcd-ac76-b361d0311d8f",
+          "delay": 0,
+          "physical-link": [
+            {
+              "link-id": "openflow:3:2",
+              "order": 1
+            },
+            {
+              "link-id": "openflow:1:3",
+              "order": 0
+            }
+          ],
+          "metric": 2,
+          "bandwidth": 0
+        },
+        {
+          "path-id": "cb9b13ad-0172-43f5-9678-69859698071d",
           "delay": 0,
           "physical-link": [
             {
@@ -891,13 +558,89 @@ var physicalJson= {
           "bandwidth": 0
         },
         {
-          "path-id": "eece4538-22ba-4876-bb0e-28b363f4ee0f",
+          "path-id": "23f80b16-76d1-424c-9a71-aacd60a62bcd",
           "delay": 0,
           "metric": 0,
           "bandwidth": 0
         },
         {
-          "path-id": "1338e6bb-82b4-4ca8-973a-df77b5fff3ea",
+          "path-id": "3b9d1480-df24-4b0b-ba58-8c92605fe917",
+          "delay": 0,
+          "metric": 0,
+          "bandwidth": 0
+        },
+        {
+          "path-id": "f84b9fda-b3f6-4631-a829-5089274093b0",
+          "delay": 0,
+          "physical-link": [
+            {
+              "link-id": "openflow:2:3",
+              "order": 0
+            }
+          ],
+          "metric": 1,
+          "bandwidth": 0
+        },
+        {
+          "path-id": "bdd1e0cb-72aa-4f04-a2db-a07a15c62d61",
+          "delay": 0,
+          "physical-link": [
+            {
+              "link-id": "openflow:3:2",
+              "order": 0
+            }
+          ],
+          "metric": 1,
+          "bandwidth": 0
+        },
+        {
+          "path-id": "eaa935ac-c511-4541-80cd-4a1640ae2246",
+          "delay": 0,
+          "physical-link": [
+            {
+              "link-id": "openflow:3:2",
+              "order": 1
+            },
+            {
+              "link-id": "openflow:1:3",
+              "order": 0
+            }
+          ],
+          "metric": 2,
+          "bandwidth": 0
+        },
+        {
+          "path-id": "cb3de13d-cd6f-4f32-9596-09ddbb6d1c44",
+          "delay": 0,
+          "metric": 0,
+          "bandwidth": 0
+        },
+        {
+          "path-id": "4fdc5a09-ceca-461a-b3d3-1c3a9506dc74",
+          "delay": 0,
+          "physical-link": [
+            {
+              "link-id": "openflow:3:3",
+              "order": 0
+            }
+          ],
+          "metric": 1,
+          "bandwidth": 128
+        },
+        {
+          "path-id": "c231b5a3-7752-4f78-b8eb-b023ad4bea2f",
+          "delay": 0,
+          "physical-link": [
+            {
+              "link-id": "openflow:3:2",
+              "order": 0
+            }
+          ],
+          "metric": 1,
+          "bandwidth": 0
+        },
+        {
+          "path-id": "aab18b50-3bf6-4fde-aac1-968ffe22f518",
           "delay": 0,
           "physical-link": [
             {
@@ -906,6 +649,80 @@ var physicalJson= {
             }
           ],
           "metric": 1,
+          "bandwidth": 0
+        },
+        {
+          "path-id": "ba0726d2-c72f-4b3e-b972-72da39430537",
+          "delay": 0,
+          "physical-link": [
+            {
+              "link-id": "openflow:2:3",
+              "order": 0
+            },
+            {
+              "link-id": "openflow:3:1",
+              "order": 1
+            }
+          ],
+          "metric": 2,
+          "bandwidth": 0
+        },
+        {
+          "path-id": "e0f22266-e0c2-4467-b143-800a7b212a98",
+          "delay": 0,
+          "metric": 0,
+          "bandwidth": 0
+        },
+        {
+          "path-id": "765e80be-6232-498d-b095-3b2c59448535",
+          "delay": 0,
+          "physical-link": [
+            {
+              "link-id": "openflow:2:3",
+              "order": 0
+            }
+          ],
+          "metric": 1,
+          "bandwidth": 0
+        },
+        {
+          "path-id": "a710b9b8-5abf-4c59-9afd-88ccf8d935b0",
+          "delay": 0,
+          "physical-link": [
+            {
+              "link-id": "openflow:3:1",
+              "order": 0
+            }
+          ],
+          "metric": 1,
+          "bandwidth": 0
+        },
+        {
+          "path-id": "61c4597d-02a5-4609-8756-955024691a17",
+          "delay": 0,
+          "physical-link": [
+            {
+              "link-id": "openflow:1:3",
+              "order": 0
+            }
+          ],
+          "metric": 1,
+          "bandwidth": 0
+        },
+        {
+          "path-id": "5fc169b2-1209-4663-92c3-031100923f6f",
+          "delay": 0,
+          "physical-link": [
+            {
+              "link-id": "openflow:2:3",
+              "order": 0
+            },
+            {
+              "link-id": "openflow:3:1",
+              "order": 1
+            }
+          ],
+          "metric": 2,
           "bandwidth": 0
         }
       ]
@@ -920,7 +737,59 @@ var virtualJson={
         "virtual-nodes": {
           "virtual-node": [
             {
-              "node-id": "6e77a772-602a-4e23-9275-522dd8b2fccb",
+              "node-id": "d52e6bb0-93aa-4bf8-88cf-f24b11651a88",
+              "node-type": "vrouter",
+              "physical-resource-requirement": [
+                {
+                  "attribute-name": "location",
+                  "attribute-value": {
+                    "string-value": "openflow:3"
+                  },
+                  "attribute-match-pattern": "equal"
+                }
+              ],
+              "virtual-port": [
+                {
+                  "port-id": "ee08bce2-0d1b-45f7-947c-73fa82175ee8",
+                  "port-type": "internal",
+                  "bandwidth": 128
+                },
+                {
+                  "port-id": "5f965841-2e92-4317-a550-4be57d706896",
+                  "external-ip-prefixes": {
+                    "external-ip-prefix": [
+                      "192.168.12.0/24"
+                    ]
+                  },
+                  "port-type": "internal"
+                },
+                {
+                  "port-id": "81e7f41a-be2c-4986-ac1d-11fbd4062be4",
+                  "port-type": "internal",
+                  "bandwidth": 0
+                },
+                {
+                  "port-id": "c3ea674e-3dfb-492b-98d4-94b5f3b826e5",
+                  "external-ip-prefixes": {
+                    "external-ip-prefix": [
+                      "192.168.12.0/24"
+                    ]
+                  },
+                  "port-type": "internal"
+                },
+                {
+                  "port-id": "c04b0c95-b19b-4d29-962d-bb88ee271703",
+                  "external-ip-prefixes": {
+                    "external-ip-prefix": [
+                      "192.168.12.0/24"
+                    ]
+                  },
+                  "port-type": "internal"
+                }
+              ]
+            },
+            {
+              "node-id": "b0cec72b-376f-47f4-b7ae-44c0eb10d491",
               "node-type": "vswitch",
               "physical-resource-requirement": [
                 {
@@ -933,19 +802,7 @@ var virtualJson={
               ],
               "virtual-port": [
                 {
-                  "port-id": "2d56888f-d697-4758-9de1-53540476afac",
-                  "port-type": "internal"
-                },
-                {
-                  "port-id": "4a0307d7-0ca1-4e66-83d9-d6051c116bd9",
-                  "port-type": "internal"
-                },
-                {
-                  "port-id": "b553b789-7e7b-4577-ad7d-d40cdb54b525",
-                  "port-type": "internal"
-                },
-                {
-                  "port-id": "56d54ad9-1d55-455d-828c-add02f9cfbd3",
+                  "port-id": "fe8a0153-2a95-4473-8b62-16a6542c9212",
                   "external-mac-addresses": {
                     "external-mac-address": [
                       "08:00:27:a0:a9:b3"
@@ -961,218 +818,23 @@ var virtualJson={
                       "attribute-match-pattern": "equal"
                     }
                   ]
-                }
-              ]
-            },
-            {
-              "node-id": "74766098-9f67-4be0-8b6d-b6011110198c",
-              "node-type": "vrouter",
-              "physical-resource-requirement": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:3"
-                  },
-                  "attribute-match-pattern": "equal"
-                }
-              ],
-              "virtual-port": [
-                {
-                  "port-id": "19e72797-a78c-418c-8f99-1e2d4293f3e5",
-                  "port-type": "internal",
-                  "bandwidth": 0
                 },
                 {
-                  "port-id": "9680299d-dc93-4ba0-aff4-20c43962b249",
-                  "external-ip-prefixes": {
-                    "external-ip-prefix": [
-                      "172.168.1.0/24"
-                    ]
-                  },
-                  "port-type": "external",
-                  "physical-resource-requirement": [
-                    {
-                      "attribute-name": "location",
-                      "attribute-value": {
-                        "string-value": "openflow:3:4"
-                      },
-                      "attribute-match-pattern": "equal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "node-id": "ba9e5273-2c47-43c1-a959-5779488ce1f8",
-              "node-type": "vrouter",
-              "physical-resource-requirement": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:4"
-                  },
-                  "attribute-match-pattern": "equal"
-                }
-              ],
-              "virtual-port": [
-                {
-                  "port-id": "25ba99fd-8846-490b-bbe7-883f71914851",
-                  "external-ip-prefixes": {
-                    "external-ip-prefix": [
-                      "192.168.13.0/24"
-                    ]
-                  },
-                  "port-type": "external",
-                  "physical-resource-requirement": [
-                    {
-                      "attribute-name": "location",
-                      "attribute-value": {
-                        "string-value": "openflow:4:2"
-                      },
-                      "attribute-match-pattern": "equal"
-                    }
-                  ]
-                },
-                {
-                  "port-id": "90b1cc61-d631-4c9c-90bc-0aed911679ff",
-                  "port-type": "internal",
-                  "bandwidth": 128
-                }
-              ]
-            },
-            {
-              "node-id": "d7b911e0-f7b4-4fb5-b9dc-af87738485bb",
-              "node-type": "vrouter",
-              "physical-resource-requirement": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:3"
-                  },
-                  "attribute-match-pattern": "equal"
-                }
-              ],
-              "virtual-port": [
-                {
-                  "port-id": "7a558ce5-cbfd-4c4e-ac4b-223cb553ea42",
-                  "external-ip-prefixes": {
-                    "external-ip-prefix": [
-                      "192.168.12.0/24"
-                    ]
-                  },
+                  "port-id": "f7782068-8bf2-4ffb-a432-447a5cb708c4",
                   "port-type": "internal"
                 },
                 {
-                  "port-id": "8981025b-2990-4d77-b041-0db8af1f8325",
-                  "external-ip-prefixes": {
-                    "external-ip-prefix": [
-                      "192.168.12.0/24"
-                    ]
-                  },
+                  "port-id": "7cb2dda8-3cd2-4d84-996a-1d61aa0358a5",
                   "port-type": "internal"
                 },
                 {
-                  "port-id": "ea178dbc-4ea7-4855-b1f0-130caae61ac5",
-                  "port-type": "internal",
-                  "bandwidth": 128
-                },
-                {
-                  "port-id": "e246cc12-1c0a-467f-8440-b7bb43539b18",
-                  "port-type": "internal",
-                  "bandwidth": 0
-                },
-                {
-                  "port-id": "03e82eac-9906-4c52-8960-0c6c34b6605a",
-                  "external-ip-prefixes": {
-                    "external-ip-prefix": [
-                      "192.168.12.0/24"
-                    ]
-                  },
+                  "port-id": "f6171160-ef25-45e9-8251-7a44468a9a68",
                   "port-type": "internal"
                 }
               ]
             },
             {
-              "node-id": "7826e5d1-2a8c-4bca-be38-ada2fb54dd47",
-              "node-type": "vrouter",
-              "physical-resource-requirement": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:3"
-                  },
-                  "attribute-match-pattern": "equal"
-                }
-              ],
-              "virtual-port": [
-                {
-                  "port-id": "eb30411b-1fc3-47c6-9238-ad437e362416",
-                  "external-ip-prefixes": {
-                    "external-ip-prefix": [
-                      "192.168.11.0/24"
-                    ]
-                  },
-                  "port-type": "internal"
-                },
-                {
-                  "port-id": "831ff095-5fed-4125-8249-3b1238e05a9e",
-                  "port-type": "internal",
-                  "bandwidth": 0
-                },
-                {
-                  "port-id": "56d04cbc-2557-4514-ae69-35d3b4fb6dc3",
-                  "port-type": "internal",
-                  "bandwidth": 0
-                }
-              ]
-            },
-            {
-              "node-id": "3450efe7-dd9c-46c9-a10d-a57b609f2885",
-              "node-type": "vswitch",
-              "physical-resource-requirement": [
-                {
-                  "attribute-name": "location",
-                  "attribute-value": {
-                    "string-value": "openflow:2"
-                  },
-                  "attribute-match-pattern": "equal"
-                }
-              ],
-              "virtual-port": [
-                {
-                  "port-id": "56e7046b-3f13-4f73-92a4-e166cc076f5a",
-                  "port-type": "internal"
-                },
-                {
-                  "port-id": "bc7f6f1d-3921-44a8-b7e0-12c03bfdf9b3",
-                  "port-type": "internal"
-                },
-                {
-                  "port-id": "e5a44c4c-6efb-4852-bf0a-2639d9cb739c",
-                  "external-mac-addresses": {
-                    "external-mac-address": [
-                      "00:00:00:00:00:02"
-                    ]
-                  },
-                  "port-type": "external",
-                  "physical-resource-requirement": [
-                    {
-                      "attribute-name": "location",
-                      "attribute-value": {
-                        "string-value": "openflow:2:1"
-                      },
-                      "attribute-match-pattern": "equal"
-                    }
-                  ]
-                },
-                {
-                  "port-id": "b295c6ad-eb02-4d43-bb48-a5f72db8b63c",
-                  "port-type": "internal"
-                }
-              ]
-            },
-            {
-              "node-id": "8c79c039-41c0-4bd9-a7af-704ed437cd49",
+              "node-id": "2698e79a-4a9e-4b9a-ae17-a5698a999bc9",
               "node-type": "vswitch",
               "physical-resource-requirement": [
                 {
@@ -1185,19 +847,19 @@ var virtualJson={
               ],
               "virtual-port": [
                 {
-                  "port-id": "577517d2-f936-4227-9b3a-ecb462a57d15",
+                  "port-id": "34bca859-1b88-4d5a-b564-7d9080063609",
                   "port-type": "internal"
                 },
                 {
-                  "port-id": "92931833-02db-4e6d-8cf7-8fa5d43c34a5",
+                  "port-id": "707d56c8-4aee-4466-9383-503ecedd31c3",
                   "port-type": "internal"
                 },
                 {
-                  "port-id": "948651a1-a523-43dc-b593-b0f44c817826",
+                  "port-id": "32ea562d-5ba2-4c84-8560-9f0b4f8dc3ae",
                   "port-type": "internal"
                 },
                 {
-                  "port-id": "3020a073-aec7-4e45-888b-98a7c06a0cb4",
+                  "port-id": "c0284004-7b36-4bda-ab98-3f33a67655db",
                   "external-mac-addresses": {
                     "external-mac-address": [
                       "00:00:00:00:00:01"
@@ -1217,7 +879,162 @@ var virtualJson={
               ]
             },
             {
-              "node-id": "3c641151-82a9-45f1-a40b-6d3fa6ddccd1",
+              "node-id": "868cf78a-54b7-495d-9ae7-a8fa3f2c7883",
+              "node-type": "vrouter",
+              "physical-resource-requirement": [
+                {
+                  "attribute-name": "location",
+                  "attribute-value": {
+                    "string-value": "openflow:3"
+                  },
+                  "attribute-match-pattern": "equal"
+                }
+              ],
+              "virtual-port": [
+                {
+                  "port-id": "9fb8376a-f286-489a-bde4-d5adde1c28c8",
+                  "port-type": "internal",
+                  "bandwidth": 0
+                },
+                {
+                  "port-id": "b743e2d7-bec1-4e88-b2f8-0c3438322e03",
+                  "port-type": "internal",
+                  "bandwidth": 0
+                },
+                {
+                  "port-id": "57c62f69-536a-4628-8d03-a3bf230ac607",
+                  "external-ip-prefixes": {
+                    "external-ip-prefix": [
+                      "192.168.11.0/24"
+                    ]
+                  },
+                  "port-type": "internal"
+                }
+              ]
+            },
+            {
+              "node-id": "e280be82-6354-4cd3-b8ca-7a41e7acc448",
+              "node-type": "vrouter",
+              "physical-resource-requirement": [
+                {
+                  "attribute-name": "location",
+                  "attribute-value": {
+                    "string-value": "openflow:4"
+                  },
+                  "attribute-match-pattern": "equal"
+                }
+              ],
+              "virtual-port": [
+                {
+                  "port-id": "01a637dd-55c9-4d96-8729-91538346001f",
+                  "port-type": "internal",
+                  "bandwidth": 128
+                },
+                {
+                  "port-id": "1b10a84d-247c-40b7-b4e6-6e3e0b140cda",
+                  "external-ip-prefixes": {
+                    "external-ip-prefix": [
+                      "192.168.13.0/24"
+                    ]
+                  },
+                  "port-type": "external",
+                  "physical-resource-requirement": [
+                    {
+                      "attribute-name": "location",
+                      "attribute-value": {
+                        "string-value": "openflow:4:2"
+                      },
+                      "attribute-match-pattern": "equal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "node-id": "80213cce-4e1b-4b32-8d71-e2d68fedc50d",
+              "node-type": "vrouter",
+              "physical-resource-requirement": [
+                {
+                  "attribute-name": "location",
+                  "attribute-value": {
+                    "string-value": "openflow:3"
+                  },
+                  "attribute-match-pattern": "equal"
+                }
+              ],
+              "virtual-port": [
+                {
+                  "port-id": "3ac1b718-b541-4df4-8e7b-a56407673cbf",
+                  "port-type": "internal",
+                  "bandwidth": 0
+                },
+                {
+                  "port-id": "89f43bd8-e6f7-4aea-9fb2-936f6255bf4b",
+                  "external-ip-prefixes": {
+                    "external-ip-prefix": [
+                      "172.168.1.0/24"
+                    ]
+                  },
+                  "port-type": "external",
+                  "physical-resource-requirement": [
+                    {
+                      "attribute-name": "location",
+                      "attribute-value": {
+                        "string-value": "openflow:3:4"
+                      },
+                      "attribute-match-pattern": "equal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "node-id": "bfc9341e-52d1-4e00-a992-110140be11b4",
+              "node-type": "vswitch",
+              "physical-resource-requirement": [
+                {
+                  "attribute-name": "location",
+                  "attribute-value": {
+                    "string-value": "openflow:2"
+                  },
+                  "attribute-match-pattern": "equal"
+                }
+              ],
+              "virtual-port": [
+                {
+                  "port-id": "57c413cd-8b84-4eb9-80d1-b67b3b187687",
+                  "port-type": "internal"
+                },
+                {
+                  "port-id": "3ccecbc5-6871-448e-bfe7-7da0d8d617da",
+                  "port-type": "internal"
+                },
+                {
+                  "port-id": "7ac662fe-1684-445e-9253-9b55a3cbd03c",
+                  "port-type": "internal"
+                },
+                {
+                  "port-id": "78baf6e4-5df3-45b2-be20-107844d71d87",
+                  "external-mac-addresses": {
+                    "external-mac-address": [
+                      "00:00:00:00:00:02"
+                    ]
+                  },
+                  "port-type": "external",
+                  "physical-resource-requirement": [
+                    {
+                      "attribute-name": "location",
+                      "attribute-value": {
+                        "string-value": "openflow:2:1"
+                      },
+                      "attribute-match-pattern": "equal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "node-id": "520bdfdc-ecd4-4a3b-ab64-7bdd5f178add",
               "node-type": "vswitch",
               "physical-resource-requirement": [
                 {
@@ -1230,11 +1047,11 @@ var virtualJson={
               ],
               "virtual-port": [
                 {
-                  "port-id": "b76cd89e-6d7f-48d5-aada-0aab94fa8d3f",
+                  "port-id": "58efb0ef-eb99-4afe-bfaa-ee1d6f98e235",
                   "port-type": "internal"
                 },
                 {
-                  "port-id": "b57dc73e-e107-4913-9de2-d1a13b06b8b0",
+                  "port-id": "2ec42067-0694-497f-8fd6-142d5e1e2820",
                   "external-mac-addresses": {
                     "external-mac-address": [
                       "00:00:00:00:00:03"
@@ -1259,231 +1076,231 @@ var virtualJson={
           "virtual-arp": [
             {
               "ip-address": "192.168.12.4",
-              "node-id": "6e77a772-602a-4e23-9275-522dd8b2fccb",
+              "node-id": "b0cec72b-376f-47f4-b7ae-44c0eb10d491",
               "mac-address": "08:00:27:a0:a9:b3",
-              "port-id": "56d54ad9-1d55-455d-828c-add02f9cfbd3"
+              "port-id": "fe8a0153-2a95-4473-8b62-16a6542c9212"
             },
             {
               "ip-address": "192.168.11.2",
-              "node-id": "3c641151-82a9-45f1-a40b-6d3fa6ddccd1",
+              "node-id": "520bdfdc-ecd4-4a3b-ab64-7bdd5f178add",
               "mac-address": "00:00:00:00:00:03",
-              "port-id": "b57dc73e-e107-4913-9de2-d1a13b06b8b0"
+              "port-id": "2ec42067-0694-497f-8fd6-142d5e1e2820"
             },
             {
               "ip-address": "192.168.12.2",
-              "node-id": "8c79c039-41c0-4bd9-a7af-704ed437cd49",
+              "node-id": "2698e79a-4a9e-4b9a-ae17-a5698a999bc9",
               "mac-address": "00:00:00:00:00:01",
-              "port-id": "3020a073-aec7-4e45-888b-98a7c06a0cb4"
+              "port-id": "c0284004-7b36-4bda-ab98-3f33a67655db"
             },
             {
               "ip-address": "192.168.12.3",
-              "node-id": "3450efe7-dd9c-46c9-a10d-a57b609f2885",
+              "node-id": "bfc9341e-52d1-4e00-a992-110140be11b4",
               "mac-address": "00:00:00:00:00:02",
-              "port-id": "e5a44c4c-6efb-4852-bf0a-2639d9cb739c"
+              "port-id": "78baf6e4-5df3-45b2-be20-107844d71d87"
             }
           ]
         },
         "virtual-links": {
           "virtual-link": [
             {
-              "link-id": "d5a26599-8433-4e32-ae2f-8bf81c15a007",
-              "src-node-id": "8c79c039-41c0-4bd9-a7af-704ed437cd49",
+              "link-id": "b19b3f5c-0fb3-4dca-98b5-5136b406e988",
+              "src-node-id": "868cf78a-54b7-495d-9ae7-a8fa3f2c7883",
               "delay": 0,
-              "dest-port-id": "03e82eac-9906-4c52-8960-0c6c34b6605a",
-              "metric": 1,
+              "dest-port-id": "3ac1b718-b541-4df4-8e7b-a56407673cbf",
+              "metric": 0,
               "bandwidth": 0,
-              "dest-node-id": "d7b911e0-f7b4-4fb5-b9dc-af87738485bb",
-              "src-port-id": "92931833-02db-4e6d-8cf7-8fa5d43c34a5"
+              "dest-node-id": "80213cce-4e1b-4b32-8d71-e2d68fedc50d",
+              "src-port-id": "b743e2d7-bec1-4e88-b2f8-0c3438322e03"
             },
             {
-              "link-id": "93605e9e-cfbe-4d87-80ea-7bcd3f2c1b72",
-              "src-node-id": "8c79c039-41c0-4bd9-a7af-704ed437cd49",
+              "link-id": "6632b4c7-a794-4e14-a2c7-872e81277d94",
+              "src-node-id": "520bdfdc-ecd4-4a3b-ab64-7bdd5f178add",
               "delay": 0,
-              "dest-port-id": "2d56888f-d697-4758-9de1-53540476afac",
+              "dest-port-id": "57c62f69-536a-4628-8d03-a3bf230ac607",
+              "metric": 1,
+              "bandwidth": 0,
+              "dest-node-id": "868cf78a-54b7-495d-9ae7-a8fa3f2c7883",
+              "src-port-id": "58efb0ef-eb99-4afe-bfaa-ee1d6f98e235"
+            },
+            {
+              "link-id": "8b2218cf-fbbb-4e14-85ca-694ceac1edfb",
+              "src-node-id": "2698e79a-4a9e-4b9a-ae17-a5698a999bc9",
+              "delay": 0,
+              "dest-port-id": "f7782068-8bf2-4ffb-a432-447a5cb708c4",
               "metric": 2,
               "bandwidth": 0,
-              "dest-node-id": "6e77a772-602a-4e23-9275-522dd8b2fccb",
-              "src-port-id": "948651a1-a523-43dc-b593-b0f44c817826"
+              "dest-node-id": "b0cec72b-376f-47f4-b7ae-44c0eb10d491",
+              "src-port-id": "707d56c8-4aee-4466-9383-503ecedd31c3"
             },
             {
-              "link-id": "3c2cdead-f362-495a-8e97-6f14c97ff077",
-              "src-node-id": "d7b911e0-f7b4-4fb5-b9dc-af87738485bb",
+              "link-id": "4b591338-e82f-4b8b-a7c4-afb241549455",
+              "src-node-id": "b0cec72b-376f-47f4-b7ae-44c0eb10d491",
               "delay": 0,
-              "dest-port-id": "b553b789-7e7b-4577-ad7d-d40cdb54b525",
+              "dest-port-id": "7ac662fe-1684-445e-9253-9b55a3cbd03c",
+              "metric": 0,
+              "bandwidth": 0,
+              "dest-node-id": "bfc9341e-52d1-4e00-a992-110140be11b4",
+              "src-port-id": "f6171160-ef25-45e9-8251-7a44468a9a68"
+            },
+            {
+              "link-id": "8cb78a59-146d-48f6-90e0-6fda9165a901",
+              "src-node-id": "868cf78a-54b7-495d-9ae7-a8fa3f2c7883",
+              "delay": 0,
+              "dest-port-id": "81e7f41a-be2c-4986-ac1d-11fbd4062be4",
+              "metric": 0,
+              "bandwidth": 0,
+              "dest-node-id": "d52e6bb0-93aa-4bf8-88cf-f24b11651a88",
+              "src-port-id": "9fb8376a-f286-489a-bde4-d5adde1c28c8"
+            },
+            {
+              "link-id": "110d2527-b282-4126-932f-8c2b9d728f82",
+              "src-node-id": "d52e6bb0-93aa-4bf8-88cf-f24b11651a88",
+              "delay": 0,
+              "dest-port-id": "34bca859-1b88-4d5a-b564-7d9080063609",
               "metric": 1,
               "bandwidth": 0,
-              "dest-node-id": "6e77a772-602a-4e23-9275-522dd8b2fccb",
-              "src-port-id": "7a558ce5-cbfd-4c4e-ac4b-223cb553ea42"
+              "dest-node-id": "2698e79a-4a9e-4b9a-ae17-a5698a999bc9",
+              "src-port-id": "c3ea674e-3dfb-492b-98d4-94b5f3b826e5"
             },
             {
-              "link-id": "09692509-6681-4b41-915b-ce12ae33187f",
-              "src-node-id": "8c79c039-41c0-4bd9-a7af-704ed437cd49",
+              "link-id": "c00198e9-8b1c-4f12-84f2-5ddc5bbee995",
+              "src-node-id": "80213cce-4e1b-4b32-8d71-e2d68fedc50d",
               "delay": 0,
-              "dest-port-id": "b295c6ad-eb02-4d43-bb48-a5f72db8b63c",
+              "dest-port-id": "b743e2d7-bec1-4e88-b2f8-0c3438322e03",
+              "metric": 0,
+              "bandwidth": 0,
+              "dest-node-id": "868cf78a-54b7-495d-9ae7-a8fa3f2c7883",
+              "src-port-id": "3ac1b718-b541-4df4-8e7b-a56407673cbf"
+            },
+            {
+              "link-id": "98d7b523-9532-4974-825e-c91aa402fe28",
+              "src-node-id": "b0cec72b-376f-47f4-b7ae-44c0eb10d491",
+              "delay": 0,
+              "dest-port-id": "5f965841-2e92-4317-a550-4be57d706896",
+              "metric": 1,
+              "bandwidth": 0,
+              "dest-node-id": "d52e6bb0-93aa-4bf8-88cf-f24b11651a88",
+              "src-port-id": "7cb2dda8-3cd2-4d84-996a-1d61aa0358a5"
+            },
+            {
+              "link-id": "ad1e1487-59a5-4fc1-8680-7a1e4d1aaf1a",
+              "src-node-id": "d52e6bb0-93aa-4bf8-88cf-f24b11651a88",
+              "delay": 0,
+              "dest-port-id": "3ccecbc5-6871-448e-bfe7-7da0d8d617da",
+              "metric": 1,
+              "bandwidth": 0,
+              "dest-node-id": "bfc9341e-52d1-4e00-a992-110140be11b4",
+              "src-port-id": "c04b0c95-b19b-4d29-962d-bb88ee271703"
+            },
+            {
+              "link-id": "3909140b-cd9d-4dce-a82f-a8b16d33f20b",
+              "src-node-id": "bfc9341e-52d1-4e00-a992-110140be11b4",
+              "delay": 0,
+              "dest-port-id": "32ea562d-5ba2-4c84-8560-9f0b4f8dc3ae",
               "metric": 2,
               "bandwidth": 0,
-              "dest-node-id": "3450efe7-dd9c-46c9-a10d-a57b609f2885",
-              "src-port-id": "577517d2-f936-4227-9b3a-ecb462a57d15"
+              "dest-node-id": "2698e79a-4a9e-4b9a-ae17-a5698a999bc9",
+              "src-port-id": "57c413cd-8b84-4eb9-80d1-b67b3b187687"
             },
             {
-              "link-id": "54e28d07-370d-4023-a80d-9897819bfda6",
-              "src-node-id": "3450efe7-dd9c-46c9-a10d-a57b609f2885",
+              "link-id": "f24926ee-586f-4434-a56c-b0e77c2b6031",
+              "src-node-id": "bfc9341e-52d1-4e00-a992-110140be11b4",
               "delay": 0,
-              "dest-port-id": "577517d2-f936-4227-9b3a-ecb462a57d15",
-              "metric": 2,
-              "bandwidth": 0,
-              "dest-node-id": "8c79c039-41c0-4bd9-a7af-704ed437cd49",
-              "src-port-id": "b295c6ad-eb02-4d43-bb48-a5f72db8b63c"
-            },
-            {
-              "link-id": "b920b33f-10f1-4b9a-858b-76ef2c2565fb",
-              "src-node-id": "6e77a772-602a-4e23-9275-522dd8b2fccb",
-              "delay": 0,
-              "dest-port-id": "948651a1-a523-43dc-b593-b0f44c817826",
-              "metric": 2,
-              "bandwidth": 0,
-              "dest-node-id": "8c79c039-41c0-4bd9-a7af-704ed437cd49",
-              "src-port-id": "2d56888f-d697-4758-9de1-53540476afac"
-            },
-            {
-              "link-id": "8e495e86-e415-4f5b-acd6-1e45472e07f7",
-              "src-node-id": "3c641151-82a9-45f1-a40b-6d3fa6ddccd1",
-              "delay": 0,
-              "dest-port-id": "eb30411b-1fc3-47c6-9238-ad437e362416",
+              "dest-port-id": "c04b0c95-b19b-4d29-962d-bb88ee271703",
               "metric": 1,
               "bandwidth": 0,
-              "dest-node-id": "7826e5d1-2a8c-4bca-be38-ada2fb54dd47",
-              "src-port-id": "b76cd89e-6d7f-48d5-aada-0aab94fa8d3f"
+              "dest-node-id": "d52e6bb0-93aa-4bf8-88cf-f24b11651a88",
+              "src-port-id": "3ccecbc5-6871-448e-bfe7-7da0d8d617da"
             },
             {
-              "link-id": "07510b23-7253-4ead-94f0-a536f1db346f",
-              "src-node-id": "7826e5d1-2a8c-4bca-be38-ada2fb54dd47",
+              "link-id": "866bf38c-8a6b-4c73-8d7b-74b02797171d",
+              "src-node-id": "e280be82-6354-4cd3-b8ca-7a41e7acc448",
               "delay": 0,
-              "dest-port-id": "b76cd89e-6d7f-48d5-aada-0aab94fa8d3f",
-              "metric": 1,
-              "bandwidth": 0,
-              "dest-node-id": "3c641151-82a9-45f1-a40b-6d3fa6ddccd1",
-              "src-port-id": "eb30411b-1fc3-47c6-9238-ad437e362416"
-            },
-            {
-              "link-id": "2c7793da-a1ad-4651-9367-db754c19684e",
-              "src-node-id": "d7b911e0-f7b4-4fb5-b9dc-af87738485bb",
-              "delay": 0,
-              "dest-port-id": "92931833-02db-4e6d-8cf7-8fa5d43c34a5",
-              "metric": 1,
-              "bandwidth": 0,
-              "dest-node-id": "8c79c039-41c0-4bd9-a7af-704ed437cd49",
-              "src-port-id": "03e82eac-9906-4c52-8960-0c6c34b6605a"
-            },
-            {
-              "link-id": "2579caf3-2a2d-49bb-b5c3-226aab60c3e5",
-              "src-node-id": "3450efe7-dd9c-46c9-a10d-a57b609f2885",
-              "delay": 0,
-              "dest-port-id": "4a0307d7-0ca1-4e66-83d9-d6051c116bd9",
-              "metric": 0,
-              "bandwidth": 0,
-              "dest-node-id": "6e77a772-602a-4e23-9275-522dd8b2fccb",
-              "src-port-id": "bc7f6f1d-3921-44a8-b7e0-12c03bfdf9b3"
-            },
-            {
-              "link-id": "b44bdf96-f78b-40b0-8b06-0f9cc5c46b24",
-              "src-node-id": "6e77a772-602a-4e23-9275-522dd8b2fccb",
-              "delay": 0,
-              "dest-port-id": "bc7f6f1d-3921-44a8-b7e0-12c03bfdf9b3",
-              "metric": 0,
-              "bandwidth": 0,
-              "dest-node-id": "3450efe7-dd9c-46c9-a10d-a57b609f2885",
-              "src-port-id": "4a0307d7-0ca1-4e66-83d9-d6051c116bd9"
-            },
-            {
-              "link-id": "b4abce22-18a3-4c3c-8c1a-4560b18b2f04",
-              "src-node-id": "6e77a772-602a-4e23-9275-522dd8b2fccb",
-              "delay": 0,
-              "dest-port-id": "7a558ce5-cbfd-4c4e-ac4b-223cb553ea42",
-              "metric": 1,
-              "bandwidth": 0,
-              "dest-node-id": "d7b911e0-f7b4-4fb5-b9dc-af87738485bb",
-              "src-port-id": "b553b789-7e7b-4577-ad7d-d40cdb54b525"
-            },
-            {
-              "link-id": "85c374ab-4135-4d5a-b3f7-80b780d12ddb",
-              "src-node-id": "7826e5d1-2a8c-4bca-be38-ada2fb54dd47",
-              "delay": 0,
-              "dest-port-id": "e246cc12-1c0a-467f-8440-b7bb43539b18",
-              "metric": 0,
-              "bandwidth": 0,
-              "dest-node-id": "d7b911e0-f7b4-4fb5-b9dc-af87738485bb",
-              "src-port-id": "831ff095-5fed-4125-8249-3b1238e05a9e"
-            },
-            {
-              "link-id": "bf4ccacb-cb99-46ce-8365-b2e1545cfe45",
-              "src-node-id": "d7b911e0-f7b4-4fb5-b9dc-af87738485bb",
-              "delay": 0,
-              "dest-port-id": "831ff095-5fed-4125-8249-3b1238e05a9e",
-              "metric": 0,
-              "bandwidth": 0,
-              "dest-node-id": "7826e5d1-2a8c-4bca-be38-ada2fb54dd47",
-              "src-port-id": "e246cc12-1c0a-467f-8440-b7bb43539b18"
-            },
-            {
-              "link-id": "decd48aa-5e1b-4775-899b-8e25e8d006f3",
-              "src-node-id": "3450efe7-dd9c-46c9-a10d-a57b609f2885",
-              "delay": 0,
-              "dest-port-id": "8981025b-2990-4d77-b041-0db8af1f8325",
-              "metric": 1,
-              "bandwidth": 0,
-              "dest-node-id": "d7b911e0-f7b4-4fb5-b9dc-af87738485bb",
-              "src-port-id": "56e7046b-3f13-4f73-92a4-e166cc076f5a"
-            },
-            {
-              "link-id": "136907df-d099-45ab-b55e-5ff32d4d1579",
-              "src-node-id": "74766098-9f67-4be0-8b6d-b6011110198c",
-              "delay": 0,
-              "dest-port-id": "56d04cbc-2557-4514-ae69-35d3b4fb6dc3",
-              "metric": 0,
-              "bandwidth": 0,
-              "dest-node-id": "7826e5d1-2a8c-4bca-be38-ada2fb54dd47",
-              "src-port-id": "19e72797-a78c-418c-8f99-1e2d4293f3e5"
-            },
-            {
-              "link-id": "c7aa534e-fcd5-4164-a636-a236d95ba624",
-              "src-node-id": "d7b911e0-f7b4-4fb5-b9dc-af87738485bb",
-              "delay": 0,
-              "dest-port-id": "90b1cc61-d631-4c9c-90bc-0aed911679ff",
+              "dest-port-id": "ee08bce2-0d1b-45f7-947c-73fa82175ee8",
               "metric": 1,
               "bandwidth": 128,
-              "dest-node-id": "ba9e5273-2c47-43c1-a959-5779488ce1f8",
-              "src-port-id": "ea178dbc-4ea7-4855-b1f0-130caae61ac5"
+              "dest-node-id": "d52e6bb0-93aa-4bf8-88cf-f24b11651a88",
+              "src-port-id": "01a637dd-55c9-4d96-8729-91538346001f"
             },
             {
-              "link-id": "f14c1592-d107-48c1-a5ca-835ad347e38b",
-              "src-node-id": "d7b911e0-f7b4-4fb5-b9dc-af87738485bb",
+              "link-id": "16e4dfd8-74e4-44ba-8a7d-0ddba8e00b52",
+              "src-node-id": "868cf78a-54b7-495d-9ae7-a8fa3f2c7883",
               "delay": 0,
-              "dest-port-id": "56e7046b-3f13-4f73-92a4-e166cc076f5a",
+              "dest-port-id": "58efb0ef-eb99-4afe-bfaa-ee1d6f98e235",
               "metric": 1,
               "bandwidth": 0,
-              "dest-node-id": "3450efe7-dd9c-46c9-a10d-a57b609f2885",
-              "src-port-id": "8981025b-2990-4d77-b041-0db8af1f8325"
+              "dest-node-id": "520bdfdc-ecd4-4a3b-ab64-7bdd5f178add",
+              "src-port-id": "57c62f69-536a-4628-8d03-a3bf230ac607"
             },
             {
-              "link-id": "94d01a13-0f9d-42ce-bc2e-308f16789dc7",
-              "src-node-id": "7826e5d1-2a8c-4bca-be38-ada2fb54dd47",
+              "link-id": "8295f474-0788-4431-ab0d-124b0c3d0b5f",
+              "src-node-id": "bfc9341e-52d1-4e00-a992-110140be11b4",
               "delay": 0,
-              "dest-port-id": "19e72797-a78c-418c-8f99-1e2d4293f3e5",
+              "dest-port-id": "f6171160-ef25-45e9-8251-7a44468a9a68",
               "metric": 0,
               "bandwidth": 0,
-              "dest-node-id": "74766098-9f67-4be0-8b6d-b6011110198c",
-              "src-port-id": "56d04cbc-2557-4514-ae69-35d3b4fb6dc3"
+              "dest-node-id": "b0cec72b-376f-47f4-b7ae-44c0eb10d491",
+              "src-port-id": "7ac662fe-1684-445e-9253-9b55a3cbd03c"
             },
             {
-              "link-id": "65b81cf0-5006-4aa4-80ca-f9cd01ada1b6",
-              "src-node-id": "ba9e5273-2c47-43c1-a959-5779488ce1f8",
+              "link-id": "63d55804-3204-4119-8187-7bd794061986",
+              "src-node-id": "2698e79a-4a9e-4b9a-ae17-a5698a999bc9",
               "delay": 0,
-              "dest-port-id": "ea178dbc-4ea7-4855-b1f0-130caae61ac5",
+              "dest-port-id": "57c413cd-8b84-4eb9-80d1-b67b3b187687",
+              "metric": 2,
+              "bandwidth": 0,
+              "dest-node-id": "bfc9341e-52d1-4e00-a992-110140be11b4",
+              "src-port-id": "32ea562d-5ba2-4c84-8560-9f0b4f8dc3ae"
+            },
+            {
+              "link-id": "92e5487b-ef90-4769-9ca8-10f60ab43c83",
+              "src-node-id": "d52e6bb0-93aa-4bf8-88cf-f24b11651a88",
+              "delay": 0,
+              "dest-port-id": "01a637dd-55c9-4d96-8729-91538346001f",
               "metric": 1,
               "bandwidth": 128,
-              "dest-node-id": "d7b911e0-f7b4-4fb5-b9dc-af87738485bb",
-              "src-port-id": "90b1cc61-d631-4c9c-90bc-0aed911679ff"
+              "dest-node-id": "e280be82-6354-4cd3-b8ca-7a41e7acc448",
+              "src-port-id": "ee08bce2-0d1b-45f7-947c-73fa82175ee8"
+            },
+            {
+              "link-id": "fad38c1a-153b-4814-bf12-8d40887808b3",
+              "src-node-id": "d52e6bb0-93aa-4bf8-88cf-f24b11651a88",
+              "delay": 0,
+              "dest-port-id": "7cb2dda8-3cd2-4d84-996a-1d61aa0358a5",
+              "metric": 1,
+              "bandwidth": 0,
+              "dest-node-id": "b0cec72b-376f-47f4-b7ae-44c0eb10d491",
+              "src-port-id": "5f965841-2e92-4317-a550-4be57d706896"
+            },
+            {
+              "link-id": "5467514b-9598-4767-8c76-f8e9d23a69b3",
+              "src-node-id": "d52e6bb0-93aa-4bf8-88cf-f24b11651a88",
+              "delay": 0,
+              "dest-port-id": "9fb8376a-f286-489a-bde4-d5adde1c28c8",
+              "metric": 0,
+              "bandwidth": 0,
+              "dest-node-id": "868cf78a-54b7-495d-9ae7-a8fa3f2c7883",
+              "src-port-id": "81e7f41a-be2c-4986-ac1d-11fbd4062be4"
+            },
+            {
+              "link-id": "316d4aa1-88ff-4b4b-bff2-fa8089f04e83",
+              "src-node-id": "b0cec72b-376f-47f4-b7ae-44c0eb10d491",
+              "delay": 0,
+              "dest-port-id": "707d56c8-4aee-4466-9383-503ecedd31c3",
+              "metric": 2,
+              "bandwidth": 0,
+              "dest-node-id": "2698e79a-4a9e-4b9a-ae17-a5698a999bc9",
+              "src-port-id": "f7782068-8bf2-4ffb-a432-447a5cb708c4"
+            },
+            {
+              "link-id": "ae7131f1-7207-4693-a149-e497738b1081",
+              "src-node-id": "2698e79a-4a9e-4b9a-ae17-a5698a999bc9",
+              "delay": 0,
+              "dest-port-id": "c3ea674e-3dfb-492b-98d4-94b5f3b826e5",
+              "metric": 1,
+              "bandwidth": 0,
+              "dest-node-id": "d52e6bb0-93aa-4bf8-88cf-f24b11651a88",
+              "src-port-id": "34bca859-1b88-4d5a-b564-7d9080063609"
             }
           ]
         },
@@ -1494,7 +1311,7 @@ var virtualJson={
     ]
   }
 }
-var MappingJson={
+var VnMappingJson={
   "intent-vn-mapping-results": {
     "user-intent-vn-mapping": [
       {
@@ -1505,11 +1322,11 @@ var MappingJson={
             "intent-type": "node",
             "virtual-resource": [
               {
-                "virtual-resource-id": "29bd638b-2187-4c73-9298-2c887d331a7d",
-                "parent-virtual-resource-entity-id": "ba9e5273-2c47-43c1-a959-5779488ce1f8",
+                "virtual-resource-id": "af948b19-9636-461f-8a46-4d7d340d17e5",
+                "parent-virtual-resource-entity-id": "e280be82-6354-4cd3-b8ca-7a41e7acc448",
                 "virtual-resource-type": "vport",
                 "order": 0,
-                "virtual-resource-entity-id": "25ba99fd-8846-490b-bbe7-883f71914851"
+                "virtual-resource-entity-id": "1b10a84d-247c-40b7-b4e6-6e3e0b140cda"
               }
             ]
           },
@@ -1518,11 +1335,11 @@ var MappingJson={
             "intent-type": "node",
             "virtual-resource": [
               {
-                "virtual-resource-id": "ecd7a4eb-4f68-416f-88d0-af96f914ee3d",
-                "parent-virtual-resource-entity-id": "3450efe7-dd9c-46c9-a10d-a57b609f2885",
+                "virtual-resource-id": "88d1b2f5-f3f6-4060-ab94-f99ff2db1ca1",
+                "parent-virtual-resource-entity-id": "bfc9341e-52d1-4e00-a992-110140be11b4",
                 "virtual-resource-type": "vport",
                 "order": 0,
-                "virtual-resource-entity-id": "e5a44c4c-6efb-4852-bf0a-2639d9cb739c"
+                "virtual-resource-entity-id": "78baf6e4-5df3-45b2-be20-107844d71d87"
               }
             ]
           },
@@ -1531,16 +1348,16 @@ var MappingJson={
             "intent-type": "connection",
             "virtual-resource": [
               {
-                "virtual-resource-id": "466dac24-f6ea-44b4-8011-2de59bc5cd97",
+                "virtual-resource-id": "a4cdf6b5-adcf-4533-b7b0-aed75fa32bbb",
                 "virtual-resource-type": "vlink",
                 "order": 0,
-                "virtual-resource-entity-id": "94d01a13-0f9d-42ce-bc2e-308f16789dc7"
+                "virtual-resource-entity-id": "c00198e9-8b1c-4f12-84f2-5ddc5bbee995"
               },
               {
-                "virtual-resource-id": "135ba490-19d9-4cb0-a211-49c6571c5064",
+                "virtual-resource-id": "f4025170-a20b-4a7f-aad1-1f1d4c4c4b4c",
                 "virtual-resource-type": "vlink",
                 "order": 0,
-                "virtual-resource-entity-id": "136907df-d099-45ab-b55e-5ff32d4d1579"
+                "virtual-resource-entity-id": "b19b3f5c-0fb3-4dca-98b5-5136b406e988"
               }
             ]
           },
@@ -1549,10 +1366,10 @@ var MappingJson={
             "intent-type": "node",
             "virtual-resource": [
               {
-                "virtual-resource-id": "d56007fd-01bc-4f07-a770-9a22a4ebb11f",
+                "virtual-resource-id": "293c7f66-8a22-4a20-8a91-0fe672431436",
                 "virtual-resource-type": "vnode",
                 "order": 0,
-                "virtual-resource-entity-id": "7826e5d1-2a8c-4bca-be38-ada2fb54dd47"
+                "virtual-resource-entity-id": "868cf78a-54b7-495d-9ae7-a8fa3f2c7883"
               }
             ]
           },
@@ -1561,11 +1378,11 @@ var MappingJson={
             "intent-type": "node",
             "virtual-resource": [
               {
-                "virtual-resource-id": "05d68f48-1f68-4c3b-b19e-312a9a2b0471",
-                "parent-virtual-resource-entity-id": "74766098-9f67-4be0-8b6d-b6011110198c",
+                "virtual-resource-id": "a267bedc-fb63-4c5b-9862-87794345695c",
+                "parent-virtual-resource-entity-id": "80213cce-4e1b-4b32-8d71-e2d68fedc50d",
                 "virtual-resource-type": "vport",
                 "order": 0,
-                "virtual-resource-entity-id": "9680299d-dc93-4ba0-aff4-20c43962b249"
+                "virtual-resource-entity-id": "89f43bd8-e6f7-4aea-9fb2-936f6255bf4b"
               }
             ]
           },
@@ -1574,16 +1391,16 @@ var MappingJson={
             "intent-type": "connection",
             "virtual-resource": [
               {
-                "virtual-resource-id": "9101d69a-312a-43b4-a9e1-a68c1d7acea4",
+                "virtual-resource-id": "6bd8c604-dbb7-473b-85eb-4e6df01fa17b",
                 "virtual-resource-type": "vlink",
                 "order": 0,
-                "virtual-resource-entity-id": "bf4ccacb-cb99-46ce-8365-b2e1545cfe45"
+                "virtual-resource-entity-id": "8cb78a59-146d-48f6-90e0-6fda9165a901"
               },
               {
-                "virtual-resource-id": "d6ed9071-e257-4a52-a64b-678bb1156221",
+                "virtual-resource-id": "39b09f4c-eaeb-4a87-a1ee-bf209926328b",
                 "virtual-resource-type": "vlink",
                 "order": 0,
-                "virtual-resource-entity-id": "85c374ab-4135-4d5a-b3f7-80b780d12ddb"
+                "virtual-resource-entity-id": "5467514b-9598-4767-8c76-f8e9d23a69b3"
               }
             ]
           },
@@ -1592,16 +1409,16 @@ var MappingJson={
             "intent-type": "connection",
             "virtual-resource": [
               {
-                "virtual-resource-id": "3c37017e-5495-4d2e-8a91-dfd7afe3d63d",
+                "virtual-resource-id": "a7997c59-6880-479d-a50a-7a00ee21ed01",
                 "virtual-resource-type": "vlink",
                 "order": 0,
-                "virtual-resource-entity-id": "65b81cf0-5006-4aa4-80ca-f9cd01ada1b6"
+                "virtual-resource-entity-id": "866bf38c-8a6b-4c73-8d7b-74b02797171d"
               },
               {
-                "virtual-resource-id": "0eddd640-073f-4762-abd0-ca9af26fd380",
+                "virtual-resource-id": "be484e6c-7f80-4d70-b244-d394065e98e1",
                 "virtual-resource-type": "vlink",
                 "order": 0,
-                "virtual-resource-entity-id": "c7aa534e-fcd5-4164-a636-a236d95ba624"
+                "virtual-resource-entity-id": "92e5487b-ef90-4769-9ca8-10f60ab43c83"
               }
             ]
           },
@@ -1610,11 +1427,11 @@ var MappingJson={
             "intent-type": "node",
             "virtual-resource": [
               {
-                "virtual-resource-id": "fe7c8040-3e8e-44e9-882f-17a0557af7ad",
-                "parent-virtual-resource-entity-id": "8c79c039-41c0-4bd9-a7af-704ed437cd49",
+                "virtual-resource-id": "5dc78465-e253-430d-bffc-c4c62ea8159a",
+                "parent-virtual-resource-entity-id": "2698e79a-4a9e-4b9a-ae17-a5698a999bc9",
                 "virtual-resource-type": "vport",
                 "order": 0,
-                "virtual-resource-entity-id": "3020a073-aec7-4e45-888b-98a7c06a0cb4"
+                "virtual-resource-entity-id": "c0284004-7b36-4bda-ab98-3f33a67655db"
               }
             ]
           },
@@ -1623,10 +1440,10 @@ var MappingJson={
             "intent-type": "node",
             "virtual-resource": [
               {
-                "virtual-resource-id": "7fff5626-dd2a-42e8-a0f2-efe374470178",
+                "virtual-resource-id": "52eace82-2f94-4d1d-b135-1a2fb928b741",
                 "virtual-resource-type": "vnode",
                 "order": 0,
-                "virtual-resource-entity-id": "d7b911e0-f7b4-4fb5-b9dc-af87738485bb"
+                "virtual-resource-entity-id": "d52e6bb0-93aa-4bf8-88cf-f24b11651a88"
               }
             ]
           },
@@ -1635,11 +1452,11 @@ var MappingJson={
             "intent-type": "node",
             "virtual-resource": [
               {
-                "virtual-resource-id": "a892362e-f2c2-4cf6-bfb2-5b5b1ca3014d",
-                "parent-virtual-resource-entity-id": "3c641151-82a9-45f1-a40b-6d3fa6ddccd1",
+                "virtual-resource-id": "acfe47d3-274a-4ce5-bcd9-3a8e947ef666",
+                "parent-virtual-resource-entity-id": "520bdfdc-ecd4-4a3b-ab64-7bdd5f178add",
                 "virtual-resource-type": "vport",
                 "order": 0,
-                "virtual-resource-entity-id": "b57dc73e-e107-4913-9de2-d1a13b06b8b0"
+                "virtual-resource-entity-id": "2ec42067-0694-497f-8fd6-142d5e1e2820"
               }
             ]
           },
@@ -1648,16 +1465,312 @@ var MappingJson={
             "intent-type": "node",
             "virtual-resource": [
               {
-                "virtual-resource-id": "d43bd8d0-3564-46a6-a2b1-441bdd947543",
-                "parent-virtual-resource-entity-id": "6e77a772-602a-4e23-9275-522dd8b2fccb",
+                "virtual-resource-id": "dcba1206-0961-4571-89a5-a96bcdce2e50",
+                "parent-virtual-resource-entity-id": "b0cec72b-376f-47f4-b7ae-44c0eb10d491",
                 "virtual-resource-type": "vport",
                 "order": 0,
-                "virtual-resource-entity-id": "56d54ad9-1d55-455d-828c-add02f9cfbd3"
+                "virtual-resource-entity-id": "fe8a0153-2a95-4473-8b62-16a6542c9212"
               }
             ]
           }
         ],
         "virtual-network-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b"
+      }
+    ]
+  }
+}
+var PnMappingJson={
+  "vn-pn-mapping-results": {
+    "user-vn-pn-mapping": [
+      {
+        "virtual-network-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
+        "vn-pn-mapping-result": [
+          {
+            "virtual-resource-entity-id": "78baf6e4-5df3-45b2-be20-107844d71d87",
+            "parent-physical-resource-entity-id": "openflow:2",
+            "parent-virtual-resource-entity-id": "bfc9341e-52d1-4e00-a992-110140be11b4",
+            "virtual-resource-id": "ad67bbcf-030a-44cb-8694-a25007ce05e3",
+            "physical-resource-id": "e8135c7c-a1e0-41c0-843b-9c2d4bd87761",
+            "physical-resource-entity-id": "openflow:2:1",
+            "physical-resource-type": "port",
+            "virtual-resource-type": "vport"
+          },
+          {
+            "virtual-resource-entity-id": "fad38c1a-153b-4814-bf12-8d40887808b3",
+            "virtual-resource-id": "01b5783e-db6e-4103-83c9-2445f5a72752",
+            "physical-resource-id": "f856a1c9-9c1d-4e9f-873e-1a4543b195f0",
+            "physical-resource-entity-id": "c231b5a3-7752-4f78-b8eb-b023ad4bea2f",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "fe8a0153-2a95-4473-8b62-16a6542c9212",
+            "parent-physical-resource-entity-id": "openflow:2",
+            "parent-virtual-resource-entity-id": "b0cec72b-376f-47f4-b7ae-44c0eb10d491",
+            "virtual-resource-id": "e8121faa-0109-4cec-89ef-54a3bfcd78ff",
+            "physical-resource-id": "b1682914-fb2b-4bbb-b5a0-a9bd43fbfa3e",
+            "physical-resource-entity-id": "openflow:2:2",
+            "physical-resource-type": "port",
+            "virtual-resource-type": "vport"
+          },
+          {
+            "virtual-resource-entity-id": "80213cce-4e1b-4b32-8d71-e2d68fedc50d",
+            "virtual-resource-id": "fa7d0f51-3a65-46a6-a428-a1d6fc927c1f",
+            "physical-resource-id": "f992d18f-1d8a-43fb-9b4f-e2c7d63210e8",
+            "physical-resource-entity-id": "openflow:3",
+            "physical-resource-type": "node",
+            "virtual-resource-type": "vnode"
+          },
+          {
+            "virtual-resource-entity-id": "5467514b-9598-4767-8c76-f8e9d23a69b3",
+            "virtual-resource-id": "f702bebc-725a-41c2-89e4-06bcde838282",
+            "physical-resource-id": "a1836436-17ff-495f-be9a-39e44bb77e26",
+            "physical-resource-entity-id": "3b9d1480-df24-4b0b-ba58-8c92605fe917",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "6632b4c7-a794-4e14-a2c7-872e81277d94",
+            "virtual-resource-id": "9b3fe3f6-2959-460c-a354-7d3ccc571554",
+            "physical-resource-id": "2d70ca54-9b42-47dc-8632-0c69c1e72e01",
+            "physical-resource-entity-id": "cb9b13ad-0172-43f5-9678-69859698071d",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "3909140b-cd9d-4dce-a82f-a8b16d33f20b",
+            "virtual-resource-id": "6b6250dd-2f79-424a-b6d0-4a80b8059e20",
+            "physical-resource-id": "f43d01be-ea31-40d1-9263-f019f78ccf12",
+            "physical-resource-entity-id": "5fc169b2-1209-4663-92c3-031100923f6f",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "520bdfdc-ecd4-4a3b-ab64-7bdd5f178add",
+            "virtual-resource-id": "6b91164b-81fd-4781-9042-d09ee6eac4da",
+            "physical-resource-id": "39f2ba50-661b-484a-91b2-53a845bbe0f2",
+            "physical-resource-entity-id": "openflow:1",
+            "physical-resource-type": "node",
+            "virtual-resource-type": "vnode"
+          },
+          {
+            "virtual-resource-entity-id": "1b10a84d-247c-40b7-b4e6-6e3e0b140cda",
+            "parent-physical-resource-entity-id": "openflow:4",
+            "parent-virtual-resource-entity-id": "e280be82-6354-4cd3-b8ca-7a41e7acc448",
+            "virtual-resource-id": "0b34cbe8-20ab-49f6-b717-b9e878670581",
+            "physical-resource-id": "dded9100-be4c-4fb9-9e70-656bf3845309",
+            "physical-resource-entity-id": "openflow:4:2",
+            "physical-resource-type": "port",
+            "virtual-resource-type": "vport"
+          },
+          {
+            "virtual-resource-entity-id": "bfc9341e-52d1-4e00-a992-110140be11b4",
+            "virtual-resource-id": "98787bce-8bad-480b-a786-47932246ec4f",
+            "physical-resource-id": "f0c5e55f-2256-4e01-b8b7-6fea603c90ba",
+            "physical-resource-entity-id": "openflow:2",
+            "physical-resource-type": "node",
+            "virtual-resource-type": "vnode"
+          },
+          {
+            "virtual-resource-entity-id": "b0cec72b-376f-47f4-b7ae-44c0eb10d491",
+            "virtual-resource-id": "4f7de648-9a9a-4e4a-ac41-01e6b2ff146a",
+            "physical-resource-id": "e50ff1b1-e386-45d8-8ff3-70edb1cd4dbf",
+            "physical-resource-entity-id": "openflow:2",
+            "physical-resource-type": "node",
+            "virtual-resource-type": "vnode"
+          },
+          {
+            "virtual-resource-entity-id": "316d4aa1-88ff-4b4b-bff2-fa8089f04e83",
+            "virtual-resource-id": "072ec5ca-4e7c-47ab-934b-709de978b85c",
+            "physical-resource-id": "3deee815-b701-4a21-b65d-d1d55ff755ef",
+            "physical-resource-entity-id": "ba0726d2-c72f-4b3e-b972-72da39430537",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "866bf38c-8a6b-4c73-8d7b-74b02797171d",
+            "virtual-resource-id": "a368c2b2-8bbb-4927-8966-bb4e02e8258e",
+            "physical-resource-id": "5a9223b1-3a6a-4dbb-9f34-d3b1449f9dae",
+            "physical-resource-entity-id": "6657f46b-edd2-47fe-b3fc-7b5aa16c7b97",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "f24926ee-586f-4434-a56c-b0e77c2b6031",
+            "virtual-resource-id": "72f002b8-3dab-4c04-ad66-646453f62337",
+            "physical-resource-id": "23686c36-42b7-4ece-a626-c497f8817a93",
+            "physical-resource-entity-id": "f84b9fda-b3f6-4631-a829-5089274093b0",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "110d2527-b282-4126-932f-8c2b9d728f82",
+            "virtual-resource-id": "145fea68-5f44-4732-91da-91f0db169e49",
+            "physical-resource-id": "f62b400e-c849-4c18-8a2f-3b2a841ff7e4",
+            "physical-resource-entity-id": "aab18b50-3bf6-4fde-aac1-968ffe22f518",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "c0284004-7b36-4bda-ab98-3f33a67655db",
+            "parent-physical-resource-entity-id": "openflow:1",
+            "parent-virtual-resource-entity-id": "2698e79a-4a9e-4b9a-ae17-a5698a999bc9",
+            "virtual-resource-id": "b8ab2d49-ff0c-4891-87a6-1980ad83c7c3",
+            "physical-resource-id": "211d94d3-c4c7-40b7-9c2e-90ff5a4d976a",
+            "physical-resource-entity-id": "openflow:1:2",
+            "physical-resource-type": "port",
+            "virtual-resource-type": "vport"
+          },
+          {
+            "virtual-resource-entity-id": "b19b3f5c-0fb3-4dca-98b5-5136b406e988",
+            "virtual-resource-id": "b5dc7980-2332-47d4-80d2-0737f28639d2",
+            "physical-resource-id": "8bca1f44-3f1f-4271-8079-dd854c9702d2",
+            "physical-resource-entity-id": "847ce4e6-d631-4d90-b2f3-dcfd56dbce3a",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "8295f474-0788-4431-ab0d-124b0c3d0b5f",
+            "virtual-resource-id": "04a08cc1-af4a-4fbb-90f4-b964b9d07abd",
+            "physical-resource-id": "fa3d22e1-7957-4e7f-86d5-4cb12f035620",
+            "physical-resource-entity-id": "e0f22266-e0c2-4467-b143-800a7b212a98",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "d52e6bb0-93aa-4bf8-88cf-f24b11651a88",
+            "virtual-resource-id": "0c9f60d7-a7e1-423c-88bf-28fa793ecb00",
+            "physical-resource-id": "d175b146-c4fc-4069-82b9-853131e8023f",
+            "physical-resource-entity-id": "openflow:3",
+            "physical-resource-type": "node",
+            "virtual-resource-type": "vnode"
+          },
+          {
+            "virtual-resource-entity-id": "8b2218cf-fbbb-4e14-85ca-694ceac1edfb",
+            "virtual-resource-id": "c6078cf6-9ed4-4046-b994-4dc4e0b88dd5",
+            "physical-resource-id": "86d6d843-7f35-49e1-a344-0c602017ac5d",
+            "physical-resource-entity-id": "eaa935ac-c511-4541-80cd-4a1640ae2246",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "ae7131f1-7207-4693-a149-e497738b1081",
+            "virtual-resource-id": "b34e2039-44f1-458e-a731-6061bbfc76bb",
+            "physical-resource-id": "25dad0dc-0b3e-4dca-83b9-ca1118ae9ff1",
+            "physical-resource-entity-id": "61c4597d-02a5-4609-8756-955024691a17",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "98d7b523-9532-4974-825e-c91aa402fe28",
+            "virtual-resource-id": "9d3cc16c-ce20-484a-8d2f-b083ed077ef7",
+            "physical-resource-id": "56b4a39c-c1c3-4eba-9b80-1e37948e6461",
+            "physical-resource-entity-id": "765e80be-6232-498d-b095-3b2c59448535",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "868cf78a-54b7-495d-9ae7-a8fa3f2c7883",
+            "virtual-resource-id": "33393811-e461-4d55-aeda-837cdafad7c5",
+            "physical-resource-id": "e001fe0a-e035-4106-8dda-883445e15352",
+            "physical-resource-entity-id": "openflow:3",
+            "physical-resource-type": "node",
+            "virtual-resource-type": "vnode"
+          },
+          {
+            "virtual-resource-entity-id": "92e5487b-ef90-4769-9ca8-10f60ab43c83",
+            "virtual-resource-id": "0ce90b95-dbc5-40fe-aa62-0609b9dee100",
+            "physical-resource-id": "c0a078ad-c7dc-4aad-80a1-4d7fad5f028e",
+            "physical-resource-entity-id": "4fdc5a09-ceca-461a-b3d3-1c3a9506dc74",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "4b591338-e82f-4b8b-a7c4-afb241549455",
+            "virtual-resource-id": "f3f73508-a241-4a76-af48-7bd706cfd4ea",
+            "physical-resource-id": "7041697c-fe57-4baa-8548-2412d41a830b",
+            "physical-resource-entity-id": "23f80b16-76d1-424c-9a71-aacd60a62bcd",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "16e4dfd8-74e4-44ba-8a7d-0ddba8e00b52",
+            "virtual-resource-id": "e668751f-13b0-4816-80b1-643bd08130db",
+            "physical-resource-id": "1a328854-19ca-4331-b1cd-f8b915c9553f",
+            "physical-resource-entity-id": "a710b9b8-5abf-4c59-9afd-88ccf8d935b0",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "e280be82-6354-4cd3-b8ca-7a41e7acc448",
+            "virtual-resource-id": "9bd4be7b-98ea-4f08-ac8c-d81880fe7727",
+            "physical-resource-id": "f03f81e3-87ff-40bd-99ce-7ade5df4bae5",
+            "physical-resource-entity-id": "openflow:4",
+            "physical-resource-type": "node",
+            "virtual-resource-type": "vnode"
+          },
+          {
+            "virtual-resource-entity-id": "63d55804-3204-4119-8187-7bd794061986",
+            "virtual-resource-id": "479e807e-138e-45ba-a02b-76e75ee5482c",
+            "physical-resource-id": "6010e2df-e031-4f50-8f56-f152347ddda5",
+            "physical-resource-entity-id": "7b875b56-ce40-4fcd-ac76-b361d0311d8f",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "c00198e9-8b1c-4f12-84f2-5ddc5bbee995",
+            "virtual-resource-id": "14e197fa-0c67-427c-bfb9-da053aa4bf62",
+            "physical-resource-id": "ba0cda05-e69b-4f43-bfcd-6ea46dc95775",
+            "physical-resource-entity-id": "4ce046d2-0c20-43c7-b7f8-fa441e07d443",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "2ec42067-0694-497f-8fd6-142d5e1e2820",
+            "parent-physical-resource-entity-id": "openflow:1",
+            "parent-virtual-resource-entity-id": "520bdfdc-ecd4-4a3b-ab64-7bdd5f178add",
+            "virtual-resource-id": "87ead73f-ac56-473b-9de2-5e2755a781c2",
+            "physical-resource-id": "2fc96459-bd96-4010-ab12-4bb81b6639ed",
+            "physical-resource-entity-id": "openflow:1:1",
+            "physical-resource-type": "port",
+            "virtual-resource-type": "vport"
+          },
+          {
+            "virtual-resource-entity-id": "89f43bd8-e6f7-4aea-9fb2-936f6255bf4b",
+            "parent-physical-resource-entity-id": "openflow:3",
+            "parent-virtual-resource-entity-id": "80213cce-4e1b-4b32-8d71-e2d68fedc50d",
+            "virtual-resource-id": "52101662-9a12-4e67-b35e-3389e0e19faf",
+            "physical-resource-id": "e4e39b0b-3e94-49e2-9056-af969c866a2a",
+            "physical-resource-entity-id": "openflow:3:4",
+            "physical-resource-type": "port",
+            "virtual-resource-type": "vport"
+          },
+          {
+            "virtual-resource-entity-id": "ad1e1487-59a5-4fc1-8680-7a1e4d1aaf1a",
+            "virtual-resource-id": "514d8aa7-df8a-4fbe-83a7-596663b67f6d",
+            "physical-resource-id": "7b88b0b2-af4b-4de4-892c-52ec34103ed7",
+            "physical-resource-entity-id": "bdd1e0cb-72aa-4f04-a2db-a07a15c62d61",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "8cb78a59-146d-48f6-90e0-6fda9165a901",
+            "virtual-resource-id": "62e24268-8d6b-4832-baa3-0756ccd16140",
+            "physical-resource-id": "e6d0bdcb-6b5a-449c-97cd-aceeb58ce72f",
+            "physical-resource-entity-id": "cb3de13d-cd6f-4f32-9596-09ddbb6d1c44",
+            "physical-resource-type": "path",
+            "virtual-resource-type": "vlink"
+          },
+          {
+            "virtual-resource-entity-id": "2698e79a-4a9e-4b9a-ae17-a5698a999bc9",
+            "virtual-resource-id": "48cf54ae-11e7-46bd-a1e0-2747853d2e1f",
+            "physical-resource-id": "5af260e5-7b06-4552-94d1-34643d4200df",
+            "physical-resource-entity-id": "openflow:1",
+            "physical-resource-type": "node",
+            "virtual-resource-type": "vnode"
+          }
+        ],
+        "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b"
       }
     ]
   }

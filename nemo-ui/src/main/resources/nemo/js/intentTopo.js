@@ -9,6 +9,7 @@ function getIntentInfos(){
 			dataType: "json",
 			success: function(data) {
 				console.log(data);
+				IntentInfos=data;
 				userData=data;
 			},
 			error: function(data) {
@@ -29,7 +30,7 @@ function getIntentInfos(){
  	//return virtualDatas;
  }
 
-getIntentDatas();
+getIntentInfos();
 
  function getIntentInfoById(user_id,Data){
  		//console.log(1);

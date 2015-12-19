@@ -17,8 +17,8 @@ var physicalData=null;
 jQuery(document).ready(function ($) {
 getPhysicalDatas();
 if(!physicalData) return;
-analy_topo(physicalData);
-create_physical_topo();
+//analy_topo(physicalData);
+//create_physical_topo();
 });
  //physicalJson
  function getPhysicalDatas(){
@@ -53,7 +53,7 @@ create_physical_topo();
  if(!physicalData) physicalData=physicalJson;
  if(!physicalData) return;
  }
-
+getPhysicalData();
 function analy_topo(topo_data)
 {
 	phy_hosts = [];
@@ -239,14 +239,62 @@ function create_physical_topo()
 		}
 		
 	};
-	// console.log('before get container');
 	console.log(jQuery('#phy_graph').width());
 	jQuery('#phy_graph').width(800).height(500);
 	console.log(jQuery('#phy_graph').width());
 	var container = document.getElementById('phy_graph');
+	if(!container) return;
 	var graph = new vis.Graph(container, data, options_phy)
 }
 
+var creataPhysicalTables={
+createPhyicalNodeTable:function (id,Data){
+	if(!Data) Data=physicalData;
+	if(!Data) return;
+	var physicalnodes=[];//physical_node_id---->[physical_node_type,[internal physical port number,external physical port number]]
+ 	var Mynode=Data['physical-network']['physical-nodes']['physical-node'];
+ 	for(var i in Mynode){
+ 		physicalnodes[Mynode[i]['node-id']]=[Mynode[i]['node-type']];
+ 	    var physicalPorts=Mynode[i]['physical-port'];
+ 	    if(!physicalPorts) {physicalnodes[Mynode[i]['node-id']].push(['','']);continue;}
+ 	    var interPort=exterPort=0;
+ 	    for(var port in physicalPorts){
+ 	    	if(physicalPorts[port]['port-type']=='internal') interPort++;
+ 	    	if(physicalPorts[port]['port-type']=='external') exterPort++;	    	
+ 	    }
+ 	    physicalnodes[Mynode[i]['node-id']].push([interPort,exterPort]);
+ 	}
+ 	console.log(physicalnodes);
+ 	jQuery("#"+id).find('tr:gt(1)').empty();
+ 	for(var item in physicalnodes){
+ 		var $tr='<tr><td>'+item+'</td><td>'+physicalnodes[item][0]+'</td>'
+ 		$tr+='<td>'+physicalnodes[item][1][0]+'</td><td>'+physicalnodes[item][1][1]+'</td>'
+ 		$tr+='</tr>'
+ 		jQuery("#"+id).append($tr);
+ 	}
+},
+createPhyicalLinkTable:function (id,Data){
+	if(!Data) Data=physicalData;
+	if(!Data) return;
+	var physaicallinks=[];
+ 	var mylink=Data['physical-network']['physical-links']['physical-link'];
+ 	for(var i in mylink){
+ 		if(!mylink[i]['metric'])
+ 		physaicallinks[mylink[i]['link-id']]=[mylink[i]['src-node-id'],mylink[i]['dest-node-id'],'',mylink[i]['bandwidth'],mylink[i]['delay']];
+ 	    else
+ 		physaicallinks[mylink[i]['link-id']]=[mylink[i]['src-node-id'],mylink[i]['dest-node-id'],mylink[i]['metric'],mylink[i]['bandwidth'],mylink[i]['delay']];
 
+ 	}
+ 	console.log(physaicallinks);
+ 	jQuery("#"+id).find('tr:gt(1)').empty();
+ 	for(var item in physaicallinks){
+ 		var $tr='<tr><td>'+item+'</td><td>'+physaicallinks[item][0]+'</td>'
+ 		 $tr+='<td>'+physaicallinks[item][1]+'</td><td>'+physaicallinks[item][2]+'</td>';
+ 		 $tr+='<td>'+physaicallinks[item][3]+'kbps'+'</td><td>'+physaicallinks[item][4]+'ms'+'</td>';
+ 		 $tr+='</tr>'
+ 		jQuery("#"+id).append($tr);
+ 	}
+}
+}
 
 
