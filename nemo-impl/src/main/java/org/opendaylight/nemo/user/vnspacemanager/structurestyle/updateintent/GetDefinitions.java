@@ -7,13 +7,17 @@
  */
 package org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.ActionName;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.ConnectionType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.MatchItemName;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.ConnectionDefinitions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.MatchItemDefinitions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.NodeDefinitions;
@@ -28,9 +32,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * Created by z00293636 on 2015/12/3.
@@ -92,12 +97,12 @@ public class GetDefinitions {
         return map;
     }
 
-    public Map<ParameterName, ConditionParameterDefinition> getConditionParameterDefinition(){
+    public Map<String, ConditionParameterDefinition> getConditionParameterDefinition(){
         fetchConditionParaDefinitions();
-        Map<ParameterName, ConditionParameterDefinition> map = new HashMap<ParameterName, ConditionParameterDefinition>();
+        Map<String, ConditionParameterDefinition> map = new HashMap<>();
         if (conditionParameterDefinitionList!=null){
             for (ConditionParameterDefinition conditionParameterDefinition : conditionParameterDefinitionList){
-                map.put(conditionParameterDefinition.getParameterName(),conditionParameterDefinition);
+                map.put(conditionParameterDefinition.getParameterName().getValue(), conditionParameterDefinition);
             }
         }
         return map;
@@ -203,6 +208,13 @@ public class GetDefinitions {
                 LOG.error("Can not read condition parameter definition information.", t);
             }
         });
+
+        try {
+            conditionparadefinitionFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return ;
     }
 }

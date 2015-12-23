@@ -162,6 +162,13 @@ public class TenantManage {
 
                 }
             });
+
+            try {
+                f.get();
+            } catch (InterruptedException | ExecutionException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 }
