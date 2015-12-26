@@ -16,6 +16,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.PhysicalHostName;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.hosts.PhysicalHost;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.ConnectionDefinitions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.MatchItemDefinitions;
@@ -225,5 +227,29 @@ public class GetDefinitionsTest {
         Assert.assertEquals(getDefinitions.getConditionParameterDefinition(), map1);
 
 
+    }
+
+    @Test
+    public void testGetPhysicalHost() throws Exception {
+        Map<PhysicalHostName, PhysicalHost> map1 = new HashMap<PhysicalHostName, PhysicalHost>();
+        PhysicalHostName physicalHostName = mock(PhysicalHostName.class);
+        PhysicalHost physicalHost = mock(PhysicalHost.class);
+        map1.put(physicalHostName,physicalHost);
+
+        List<PhysicalHost> physicalHostList = new ArrayList<PhysicalHost>();
+        physicalHostList.add(physicalHost);
+
+        Class<GetDefinitions> class_1 = GetDefinitions.class;
+        Field field = class_1.getDeclaredField("physicalHostList");
+        field.setAccessible(true);
+
+        field.set(getDefinitions, physicalHostList);
+        CheckedFuture physicalHostsFuture = mock(CheckedFuture.class);
+        ReadOnlyTransaction readOnlyTransaction = mock(ReadOnlyTransaction.class);
+        when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
+        when(readOnlyTransaction.read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class))).thenReturn(physicalHostsFuture);
+        when(physicalHost.getHostName()).thenReturn(physicalHostName);
+
+        Assert.assertEquals(getDefinitions.getPhysicalHost(), map1);
     }
 }

@@ -32,6 +32,10 @@ import org.junit.Before;
 import org.junit.Test;
 import java.util.*;
 import java.util.List;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.template.definitions.TemplateDefinition;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.template.instances.TemplateInstance;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.TemplateInstances;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.TemplateDefinitions;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -77,6 +81,13 @@ public class UpdateIntentTest {
     private List<Operation> operationList;
     private Results results;
     private StructureStyleNemoUpdateInput structureStyleNemoUpdateInput;
+    private TemplateDefinition templateDefinition;
+    private List<TemplateDefinition> templateDefinitionList;
+    private TemplateInstance templateInstance;
+    private List<TemplateInstance> templateInstanceList;
+    private TemplateDefinitions templateDefinitions;
+    private TemplateInstances templateInstances;
+
 
     @Before
     public void setUp() throws Exception {
@@ -103,6 +114,16 @@ public class UpdateIntentTest {
         flowList = new ArrayList<Flow>(1);
         flowList.add(flow);
 
+        templateDefinition = mock(TemplateDefinition.class);
+        templateDefinitionList = new ArrayList<TemplateDefinition>();
+        templateDefinitionList.add(templateDefinition);
+        templateDefinitions = mock(TemplateDefinitions.class);
+
+        templateInstance = mock(TemplateInstance.class);
+        templateInstanceList = new ArrayList<TemplateInstance>();
+        templateInstanceList.add(templateInstance);
+        templateInstances = mock(TemplateInstances.class);
+
 
 
         updateIntent = new UpdateIntent(dataBroker,tenantManage);
@@ -123,7 +144,7 @@ public class UpdateIntentTest {
         field_1.setAccessible(true);
 
         UpdateNode updateNode_1 = mock(UpdateNode.class);
-        field_1.set(updateIntent,updateNode_1);
+        field_1.set(updateIntent, updateNode_1);
         when(updateNode_1.NodeHandling(userId,node)).thenReturn(new String("node success"));
         Assert.assertEquals(updateIntent.updateIntent(aaa, structureStyleNemoUpdateInput), "node success");
 
@@ -176,6 +197,36 @@ public class UpdateIntentTest {
         field_5.set(updateIntent, updateResult);
         when(updateResult.ResultHandling(userId, results)).thenReturn(new String("result success"));
         Assert.assertEquals(updateIntent.updateIntent(aaa, structureStyleNemoUpdateInput), "result success");
+
+        //getTemplateDefinitions
+        when(structureStyleNemoUpdateInput.getObjects()).thenReturn(null);
+        when(structureStyleNemoUpdateInput.getOperations()).thenReturn(null);
+        when(structureStyleNemoUpdateInput.getResults()).thenReturn(null);
+        when(structureStyleNemoUpdateInput.getTemplateDefinitions()).thenReturn(templateDefinitions);
+        when(structureStyleNemoUpdateInput.getTemplateDefinitions().getTemplateDefinition()).thenReturn(templateDefinitionList);
+
+        Field field_6 = class_1.getDeclaredField("updateTemplateDefinition");
+        field_6.setAccessible(true);
+        UpdateTemplateDefinition updateTemplateDefinition = mock(UpdateTemplateDefinition.class);
+        field_6.set(updateIntent, updateTemplateDefinition);
+        when(updateTemplateDefinition.checkTemplateDefinition(userId, templateDefinition)).thenReturn(new String("templateDefinition success"));
+        Assert.assertEquals(updateIntent.updateIntent(aaa, structureStyleNemoUpdateInput), "templateDefinition success");
+
+
+        //getTemplateInstances
+        when(structureStyleNemoUpdateInput.getObjects()).thenReturn(null);
+        when(structureStyleNemoUpdateInput.getOperations()).thenReturn(null);
+        when(structureStyleNemoUpdateInput.getResults()).thenReturn(null);
+        when(structureStyleNemoUpdateInput.getTemplateDefinitions()).thenReturn(null);
+        when(structureStyleNemoUpdateInput.getTemplateInstances()).thenReturn(templateInstances);
+        when(structureStyleNemoUpdateInput.getTemplateInstances().getTemplateInstance()).thenReturn(templateInstanceList);
+
+        Field field_7 = class_1.getDeclaredField("updateTemplateInstance");
+        field_7.setAccessible(true);
+        UpdateTemplateInstance updateTemplateInstance = mock(UpdateTemplateInstance.class);
+        field_7.set(updateIntent, updateTemplateInstance);
+        when(updateTemplateInstance.checkTemplateInstance(userId, templateInstance)).thenReturn(new String("templateInstance success"));
+        Assert.assertEquals(updateIntent.updateIntent(aaa, structureStyleNemoUpdateInput),"templateInstance success");
 
 
 
