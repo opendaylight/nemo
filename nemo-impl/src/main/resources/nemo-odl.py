@@ -26,7 +26,11 @@ def add_predefined_userrole(contHost):
 							{
 								"role-name": "tenant",
 								"role-description": "It's a non-administor user"
-							}
+							},
+							{
+                                "role-name": "admin",
+                              	"role-description": "It's a administor user"
+                            }
 						]
 					}
 		}
@@ -75,7 +79,11 @@ def add_predefined_nodetypes(contHost):
 									{
 										"property-name": "location",
 										"property-value-type": "string"
-									}
+									},
+						 			{
+                                    	"property-name": "sub-nodes",
+                                       	"property-value-type": "string"
+                                	}
 								]
 						},
 						{
