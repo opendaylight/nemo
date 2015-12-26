@@ -247,6 +247,7 @@ public class VNMappingUnit implements AutoCloseable {
     public void virtualNetworkMapping(VirtualNetwork virtualNetwork, List<VirtualLink> unmappedVirtualLinks,
                                       UserVnPnMapping userVnPnMapping, List<PhysicalPath> physicalPaths)
             throws VNMappingException {
+        UserId userId = virtualNetwork.getUserId();
         List<VirtualLink> virtualLinks = virtualNetwork.getVirtualLinks().getVirtualLink();
         List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
         PhysicalPath physicalPath;
@@ -258,10 +259,16 @@ public class VNMappingUnit implements AutoCloseable {
             physicalPath = virtualLinkMapping(virtualNetwork.getNetworkId(), virtualLink, userVnPnMapping);
 
             if ( null == physicalPath ) {
+                // If mapping failed, reset the user physical resources.
+                pnResourcesTracker.resetResource(userId);
+
                 throw new VNMappingException("Failed mapping for the virtual link " +
                         virtualLink.getLinkId().getValue() + " in the virtual network " +
                         virtualNetwork.getNetworkId().getValue());
             }
+
+            // Keep physical resource.
+            pnResourcesTracker.addPhysicalPath(userId, physicalPath);
 
             physicalPaths.add(physicalPath);
 

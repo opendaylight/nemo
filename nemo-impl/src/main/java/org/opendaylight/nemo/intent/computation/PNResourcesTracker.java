@@ -129,6 +129,9 @@ public class PNResourcesTracker {
             if (physicalResources.contains(resourceId)) {
                 physicalResourceMap.remove(userId);
                 try {
+                    log.info("Physical network changed and affected the virtual network of " +
+                            "user {}, start remapping.", userId.getValue());
+
                     intentResolver.resolveIntent(userId);
                 } catch (Exception e) {
                     e.printStackTrace();
