@@ -121,6 +121,7 @@ public class UserManager implements NemoIntentService {
             }
             else{
                 transaction = false;
+                tenantManage.transactionHandling(input.getUserId());
                 if (informresolver){
                     informresolver = false;
                     try{

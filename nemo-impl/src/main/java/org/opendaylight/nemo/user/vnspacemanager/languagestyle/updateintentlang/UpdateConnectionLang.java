@@ -7,6 +7,7 @@
  */
 package org.opendaylight.nemo.user.vnspacemanager.languagestyle.updateintentlang;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.NEMOConstants;
 import org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent.UpdateConnection;
@@ -14,13 +15,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.com
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Connection;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.ConnectionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.ConnectionKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.connection.instance.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.property.instance.PropertyValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.property.instance.property.values.*;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-
 
 import java.util.*;
 
@@ -80,65 +77,46 @@ public class UpdateConnectionLang {
 
     private String createConnection(UserId userId, String connectionname, String connectiontype, List<String> endnodes, LinkedHashMap<String, LinkedHashMap<String,String>> propertyList){
         String errorInfo = null;
-        tenantManage.fetchVNSpace(userId);
-        User user = tenantManage.getUser();
-        List<Connection> connectionList = new ArrayList<Connection>();
-        List<Node> nodeList = new ArrayList<Node>();
-        Boolean ConnExist = false;
-
-        if (user.getObjects()!=null){
-            if (user.getObjects().getNode()!=null){
-                nodeList = user.getObjects().getNode();
-            }
-            if (user.getObjects().getConnection()!=null){
-                connectionList = user.getObjects().getConnection();
-            }
-        }
         ConnectionBuilder connectionBuilder = new ConnectionBuilder();
-        if (!connectionList.isEmpty()){
-            for (Connection connection1:connectionList) {
-                if (connection1.getConnectionName().getValue().equals(connectionname)){
-                    ConnExist = true;
-                    connectionBuilder.setKey(connection1.getKey());
-                    connectionBuilder.setConnectionId(connection1.getConnectionId());
-                }
+        Connection connection1 = null;
+        if (tenantManage.getObjectId(userId,connectionname)!=null){
+            ConnectionId connectionId = new ConnectionId(tenantManage.getObjectId(userId,connectionname));
+            if (tenantManage.getConnection(userId).containsKey(connectionId)){
+                connection1 = tenantManage.getConnection(userId).get(connectionId);
+            }
+            else if (tenantManage.getConnectionDataStore(userId).containsKey(connectionId)){
+                connection1 = tenantManage.getConnectionDataStore(userId).get(connectionId);
             }
         }
-        if (!ConnExist){
+
+        if (connection1==null){
             ConnectionId connectionId = new ConnectionId(UUID.randomUUID().toString());
-            connectionBuilder.setKey(new ConnectionKey(connectionId));
-            connectionBuilder.setConnectionId(connectionId);
+            connectionBuilder.setKey(new ConnectionKey(connectionId))
+                             .setConnectionId(connectionId);
+        }
+        else {
+            connectionBuilder.setKey(connection1.getKey())
+                             .setConnectionId(connection1.getConnectionId());
         }
 
-        connectionBuilder.setConnectionName(new ConnectionName(connectionname));
-        connectionBuilder.setConnectionType(new ConnectionType(connectiontype));
+        connectionBuilder.setConnectionName(new ConnectionName(connectionname))
+                         .setConnectionType(new ConnectionType(connectiontype));
 
-        if (!endnodes.isEmpty() && errorInfo==null){
+        if (!endnodes.isEmpty()){
             List<EndNode> endNodeList = new ArrayList<EndNode>();
-
-            if (nodeList.isEmpty()){
-                errorInfo = "The EndNode is not exist in the user vn space.";
-                return errorInfo;
-            }
-            else{
-                int order = 0;
-                for (String endnode : endnodes){
-                    Boolean endnodeexist = false;
-                    for (Node node : nodeList) {
-                        if (node.getNodeName().getValue().equals(endnode)){
-                            endnodeexist = true;
-                            EndNodeBuilder endNodeBuilder = new EndNodeBuilder();
-                            endNodeBuilder.setKey(new EndNodeKey(node.getNodeId()));
-                            endNodeBuilder.setNodeId(node.getNodeId());
-                            endNodeBuilder.setOrder((long) order);
-                            endNodeList.add(endNodeBuilder.build());
-                        }
-                    }
-                    if (!endnodeexist) {
-                        errorInfo = "The EndNode is not exist in the user vn space.";
-                        return errorInfo;
-                    }
-                    order ++;
+            for (String nodeName : endnodes){
+                if (tenantManage.getObjectId(userId,nodeName)!=null){
+                    Long order = 0L;
+                    NodeId nodeId = new NodeId(tenantManage.getObjectId(userId,nodeName));
+                    EndNodeBuilder endNodeBuilder = new EndNodeBuilder();
+                    endNodeBuilder.setKey(new EndNodeKey(nodeId))
+                                  .setNodeId(nodeId)
+                                  .setOrder(order);
+                    order++;
+                    endNodeList.add(endNodeBuilder.build());
+                }
+                else {
+                    return "The end node " + nodeName + " is not exist.";
                 }
             }
             connectionBuilder.setEndNode(endNodeList);

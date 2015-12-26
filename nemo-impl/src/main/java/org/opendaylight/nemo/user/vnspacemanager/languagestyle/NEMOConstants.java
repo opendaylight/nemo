@@ -13,7 +13,7 @@ package org.opendaylight.nemo.user.vnspacemanager.languagestyle;
 public interface NEMOConstants {
     String range = "range";
     String string = "string";
-    String integer = "int";
+    String integer = "integer";
     String ethaddr = "ethaddr";
     String ipv4pref = "ipv4pref";
     String ipv4addr = "ipv4addr";
@@ -34,10 +34,6 @@ public interface NEMOConstants {
     String not = "!";
     String and = "&&";
     String or = "||";
-    String lparen = "(";
-    String rparen = ")";
-    String lbracket = "[";
-    String rbracket = "]";
     String equal = "==";
     String not_equal = "!=";
     String greater_than = ">";
@@ -71,10 +67,11 @@ public interface NEMOConstants {
     String create = "CREATE";
     String delete = "DELETE";
     String update = "UPDATE";
-    String Import = "IMPORT";
     String query = "query";
     String from = "From";
     String transaction = "Transaction";
     String begin = "Begin";
     String end = "End";
+    String sub_nodes = "sub-nodes";
+    String admin = "admin";
 }
