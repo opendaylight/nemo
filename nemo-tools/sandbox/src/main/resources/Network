@@ -1,0 +1,9 @@
+#switch:TYPE,NAME,DATA-PATH-ID
+#host:TYPE,NAME,UUID,Inde:IPV4,...
+#Link:TYPE,leftName,lPortId,rightName,rPortId
+
+Switch,sw1,1
+Router,sw2,2
+Firewall,firewall,1ab3cd4ef,1:192.168.1.1/16
+Link,sw1,1,sw2,1
+Link,sw1,2,firewall,1
