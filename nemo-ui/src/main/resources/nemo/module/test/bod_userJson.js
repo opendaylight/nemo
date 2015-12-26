@@ -297,6 +297,811 @@ var userinfo ={
   }
 }
 //console.log(userinfo);
+userinfo={
+  "users": {
+    "user": [
+      {
+        "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
+        "user-role": "tenant",
+        "user-password": "abc",
+        "user-name": "user2",
+        "objects": {
+          "node": [
+            {
+              "node-id": "22282cca-9a13-4d0c-a67e-a933ebb0b0ae",
+              "node-name": "server1",
+              "node-type": "host"
+            },
+            {
+              "node-id": "9d6f5343-f38e-4101-ab60-309e6322ace3",
+              "property": [
+                {
+                  "property-name": "location",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "openflow:1:1",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "property-name": "operating-mode",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "layer3",
+                        "order": 0
+                      }
+                    ]
+                  }
+                }
+              ],
+              "node-type": "fw",
+              "node-name": "dmz1_fw1"
+            },
+            {
+              "node-id": "ae83ca1d-43ef-4d02-a48b-6c250bb084bd",
+              "property": [
+                {
+                  "property-name": "ip-prefix",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "192.168.13.0/24",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "property-name": "ac-info-network",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "layer3",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "property-name": "ac-info-protocol",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "static",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "property-name": "location",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "openflow:4:2",
+                        "order": 0
+                      }
+                    ]
+                  }
+                }
+              ],
+              "node-type": "ext-group",
+              "node-name": "interior"
+            },
+            {
+              "node-id": "7dc2233e-f8a2-416c-902a-95cff42b398a",
+              "property": [
+                {
+                  "property-name": "location",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "openflow:3",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "property-name": "ip-prefix",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "192.168.12.0/24",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "property-name": "gateway-ip",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "192.168.12.1",
+                        "order": 0
+                      }
+                    ]
+                  }
+                }
+              ],
+              "node-type": "l2-group",
+              "node-name": "dmz1_n2",
+              "sub-node": [
+                {
+                  "node-id": "6c787caa-156a-49ed-8546-547bdccf283c",
+                  "order": 0
+                },
+                {
+                  "node-id": "22282cca-9a13-4d0c-a67e-a933ebb0b0ae",
+                  "order": 1
+                }
+              ]
+            },
+            {
+              "node-id": "c3afb4f5-ffb4-4413-bad9-020babc67ed8",
+              "property": [
+                {
+                  "property-name": "ip-prefix",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "172.168.1.0/24",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "property-name": "ac-info-network",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "layer3",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "property-name": "ac-info-protocol",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "static",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "property-name": "location",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "openflow:3:4",
+                        "order": 0
+                      }
+                    ]
+                  }
+                }
+              ],
+              "node-type": "ext-group",
+              "node-name": "internet"
+            },
+            {
+              "node-id": "6c787caa-156a-49ed-8546-547bdccf283c",
+              "node-name": "vm2",
+              "node-type": "host"
+            },
+            {
+              "node-id": "0dc22c0a-8ff0-448f-afc3-86fa22976242",
+              "node-type": "chain-group",
+              "node-name": "dmz1_n1",
+              "sub-node": [
+                {
+                  "node-id": "9d6f5343-f38e-4101-ab60-309e6322ace3",
+                  "order": 0
+                }
+              ]
+            }
+          ],
+          "connection": [
+            {
+              "connection-id": "94709024-6675-4a9a-b098-07e14d18633f",
+              "end-node": [
+                {
+                  "node-id": "c3afb4f5-ffb4-4413-bad9-020babc67ed8",
+                  "order": 0
+                },
+                {
+                  "node-id": "0dc22c0a-8ff0-448f-afc3-86fa22976242",
+                  "order": 0
+                }
+              ],
+              "connection-type": "p2p",
+              "connection-name": "c1"
+            },
+            {
+              "connection-id": "a88b037d-0aa0-4a50-8076-225449c8f036",
+              "end-node": [
+                {
+                  "node-id": "0dc22c0a-8ff0-448f-afc3-86fa22976242",
+                  "order": 0
+                },
+                {
+                  "node-id": "7dc2233e-f8a2-416c-902a-95cff42b398a",
+                  "order": 1
+                }
+              ],
+              "connection-type": "p2p",
+              "connection-name": "dmz1_c1"
+            },
+            {
+              "connection-id": "06c60ef9-f16d-4368-9697-aa6b1cf1340a",
+              "end-node": [
+                {
+                  "node-id": "ae83ca1d-43ef-4d02-a48b-6c250bb084bd",
+                  "order": 0
+                },
+                {
+                  "node-id": "7dc2233e-f8a2-416c-902a-95cff42b398a",
+                  "order": 0
+                }
+              ],
+              "connection-type": "p2p",
+              "connection-name": "c2"
+            }
+          ],
+          "flow": [
+            {
+              "flow-id": "613648ce-1059-4d06-b25a-0d54193c6586",
+              "match-item": [
+                {
+                  "match-item-name": "dst-port",
+                  "match-item-value": {
+                    "int-value": 80
+                  }
+                },
+                {
+                  "match-item-name": "dst-ip",
+                  "match-item-value": {
+                    "string-value": "192.168.12.0/24"
+                  }
+                },
+                {
+                  "match-item-name": "src-ip",
+                  "match-item-value": {
+                    "string-value": "172.168.1.0/24"
+                  }
+                }
+              ],
+              "flow-name": "dmz1_f1"
+            }
+          ]
+        },
+        "operations": {
+          "operation": [
+            {
+              "operation-id": "315b1a21-f5b3-4298-868f-6b08729d2622",
+              "priority": 0,
+              "action": [
+                {
+                  "action-name": "deny",
+                  "order": 0
+                }
+              ],
+              "target-object": "613648ce-1059-4d06-b25a-0d54193c6586",
+              "operation-name": "dmz1.o1"
+            }
+          ]
+        },
+        "template-instances": {
+          "template-instance": [
+            {
+              "template-instance-id": "e630091d-f336-4a3a-a699-fe3a4fe7c6e2",
+              "template-parameter": [
+                {
+                  "parameter-name": "subnodes-n2",
+                  "parameter-values": {
+                    "string-value": [
+                      {
+                        "value": "vm2",
+                        "order": 0
+                      },
+                      {
+                        "value": "server1",
+                        "order": 1
+                      }
+                    ]
+                  }
+                },
+                {
+                  "parameter-name": "location-fw",
+                  "parameter-values": {
+                    "string-value": [
+                      {
+                        "value": "openflow:1:1",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "parameter-name": "ipprefix",
+                  "parameter-values": {
+                    "string-value": [
+                      {
+                        "value": "192.168.12.0/24",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "parameter-name": "location-n2",
+                  "parameter-values": {
+                    "string-value": [
+                      {
+                        "value": "openflow:3",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "parameter-name": "gatewayip",
+                  "parameter-values": {
+                    "string-value": [
+                      {
+                        "value": "192.168.12.1",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "parameter-name": "srcip",
+                  "parameter-values": {
+                    "string-value": [
+                      {
+                        "value": "172.168.1.0/24",
+                        "order": 0
+                      }
+                    ]
+                  }
+                }
+              ],
+              "template-name": "dmz",
+              "template-instance-name": "dmz1"
+            }
+          ]
+        }
+      },
+      {
+        "user-id": "af4fc2be-e3f4-4388-a8ef-3aabae872f2b",
+        "user-role": "admin",
+        "user-password": "abcd",
+        "user-name": "admin",
+        "template-definitions": {
+          "template-definition": [
+            {
+              "template-name": "dmz",
+              "abstract-intents": {
+                "abstract-objects": {
+                  "abstract-connection": [
+                    {
+                      "connection-id": "86f56efc-db49-4d7c-853c-6e7db169f56c",
+                      "end-node": [
+                        {
+                          "node-id": "fc096b0b-95cb-4f12-af28-b700a1228191",
+                          "order": 0
+                        },
+                        {
+                          "node-id": "9cfda02c-ba8b-41c2-9b36-b7144390fcc3",
+                          "order": 1
+                        }
+                      ],
+                      "connection-type": "p2p",
+                      "connection-name": "c1"
+                    }
+                  ],
+                  "abstract-node": [
+                    {
+                      "node-id": "f011ae1d-bb3e-42e0-9fa1-f6fa3641f02d",
+                      "property": [
+                        {
+                          "property-name": "location",
+                          "property-values": {
+                            "string-value": [
+                              {
+                                "value": "location-fw",
+                                "order": 0
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "property-name": "operating-mode",
+                          "property-values": {
+                            "string-value": [
+                              {
+                                "value": "layer3",
+                                "order": 0
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "node-type": "fw",
+                      "node-name": "fw1"
+                    },
+                    {
+                      "node-id": "9cfda02c-ba8b-41c2-9b36-b7144390fcc3",
+                      "property": [
+                        {
+                          "property-name": "ip-prefix",
+                          "property-values": {
+                            "string-value": [
+                              {
+                                "value": "ipprefix",
+                                "order": 0
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "property-name": "gateway-ip",
+                          "property-values": {
+                            "string-value": [
+                              {
+                                "value": "gatewayip",
+                                "order": 0
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "property-name": "location",
+                          "property-values": {
+                            "string-value": [
+                              {
+                                "value": "location-n2",
+                                "order": 0
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "property-name": "sub-nodes",
+                          "property-values": {
+                            "string-value": [
+                              {
+                                "value": "subnodes-n2",
+                                "order": 0
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "node-type": "l2-group",
+                      "node-name": "n2"
+                    },
+                    {
+                      "node-id": "fc096b0b-95cb-4f12-af28-b700a1228191",
+                      "node-type": "chain-group",
+                      "node-name": "n1",
+                      "sub-node": [
+                        {
+                          "node-id": "f011ae1d-bb3e-42e0-9fa1-f6fa3641f02d",
+                          "order": 0
+                        }
+                      ]
+                    }
+                  ],
+                  "abstract-flow": [
+                    {
+                      "flow-id": "815c0bee-b04e-4c56-9bb8-b743d72ba66f",
+                      "match-item": [
+                        {
+                          "match-item-name": "dst-port",
+                          "match-item-value": {
+                            "int-value": 80
+                          }
+                        },
+                        {
+                          "match-item-name": "dst-ip",
+                          "match-item-value": {
+                            "string-value": "ipprefix"
+                          }
+                        },
+                        {
+                          "match-item-name": "src-ip",
+                          "match-item-value": {
+                            "string-value": "srcip"
+                          }
+                        }
+                      ],
+                      "flow-name": "f1"
+                    }
+                  ]
+                },
+                "abstract-operations": {
+                  "abstract-operation": [
+                    {
+                      "operation-id": "769c52f5-1c75-4c21-b270-15fa259de39b",
+                      "priority": 0,
+                      "action": [
+                        {
+                          "action-name": "deny",
+                          "order": 0
+                        }
+                      ],
+                      "target-object": "815c0bee-b04e-4c56-9bb8-b743d72ba66f",
+                      "operation-name": "o1"
+                    }
+                  ]
+                }
+              },
+              "template-parameter": [
+                {
+                  "parameter-name": "subnodes-n2",
+                  "parameter-value-type": "string"
+                },
+                {
+                  "parameter-name": "location-fw",
+                  "parameter-value-type": "string"
+                },
+                {
+                  "parameter-name": "ipprefix",
+                  "parameter-value-type": "string"
+                },
+                {
+                  "parameter-name": "location-n2",
+                  "parameter-value-type": "string"
+                },
+                {
+                  "parameter-name": "gatewayip",
+                  "parameter-value-type": "string"
+                },
+                {
+                  "parameter-name": "srcip",
+                  "parameter-value-type": "string"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+  }
+var physicalJson2={
+  "physical-network": {
+    "physical-hosts": {
+      "physical-host": [
+        {
+          "host-id": "22282cca-9a13-4d0c-a67e-a933ebb0b0ae",
+          "node-id": "openflow:2",
+          "host-name": "video-server2",
+          "mac-address": "08:00:27:a0:a9:b3",
+          "port-id": "openflow:2:2",
+          "ip-addresses": {
+            "ip-address": [
+              "192.168.12.4"
+            ]
+          }
+        },
+        {
+          "host-id": "7b796915-adf4-4356-b5ca-de005ac410c1",
+          "node-id": "openflow:1",
+          "host-name": "video-server1",
+          "mac-address": "00:00:00:00:00:03",
+          "port-id": "openflow:1:1",
+          "ip-addresses": {
+            "ip-address": [
+              "192.168.11.2"
+            ]
+          }
+        },
+        {
+          "host-id": "6c787caa-156a-49ed-8546-547bdccf283c",
+          "node-id": "openflow:2",
+          "host-name": "vm2",
+          "mac-address": "00:00:00:00:00:02",
+          "port-id": "openflow:2:1",
+          "ip-addresses": {
+            "ip-address": [
+              "192.168.12.3"
+            ]
+          }
+        },
+        {
+          "host-id": "1eaf9a67-a171-42a8-9282-71cf702f61dd",
+          "node-id": "openflow:1",
+          "host-name": "vm1",
+          "mac-address": "00:00:00:00:00:01",
+          "port-id": "openflow:1:2",
+          "ip-addresses": {
+            "ip-address": [
+              "192.168.12.2"
+            ]
+          }
+        }
+      ]
+    },
+    "physical-nodes": {
+      "physical-node": [
+        {
+          "node-id": "openflow:3",
+          "attribute": [
+            {
+              "attribute-name": "location",
+              "attribute-value": {
+                "string-value": "openflow:3"
+              }
+            }
+          ],
+          "node-type": "router"
+        },
+        {
+          "node-id": "openflow:4",
+          "attribute": [
+            {
+              "attribute-name": "location",
+              "attribute-value": {
+                "string-value": "openflow:4"
+              }
+            }
+          ],
+          "node-type": "router"
+        },
+        {
+          "node-id": "openflow:1",
+          "attribute": [
+            {
+              "attribute-name": "location",
+              "attribute-value": {
+                "string-value": "openflow:1"
+              }
+            }
+          ],
+          "node-type": "switch",
+          "physical-port": [
+            {
+              "port-id": "openflow:1:1",
+              "attribute": [
+                {
+                  "attribute-name": "location",
+                  "attribute-value": {
+                    "string-value": "openflow:1:1"
+                  }
+                }
+              ],
+              "port-type": "external",
+              "mac-address": "56:21:6B:B3:3E:1A",
+              "bandwidth": 10240
+            },
+            {
+              "port-id": "openflow:1:2",
+              "attribute": [
+                {
+                  "attribute-name": "location",
+                  "attribute-value": {
+                    "string-value": "openflow:1:2"
+                  }
+                }
+              ],
+              "port-type": "external",
+              "mac-address": "FE:2C:6E:85:F0:E1",
+              "bandwidth": 10240
+            },
+            {
+              "port-id": "openflow:1:3",
+              "attribute": [
+                {
+                  "attribute-name": "location",
+                  "attribute-value": {
+                    "string-value": "openflow:1:3"
+                  }
+                }
+              ],
+              "port-type": "internal",
+              "mac-address": "B2:78:02:9F:FA:2C",
+              "bandwidth": 10240
+            }
+          ]
+        },
+        {
+          "node-id": "openflow:2",
+          "attribute": [
+            {
+              "attribute-name": "location",
+              "attribute-value": {
+                "string-value": "openflow:2"
+              }
+            }
+          ],
+          "node-type": "switch",
+          "physical-port": [
+            {
+              "port-id": "openflow:2:3",
+              "attribute": [
+                {
+                  "attribute-name": "location",
+                  "attribute-value": {
+                    "string-value": "openflow:2:3"
+                  }
+                }
+              ],
+              "port-type": "internal",
+              "mac-address": "52:B8:9B:40:CF:43",
+              "bandwidth": 10240
+            },
+            {
+              "port-id": "openflow:2:2",
+              "attribute": [
+                {
+                  "attribute-name": "location",
+                  "attribute-value": {
+                    "string-value": "openflow:2:2"
+                  }
+                }
+              ],
+              "port-type": "external",
+              "mac-address": "00:0C:29:98:7E:13",
+              "bandwidth": 10240
+            },
+            {
+              "port-id": "openflow:2:1",
+              "attribute": [
+                {
+                  "attribute-name": "location",
+                  "attribute-value": {
+                    "string-value": "openflow:2:1"
+                  }
+                }
+              ],
+              "port-type": "external",
+              "mac-address": "52:A7:95:B0:0F:FE",
+              "bandwidth": 10240
+            }
+          ]
+        }
+      ]
+    },
+    "physical-links": {
+      "physical-link": [
+        {
+          "link-id": "openflow:3:3",
+          "loss-rate": 1,
+          "delay": 1,
+          "src-port-id": "openflow:3:3",
+          "dest-node-id": "openflow:4",
+          "metric": 1,
+          "dest-port-id": "openflow:4:1",
+          "bandwidth": 10240,
+          "src-node-id": "openflow:3"
+        },
+        {
+          "link-id": "openflow:1:3",
+          "loss-rate": 1,
+          "delay": 1,
+          "src-port-id": "openflow:1:3",
+          "dest-node-id": "openflow:3",
+          "metric": 1,
+          "dest-port-id": "openflow:3:1",
+          "bandwidth": 10240,
+          "src-node-id": "openflow:1"
+        }
+      ]
+    }
+  }
+}
 var physicalJson={
   "physical-network": {
     "physical-hosts": {

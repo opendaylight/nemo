@@ -8,8 +8,11 @@ body
 	font-family: verdana,Geneva,Arial,sans-serif;
 }
 #logPage{
-min-width: 1140px;
-/*border:2px solid red; */
+    min-width: 1140px;
+    width: 1140px;
+    height: 566px;
+    /* border: 2px solid red; */
+    background-color: #aaa;
 }
 .nemo_info{
 	background-color: #ddd;
@@ -99,7 +102,7 @@ table tr td
 {
 	width: 160px;
 	height: 25px;
-	background-color: #ccc !important;
+	background-color: #fff !important;
 	font-size: 18px;
 	color: black;
 	font-family:Verdana,Arial; 

@@ -9,11 +9,11 @@
      <!-- // <script src="src/app/nemo/module/migrate_js.js"></script> -->
     <script src="src/app/nemo/js/Nemo_Main.js"></script>
     <script src="src/app/nemo/module/keyWords.js"></script>
-    <!-- // <script src="src/app/nemo/module/migrate.js"></script> -->
+    <script src="src/app/nemo/module/migrate.js"></script>
     <!-- SFC -->
-    <!-- // <script src="src/app/nemo/module/test/servicechain_userJson.js"></script>  -->
+     <!-- // <script src="src/app/nemo/module/test/servicechain_userJson.js"></script>  -->
     <!-- Bod -->
-     <!-- // <script src="src/app/nemo/module/test/bod_userJson.js"></script>  -->
+    <!-- // <script src="src/app/nemo/module/test/bod_userJson.js"></script>  -->
 
     <script src="src/app/nemo/js/Nemo_Annouce_vis.js"></script>
     <script src="src/app/nemo/js/phyNetwork.js"></script>
@@ -57,10 +57,11 @@
         
 
         $(".tabs ul li[aria-controls='PhyNet']").click(function(){
+             createPhysicalTopo();
              analy_topo(physicalData);
-             create_physical_topo();
-             creataPhysicalTables.createPhyicalNodeTable('phyNodeTab',null)
-             creataPhysicalTables.createPhyicalLinkTable('phyLinkTab',null)
+             // create_physical_topo();
+              creataPhysicalTables.createPhyicalNodeTable('phyNodeTab',null)
+              creataPhysicalTables.createPhyicalLinkTable('phyLinkTab',null)
         });
 
         $(".tabs ul li[aria-controls='PhyNet']").click();
@@ -157,12 +158,20 @@
 
     });
 
+       $('#logout').click(function(){
+        // alert(1);
+        setCookie('nemo_userpwd','',-1);
+        $("#pageContent").empty();
+        $("#pageContent").load('src/app/nemo/register.html');
+        // alert(2);
+       });
+
         });
     </script>
 </head>
 <body>
       <div class="header">
-        <p>Hello Admin!</p>
+        <p>Hello Admin!</p><span id='logout'>Logout</span>
         <div id='selectUser'>
             <p>Tenant:</p>
             <select value="intentUser">

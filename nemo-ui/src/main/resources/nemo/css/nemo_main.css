@@ -26,6 +26,20 @@ span.key
 .header p{
   float: left;
 }
+.header span{
+  color:#000 !important;
+  text-shadow:0 0 0 #fff;
+  text-decoration: underline;
+  /*text-decoration-color:green;*/
+  /*border-bottom:1px solid green;*/
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 30px;
+  display: inline-block;
+  margin-left: 20px;
+  cursor: pointer;
+  font-family:'cursive','-webkit-pictograp',sans-serif,Verdana;
+}
 #selectUser{
 width: 290px;
 height: 30px;

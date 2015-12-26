@@ -84,7 +84,7 @@ svg{
 }
 /*tab ui li*/
 .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
-  border: 1px solid #fbd850;
+  /*border: 1px solid #fbd850;*/
   background: #fff url("../images/ui-bg_glass_65_ffffff_1x400.png") 50% 50% repeat-x;
   font-weight: bold;
   color: #eb8f00;
@@ -99,6 +99,19 @@ svg{
   border: 1px solid #ddd;
   background: #eee url("../images/ui-bg_highlight-soft_100_eeeeee_1x100.png") 50% top repeat-x;
   color: #333;
+}
+.ui-tabs .ui-tabs-nav li {
+    background: #fff;
+    /*opacity: 0.9;*/
+}
+.ui-tabs .ui-tabs-nav li a{
+    color:gray !important;
+}
+li.ui-state-default.ui-corner-top.ui-tabs-active.ui-state-active {
+    background: #eee;
+}
+li.ui-state-default.ui-corner-top.ui-tabs-active.ui-state-active a{
+   color:#eb8f00 !important;
 }
 /*jquery ui tab css end*/
 div#pageContent {

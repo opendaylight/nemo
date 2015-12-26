@@ -106,7 +106,9 @@ var createMappingTables = {
 			}
 			console.log(virtualnodes);
 			jQuery("#" + id).find('tr:gt(1)').empty();
-			if (!virtual_nodes) return;
+			var count=0;
+			for(var x in virtual_nodes){count++;}
+			if(count==0) return;
 			for (var i in virtualnodes) {
 				var $tr = '<tr><td>' + virtual_nodes[i][1] + '</td><td>' + virtualnodes[i] + '</td></tr>'
 				jQuery("#" + id).append($tr);
@@ -132,6 +134,9 @@ var createMappingTables = {
 			var paths = createMappingTables.getPaths(virtuallinks, vn_pnData, physicalData, PathId); //physical-path-id----->[Physical Nodes passed by Path](count=0,1,2,3...)
 			console.log(PathId);
 			console.log(paths);
+			var count=0;
+			for(var x in virtual_nodes){count++;}
+			if(count==0) return;
 			for (var i in virtuallinks) {
 				var $tr = '<tr><td>' + virtual_nodes[virtuallinks[i][0]][1] + '-' + virtual_nodes[virtuallinks[i][1]][1] + '</td><td>' + virtual_nodes[virtuallinks[i][0]][1] + '</td><td>' + virtual_nodes[virtuallinks[i][1]][1] + '</td><td>' + PathId[i] + '</td>'
 				var pathsNode = ''

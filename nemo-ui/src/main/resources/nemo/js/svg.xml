@@ -1,0 +1,35 @@
+<svg id="service_svg2" width="800" height="560" viewBox="100 40 900 780">
+	<path id="c2" node_start="interior" node_end="dmz1_n2" type="connection" d="M762.1320343559642 662.1320343559643 L337.86796564403573 237.86796564403573" stroke="black" stroke-width="1" fill="black"></path>
+	<path id="dmz1_c1" node_start="dmz1_n1" node_end="dmz1_n2" type="connection" d="M337.86796564403573 662.1320343559643 L337.86796564403573 237.86796564403573" stroke="black" stroke-width="1" fill="black"></path>
+	<path id="c1" node_start="internet" node_end="dmz1_n1" type="connection" d="M762.1320343559643 237.8679656440358 L337.86796564403573 662.1320343559643" stroke="black" stroke-width="1" fill="black"></path>
+
+	<defs>
+		<marker id="idArrow2" viewBox="0 0 20 20" refX="0" refY="10" markerUnits="strokeWidth" markerWidth="6" markerHeight="15" orient="auto"><path d="M 0 0 L 20 10 L0 20 z" fill="purple" stroke="black"></path> </marker>                   <marker id="idtext2" viewBox="0 0 120 50" refX="0" refY="0" markerUnits="strokeWidth" markerWidth="20" markerHeight="20" orient="auto"><text style="font-family:sans-serif; font-size:14pt;" x="20" y="20">text</text></marker>
+	</defs>
+	<g id="dmz1_n2" type="l2-group" sub="vm2,server1" ip-prefix="192.168.12.0/24">
+		<circle id="dmz1_n2_group" cx="337.86796564403573" cy="237.86796564403573" r="90" stroke="black" stroke-width="3" fill="white"></circle>
+		<rect id="vm2" x="282.86796564403573" y="212.86796564403573" width="110" height="34" stroke="black" stroke-width="1" fill="white"></rect>
+		<rect id="server1" x="282.86796564403573" y="255.86796564403573" width="110" height="34" stroke="black" stroke-width="1" fill="white"></rect>
+		<text id="dmz1_n2_title1" x="337.86796564403573" y="189.86796564403573" fill="black" text-anchor="middle" stroke="black" stroke-width="0.8">l2-group</text>
+		<text id="dmz1_n2_title2" x="337.86796564403573" y="206.86796564403573" fill="black" text-anchor="middle">dmz1_n2</text>
+		<text id="vm2_text" x="337.86796564403573" y="232.86796564403573" fill="black" text-anchor="middle">vm2</text>
+		<text id="server1_text" x="337.86796564403573" y="277.86796564403573" fill="black" text-anchor="middle">server1</text>
+	</g>
+	<g id="dmz1_n1" type="chain-group" sub="dmz1_fw1" flow="0">
+		<circle id="dmz1_n1_group" cx="337.86796564403573" cy="662.1320343559643" r="90" stroke="black" stroke-width="3" fill="white"></circle>
+		<rect id="dmz1_fw1" x="280.86796564403573" y="637.1320343559643" width="114" height="50" stroke="black" stroke-width="1" fill="white"></rect>
+		<text id="dmz1_n1_title1" x="337.86796564403573" y="614.1320343559643" fill="black" text-anchor="middle" stroke="black" stroke-width="0.8">chain-group</text>
+		<text id="dmz1_n1_title2" x="337.86796564403573" y="632.1320343559643" fill="black" text-anchor="middle">dmz1_n1</text>
+		<text id="dmz1_fw1_text" x="337.86796564403573" y="662.1320343559643" fill="black" text-anchor="middle">dmz1_fw1</text>
+	</g>
+	<g id="interior" type="ext-group" sub="interior" ip-prefix="192.168.13.0/24">
+		<circle id="interior_group" cx="762.1320343559642" cy="662.1320343559643" r="90" stroke="black" stroke-width="3" fill="white"></circle>
+		<text id="interior_title1" x="762.1320343559642" y="654.1320343559643" fill="black" text-anchor="middle" stroke="black" stroke-width="0.8">ext-group</text>
+		<text id="interior_title2" x="762.1320343559642" y="672.1320343559643" fill="                       " text-anchor="middle">interior</text>
+	</g>
+	<g id="internet" type="ext-group" sub="internet" ip-prefix="172.168.1.0/24">
+		<circle id="internet_group" cx="762.1320343559643" cy="237.8679656440358" r="90" stroke="black" stroke-width="3" fill="white"></circle>
+		<text id="internet_title1" x="762.1320343559643" y="229.8679656440358" fill="black" text-anchor="middle" stroke="black" stroke-width="0.8">ext-group</text>
+		<text id="internet_title2" x="762.1320343559643" y="247.8679656440358" fill="                       " text-anchor="middle">internet</text>
+	</g>
+</svg>

@@ -5,10 +5,31 @@
 	<title>nemo-register</title>
 	<link rel="stylesheet" href="src/app/nemo/css/register.css">
 	 <script src="lib/jquery-2.1.4.min.js"></script>
+	 <script src="src/app/nemo/js/jquery.cookie.js"></script>
 	<script>
-     jQuery(document).ready(function ($) {
-        var userInfoStorage={};
+	function setCookie(name,value,Days) 
+{ 
+    if(!Days) Days = 3; 
+    var exp = new Date(); 
+    exp.setTime(exp.getTime() + Days*24*60*60*1000); 
+    document.cookie = name + "="+ escape (value) + ";expires=" + exp.toGMTString()+';path=/'; 
+} 
+function getCookie(name) 
+{ 
+    var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+ 
+    if(arr=document.cookie.match(reg)) 
+        return unescape(arr[2]); 
+    else 
+        return null; 
+} 
 
+     	//setCookie('username','user123');
+        //alert(getCookie('username'));
+         // jQuery.cookie('name', 'value');
+     jQuery(document).ready(function ($) {
+
+        var userInfoStorage={};
       function getUserId(username,userpwd){
       	var userid = null;
       	 var users = localStorage.getItem("AllRegUserInfo");//localstorage data
@@ -41,9 +62,27 @@
 			});
       	return user_data;
       }
-
+      (function(){
+      	var cook_username=getCookie('nemo_username');
+      	var cook_userpwd=getCookie('nemo_userpwd');
+      	if(!cook_username) return;
+      	if(!cook_userpwd) return;
+      	if(cook_username=='admin'&&cook_userpwd=='admin'){
+      		$("#pageContent").empty();
+            $("#pageContent").load('src/app/nemo/nemo.tpl.html');
+      	}
+      }());
+      $("#usename").focus();
+//add enter evevt
+      document.onkeydown = function(e){ 
+          var ev = document.all ? window.event : e;
+           if(ev.keyCode==13) {
+           $("#log_ok").click();
+     }
+}
 	    $("#log_ok").click(function () {
 	        //validate all use
+	        // alert('test');
 	        var userName = $("#usename").val().trim();
 	        var userPassword = $("#usepwd").val().trim();
 	        if (userName == "" || userPassword == "") {
@@ -51,7 +90,8 @@
 	            return;
 	        }
             if(userName.toLowerCase()=="admin"&&userPassword.toLowerCase()=="admin") {
-
+            setCookie('nemo_username',userName);
+     		setCookie('nemo_userpwd',userPassword);
             $("#pageContent").empty();
             $("#pageContent").load('src/app/nemo/nemo.tpl.html');
             }
@@ -71,8 +111,10 @@
 				{
 					userInfoStorage.userName=userName;
 					localStorage.setItem("nemo_userInfo",JSON.stringify(userInfoStorage));
-			    $("#pageContent").empty();
-                $("#pageContent").load('src/app/nemo/nemo.tpl.user.html');
+     				// setCookie('username',userName);
+     				// setCookie('username',userPassword);
+			    	$("#pageContent").empty();
+                	$("#pageContent").load('src/app/nemo/nemo.tpl.user.html');
                 return;
 			    }
 			    else{
@@ -98,7 +140,6 @@
 </head>
 <body>
 	<div id="logPage">
-   
    <div class='nemo_info'>
    	<img src="src/app/nemo/images/nemo-overview.png" width="500px" height="320px" alt="nemo-overview.png">
    	<p>

@@ -54,6 +54,174 @@ if(!physicalData) return;
  if(!physicalData) return;
  }
 getPhysicalData();
+
+function createPhysicalTopo(Data){
+	nodes_phy.clear();
+	edges_phy.clear();
+	if(!Data) Data=physicalData;
+	if(!Data) return;
+	var physicalHost=Data['physical-network']['physical-hosts'];
+	var physicalNode=Data['physical-network']['physical-nodes']['physical-node'];
+	var physicalLink=Data['physical-network']['physical-links'];
+	var myHost=[];//host_id----->[vis_node_id,connected node_id,host_name]
+	var myHostPort=[];//host_id----->host_port_id
+	var myNode=[];//node_id----->[vis_node_id,node_type]
+	var externalNode=[];//external_port_id----->[vis_node_id,node_id]
+	var myLink=[];//null
+	if(physicalHost){
+		physicalHost=physicalHost['physical-host'];		
+		for(var i in physicalHost){
+			myHost[physicalHost[i]['host-id']]=[+i+1,physicalHost[i]['node-id'],physicalHost[i]['host-name']];
+			myHostPort[physicalHost[i]['host-id']]=physicalHost[i]['port-id'];
+			nodes_phy.add({
+				id: +i+1,
+                label: physicalHost[i]["host-name"],
+                image: "src/app/nemo/images/phyHost.png",
+                shape: 'image',
+			    fontSize: 15
+			});
+		}
+	}
+	console.log(myHost);
+	if(physicalNode){
+		var nodeslen=nodes_phy.get().length;
+		for(var i in physicalNode){
+			myNode[physicalNode[i]['node-id']]=[nodeslen+1,physicalNode[i]['node-type'],''];
+			nodes_phy.add({
+				id: ++nodeslen,
+                label: physicalNode[i]["node-type"]+physicalNode[i]["node-id"].split(":")[1],
+                group: physicalNode[i]["node-type"],
+			});
+			var physicalPort=physicalNode[i]['physical-port'];
+			if(physicalPort){
+				for(var item in physicalPort){
+					if(physicalPort[item]['port-type']=='external')
+					{
+					var flag=true;
+					for(var hostPort in myHostPort){
+						if(physicalPort[item]['port-id']==myHostPort[hostPort])
+							flag=false;
+					}
+					if(flag)	
+					externalNode[physicalPort[item]['port-id']]=[physicalNode[i]['node-id']];
+				    }
+				}
+			}
+		}
+	}
+	console.log(myNode);
+	console.log(externalNode);
+
+	var externalnodecount=0;
+    for(var x in externalNode){externalnodecount++;}
+    if(externalnodecount>0){
+    	var nodeslen=nodes_phy.get().length;
+    	for(var i in externalNode){
+    		externalNode[i]=[nodeslen+1,externalNode[i][0]];
+    		nodes_phy.add({
+				id: ++nodeslen,
+                label: '',
+                image: "src/app/nemo/images/ext-group.png",
+                shape: 'image',
+			});
+    	}
+    	console.log(externalNode);
+    	var edgeslen=edges_phy.get().length;
+    	for(var i in externalNode){
+    		edges_phy.add({
+				id: ++edgeslen,
+                from:externalNode[i][0],
+			    to:myNode[externalNode[i][1]][0],
+			    length:150,
+			    width: 1
+			});
+    	}
+    }
+	if(physicalLink){
+		physicalLink=physicalLink['physical-link'];
+		var edgeslen=edges_phy.get().length;
+		for(var i in physicalLink){
+			// myLink[]
+			edges_phy.add({
+		     id:++edgeslen,
+			from:myNode[physicalLink[i]['src-node-id']][0],
+			to:myNode[physicalLink[i]['dest-node-id']][0],
+			length:150,
+			width: 2
+			});
+		}
+	}
+
+    var hostcount=0;
+	for(var x in physicalHost){hostcount++;}
+	if(hostcount>0){
+		var edgeslen=edges_phy.get().length;
+		console.log(edgeslen);
+		for(var i in myHost){
+			// myLink[]
+			edges_phy.add({
+		    id:++edgeslen,
+			from:myHost[i][0],
+			to:myNode[myHost[i][1]][0],
+			length:150,
+			width: 1
+			});
+		}
+	}
+
+var data = {
+		nodes: nodes_phy,
+		edges: edges_phy
+	};
+
+var options_phy = {
+		/* physics: {
+		repulsion: {
+			centralGravity: 0,
+			springLength: 200,//弹簧长度
+			springConstant: 0,//弹簧常数
+			nodeDistance: 0,
+			damping: 0 //阻尼，减幅，衰减
+		}}, */
+		smoothCurves: false,
+		stabilize: false,
+		nodes: {
+          // default for all nodes
+			shape: 'dot', 
+			fontSize:16,
+			radius:23,
+			fixed:true
+		},
+		edges:{
+			// length:200,
+			width: 1
+		},
+		groups:{
+			switch:{
+				color: {
+					border: 'black',
+					background: '#B0E2FF',				
+				}
+            },
+				
+			router:{
+				color: {
+					border: 'black',
+					background: '#7FFF00',
+				}	
+
+			}
+		}
+		
+	};
+	console.log(jQuery('#phy_graph').width());
+	jQuery('#phy_graph').width(800).height(500);
+	console.log(jQuery('#phy_graph').width());
+	var container = document.getElementById('phy_graph');
+	if(!container) return;
+	var graph = new vis.Graph(container, data, options_phy);
+}
+
 function analy_topo(topo_data)
 {
 	phy_hosts = [];

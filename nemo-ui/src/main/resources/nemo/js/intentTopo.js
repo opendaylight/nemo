@@ -26,12 +26,12 @@ function getIntentInfos(){
  	if(!Datas){
  	Datas=userinfo;
  	}
- 	IntentInfos=Datas;
+ 	// IntentInfos=Datas;
  	//return virtualDatas;
  }
 
 getIntentInfos();
-
+//getIntentDatas();
  function getIntentInfoById(user_id,Data){
  		//console.log(1);
  	if(!Data) Data=IntentInfos;
@@ -172,6 +172,8 @@ getIntentInfos();
 	}
 
 	function flow_get_end_name(src_ip, dest_ip) {
+		// console.log(src_ip);
+		// console.log(dest_ip);
 		var host_name = ['', ''];
 		if (typeof(phy_host_ip[src_ip]) != "undefined")
 			host_name[0] = phy_host_ip[src_ip];
@@ -202,6 +204,8 @@ getIntentInfos();
 	function flow_get_group(src_ip, dest_ip) {
 		var src_host_name = flow_get_end_name(src_ip, dest_ip)[0];
 		var dest_host_name = flow_get_end_name(src_ip, dest_ip)[1];
+		console.log(src_host_name);
+		console.log(dest_host_name);
 		var group_node = ['', ''];
 		for (var i = 0; i < jQuery("#service_svg2 g").length; i++) {
 			host_list = jQuery("#service_svg2 g:eq(" + i + ")").attr("sub").split(",");
@@ -227,6 +231,8 @@ getIntentInfos();
 	function draw_flow_data(src_ip, dest_ip, flow_name) {
 		var src_group = flow_get_group(src_ip, dest_ip)[0];
 		var dest_group = flow_get_group(src_ip, dest_ip)[1];
+		console.log(src_group);
+		console.log(dest_group);
 		//get flow count
 		var flow_count_temp = 0;
 		while (1) {
@@ -345,6 +351,10 @@ getIntentInfos();
 	}
 
 	function draw_connection_data(conn_name, node_name_1, node_name_2, bandwidth) {
+		// console.log(conn_name);
+		// console.log(node_name_1);
+		// console.log(node_name_2);
+		// console.log(bandwidth);
 		if (conn_name != null && typeof(conn_name) != "undefined")
 			jQuery("#" + conn_name).remove();
 		try {
@@ -352,6 +362,10 @@ getIntentInfos();
 			var node_cy_1 = jQuery("#" + node_name_1 + "_group").attr("cy");
 			var node_cx_2 = jQuery("#" + node_name_2 + "_group").attr("cx");
 			var node_cy_2 = jQuery("#" + node_name_2 + "_group").attr("cy");
+			// console.log(node_cx_1);
+			// console.log(node_cy_1);
+			// console.log(node_cx_2);
+			// console.log(node_cy_2);
 			//var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 			var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 			var path_main = jQuery(path).attr({
@@ -443,7 +457,7 @@ getIntentInfos();
 				"stroke-width": 0.8
 
 			});
-			jQuery(text1).text(node_type);
+			jQuery(text1).text(node_name);
 			var text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 			var text2_main = jQuery(text2).attr({
 				id: node_name + "_title2",
@@ -452,7 +466,7 @@ getIntentInfos();
 				fill: "                       ",
 				'text-anchor': 'middle'
 			});
-			jQuery(text2).text(node_name);
+			jQuery(text2).text(node_type);
 			var g_main = jQuery(g).append(inCircle1_main);
 			jQuery(g).append(text1_main);
 			jQuery(g).append(text2_main);
@@ -504,7 +518,7 @@ getIntentInfos();
 				"stroke": "black",
 				"stroke-width": 0.8
 			});
-			jQuery(text1).text(node_type);
+			jQuery(text1).text(node_name);
 			var text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 			var text2_main = jQuery(text2).attr({
 				id: node_name + "_title2",
@@ -513,7 +527,7 @@ getIntentInfos();
 				fill: "black",
 				'text-anchor': 'middle'
 			});
-			jQuery(text2).text(node_name);
+			jQuery(text2).text(node_type);
 			var text3 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 			var text3_main = jQuery(text3).attr({
 				id: node_list[0] + '_text',
@@ -530,9 +544,10 @@ getIntentInfos();
 			jQuery(g).append(text3_main);
 			jQuery(g).attr("id", node_name);
 			jQuery(g).attr("type", node_type);
-			jQuery(g).attr("sub", node_list[0]);
+			jQuery(g).attr("sub", node_name,node_list[0]);
 			if (node_type.indexOf("chain") > -1)
 				jQuery(g).attr("flow", 0);
+			if(ip) jQuery(g).attr("ip-prefix", ip);
 			jQuery('#service_svg2').append(g_main);
 		} else if (node_number == 2) {
 			var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -578,7 +593,7 @@ getIntentInfos();
 				"stroke": "black",
 				"stroke-width": 0.8
 			});
-			jQuery(text1).text(node_type);
+			jQuery(text1).text(node_name);
 			var text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 			var text2_main = jQuery(text2).attr({
 				id: node_name + "_title2",
@@ -587,7 +602,7 @@ getIntentInfos();
 				fill: "black",
 				'text-anchor': 'middle'
 			});
-			jQuery(text2).text(node_name);
+			jQuery(text2).text(node_type);
 			var text3 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 			var text3_main = jQuery(text3).attr({
 				id: node_list[0] + "_text",
@@ -615,13 +630,13 @@ getIntentInfos();
 			jQuery(g).append(text4_main);
 			jQuery(g).attr("id", node_name);
 			jQuery(g).attr("type", node_type);
-			jQuery(g).attr("sub", node_list[0] + "," + node_list[1]);
+			jQuery(g).attr("sub", node_name,node_list[0] + "," + node_list[1]);
 			if (node_type.indexOf("chain") > -1)
 				jQuery(g).attr("flow", 0);
+		    if(ip) jQuery(g).attr("ip-prefix", ip);
 			jQuery('#service_svg2').append(g);
 
 		} else if (node_number == 3) {
-			var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 			var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 			var circle_main = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
 			var inCircle1_main = jQuery(circle_main).attr({
@@ -676,7 +691,7 @@ getIntentInfos();
 				"stroke": "black",
 				"stroke-width": 0.8
 			});
-			jQuery(text1).text(node_type);
+			jQuery(text1).text(node_name);
 			var text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 			var text2_main = jQuery(text2).attr({
 				id: node_name + "_title2",
@@ -685,7 +700,7 @@ getIntentInfos();
 				fill: "black",
 				'text-anchor': 'middle'
 			});
-			jQuery(text2).text(node_name);
+			jQuery(text2).text(node_type);
 			var text3 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 			var text3_main = jQuery(text3).attr({
 				id: node_list[0] + '_text',
@@ -724,7 +739,7 @@ getIntentInfos();
 			jQuery(g).append(text5_main);
 			jQuery(g).attr("id", node_name);
 			jQuery(g).attr("type", node_type);
-			jQuery(g).attr("sub", node_list[0] + "," + node_list[1] + "," + node_list[2]);
+			jQuery(g).attr("sub", node_name,node_list[0] + "," + node_list[1] + "," + node_list[2]);
 			if (node_type.indexOf("chain") > -1)
 				jQuery(g).attr("flow", 0);
 			jQuery('#service_svg2').append(g);
@@ -804,7 +819,16 @@ getIntentInfos();
 				sub_list[sub_count] = host_list[user_json_data["node"][lgroup_cursor]["sub-node"][sub_cursor]["node-id"]];
 				sub_count++;
 			}
-			draw_group_data(user_json_data["node"][lgroup_cursor]["node-name"], sub_list.length, sub_list, user_json_data["node"][lgroup_cursor]["node-type"], "");
+			var ip='';
+			var myProperty=user_json_data["node"][lgroup_cursor]['property'];
+			if(myProperty){
+			for(var item in myProperty){
+				if(myProperty[item]['property-name']=='ip-prefix'){
+					ip=myProperty[item]['property-values']['string-value'][0]['value'];
+				}
+			}
+	        }
+			draw_group_data(user_json_data["node"][lgroup_cursor]["node-name"], sub_list.length, sub_list, user_json_data["node"][lgroup_cursor]["node-type"], ip);
 			redraw_node_possition_data();
 			node_list[user_json_data["node"][lgroup_cursor]["node-id"]] = user_json_data["node"][lgroup_cursor]["node-name"];
 		}
@@ -846,7 +870,7 @@ getIntentInfos();
 		for (var conn_cursor in user_json_data["connection"]) {
 			var start_name = node_list[user_json_data["connection"][conn_cursor]["end-node"][0]["node-id"]];
 			var end_name = node_list[user_json_data["connection"][conn_cursor]["end-node"][1]["node-id"]];
-			var bandwidth
+			var bandwidth;
 			if (user_json_data["connection"][conn_cursor]["property"] != null)
 				bandwidth = user_json_data["connection"][conn_cursor]["property"][0]["property-values"]["int-value"][0]["value"];
 			else
@@ -875,6 +899,8 @@ getIntentInfos();
 		//operation
 		if (user_data["operations"] != null) {
 			for (var operation_cursor in user_data["operations"]["operation"]) {
+				var myTarget=user_data["operations"]["operation"][operation_cursor]["action"][0]['action-name'];
+				if(myTarget!='go-through') continue;
 				var flow_name = flow_list[user_data["operations"]["operation"][operation_cursor]["target-object"]];
 				var chain_name = node_list[user_data["operations"]["operation"][operation_cursor]["action"][0]["parameter-values"]["string-value"][0]["value"]];
 				var node_start = jQuery("#" + flow_name).attr("node_start");
@@ -908,9 +934,6 @@ getIntentInfos();
 				lead_policy(node_start, chain_name, parseInt(jQuery("#" + flow_name).attr("count")), jQuery("#" + flow_name).attr("stroke"), flow_name + "_1", chain_name, node_start, node_end)
 				lead_policy(chain_name, node_end, parseInt(jQuery("#" + flow_name).attr("count")), jQuery("#" + flow_name).attr("stroke"), flow_name + "_2", chain_name, node_start, node_end)
 				jQuery("#" + flow_name).remove();
-
-
-
 			}
 
 		}
@@ -1030,7 +1053,10 @@ getIntentInfos();
 					if (match && match.length > 0) {
 						nemo_str += " Match ";
 						for (var k in match) {
+							if(match[k]["match-item-value"]['string-value'])
 							nemo_str += match[k]['match-item-name'] + ':"' + match[k]["match-item-value"]['string-value'] + '",';
+						    else if(match[k]["match-item-value"]['int-value'])
+							nemo_str += match[k]['match-item-name'] + ':' + match[k]["match-item-value"]['int-value'] + ',';
 						}
 						nemo_str = nemo_str.substring(0, nemo_str.length - 1);
 					}
@@ -1057,7 +1083,10 @@ getIntentInfos();
 				if (action && action.length > 0) {
 					nemo_str += " Action "
 					for (var k in action) {
+						if(action[k]['action-name']=='go-through')
 						nemo_str += action[k]['action-name'] + ":" + nodes[action[k]['parameter-values']["string-value"][0]['value']] + ',';
+					   if(action[k]['action-name']=='deny')
+					   	nemo_str+= action[k]['action-name']+',';
 					}
 					nemo_str = nemo_str.substring(0, nemo_str.length - 1);
 				}
