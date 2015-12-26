@@ -33,7 +33,6 @@ public class LanguageIntent {
     }
 
     public String LanIntentHandler(AAA aaa, LanguageStyleNemoRequestInput languageStyleNemoRequestInput) throws ParseException {
-
         String errorInfo = null;
 
         errorInfo = aaa.checkUser(languageStyleNemoRequestInput.getUserId());

@@ -7,94 +7,143 @@
  */
 package org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.NEMOConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.Users;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.Objects;
+import org.opendaylight.nemo.user.vnspacemanager.languagestyle.updateintentlang.UpdateTemplateInstanceLang;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.NodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.template.instances.TemplateInstanceBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.template.instances.TemplateInstanceKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.UserKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.NodeDefinitions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.node.definitions.NodeDefinition;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.node.instance.Property;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.property.definitions.PropertyDefinition;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.property.instance.PropertyValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.property.instance.property.values.StringValue;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.template.rev151201.template.instance.grouping.TemplateParameter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.template.rev151201.template.instance.grouping.TemplateParameterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.template.rev151201.template.instance.grouping.TemplateParameterKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.template.rev151201.template.instance.grouping.template.parameter.ParameterValuesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.template.rev151201.template.instance.grouping.template.parameter.parameter.values.*;
 
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by z00293636 on 2015/8/31.
  */
 public class UpdateNode {
-
-    private DataBroker dataBroker;
     private TenantManage tenantManage;
     private GetDefinitions getDefinitions;
     private ValueCheck valueCheck;
-    private static final Logger LOG = LoggerFactory.getLogger(UpdateNode.class);
+    private UpdateTemplateInstance updateTemplateInstance;
+    private UpdateTemplateInstanceLang updateTemplateInstanceLang;
 
     public UpdateNode(DataBroker dataBroker,TenantManage tenantManage){
-        this.dataBroker = dataBroker;
         this.tenantManage = tenantManage;
         getDefinitions = new GetDefinitions(dataBroker);
         valueCheck = new ValueCheck();
+        updateTemplateInstance = new UpdateTemplateInstance(dataBroker, tenantManage);
+        updateTemplateInstanceLang = new UpdateTemplateInstanceLang(dataBroker, tenantManage);
     }
 
 
     public String NodeHandling(UserId userId,Node node){
         String errorInfo = null;
-        errorInfo = checkDefinition(node);
-        if (errorInfo !=null){
-            return errorInfo;
+        boolean nodeModel = false;
+        if (tenantManage.getTempalteDefinition(userId)!=null){
+            if (tenantManage.getTempalteDefinition(userId).containsKey(new TemplateName(node.getNodeType().getValue()))){
+                nodeModel = true;
+            }
         }
-        else{
-            errorInfo = checkInstance(userId, node);
-            if (errorInfo!=null){
-                return errorInfo;
+        else if (tenantManage.getDefinitionDataStore(userId)!=null){
+            if (tenantManage.getDefinitionDataStore(userId).containsKey(new TemplateName(node.getNodeType().getValue()))){
+                nodeModel = true;
+            }
+        }
+        else if (!nodeModel){
+            Map<UserId, User> usersMap = tenantManage.getUsers();
+            for (User user : usersMap.values()) {
+                if (user.getUserRole().getValue().equals(NEMOConstants.admin)) {
+                    if (tenantManage.getDefinitionDataStore(user.getUserId()) != null) {
+                        if (tenantManage.getDefinitionDataStore(user.getUserId()).containsKey(new TemplateName(node.getNodeType().getValue()))) {
+                            nodeModel = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (nodeModel){
+            if (node.getSubNode()!=null){
+                return "Subnodes should not be included in template instance.";
             }
             else {
-                WriteTransaction t = dataBroker.newWriteOnlyTransaction();
-                if (userId != null && node.getNodeId() !=null){
-                    Node node1 = new NodeBuilder(node).build();
-                    NodeKey nodeKey = new NodeKey(node.getKey());
-                    UserKey userKey = new UserKey(userId);
-
-                    InstanceIdentifier<Node> nodeid = InstanceIdentifier.builder(Users.class).child(User.class, userKey).child(Objects.class).child(Node.class,nodeKey).build();
-                    t.put(LogicalDatastoreType.CONFIGURATION, nodeid, node1,true);
-                    CheckedFuture<Void, TransactionCommitFailedException> f = t.submit();
-                    Futures.addCallback(f, new FutureCallback<Void>() {
-                        @Override
-                        public void onFailure(Throwable t) {
-                            LOG.error("Could not write endpoint base container", t);
+                TemplateInstanceBuilder builder = new TemplateInstanceBuilder();
+                builder.setKey(new TemplateInstanceKey(new TemplateInstanceId(node.getNodeId().getValue())))
+                        .setTemplateInstanceId(new TemplateInstanceId(node.getNodeId().getValue()))
+                        .setTemplateInstanceName(new TemplateInstanceName(node.getNodeName().getValue()))
+                        .setTemplateName(new TemplateName(node.getNodeType().getValue()));
+                if (node.getProperty()!=null){
+                    List<Property> nodeProeprty = node.getProperty();
+                    List<TemplateParameter> parameters = new LinkedList<TemplateParameter>();
+                    for (Property property : nodeProeprty){
+                        TemplateParameterBuilder parameterBuilder = new TemplateParameterBuilder();
+                        parameterBuilder.setKey(new TemplateParameterKey(new ParameterName(property.getPropertyName().getValue())))
+                                        .setParameterName(new ParameterName(property.getPropertyName().getValue()));
+                        ParameterValuesBuilder valuesBuilder = new ParameterValuesBuilder();
+                        List<IntValue> intValueList = new LinkedList<IntValue>();
+                        List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.template.rev151201.template.instance.grouping.template.parameter.parameter.values.StringValue> stringValueList
+                                = new LinkedList<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.template.rev151201.template.instance.grouping.template.parameter.parameter.values.StringValue>();
+                        RangeValue rangeValue = null;
+                        if (property.getPropertyValues().getIntValue()!=null){
+                            for (org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.property.instance.property.values.IntValue intValue : property.getPropertyValues().getIntValue()){
+                                IntValueBuilder intValueBuilder = new IntValueBuilder();
+                                intValueBuilder.setKey(new IntValueKey(intValue.getOrder(),intValue.getValue()))
+                                                .setOrder(intValue.getOrder())
+                                                .setValue(intValue.getValue());
+                                intValueList.add(intValueBuilder.build());
+                            }
                         }
-
-                        @Override
-                        public void onSuccess(Void result) {
+                        if (property.getPropertyValues().getStringValue()!=null){
+                            for (StringValue stringValue : property.getPropertyValues().getStringValue()){
+                                StringValueBuilder stringValueBuilder = new StringValueBuilder();
+                                stringValueBuilder.setKey(new StringValueKey(stringValue.getOrder(),stringValue.getValue()))
+                                                  .setOrder(stringValue.getOrder())
+                                                  .setValue(stringValue.getValue());
+                                stringValueList.add(stringValueBuilder.build());
+                            }
                         }
-                    });
+                        if (property.getPropertyValues().getRangeValue()!=null){
+                            RangeValueBuilder rangeValueBuilder = new RangeValueBuilder();
+                            rangeValueBuilder.setMin(property.getPropertyValues().getRangeValue().getMin())
+                                             .setMax(property.getPropertyValues().getRangeValue().getMax());
+                            rangeValue = rangeValueBuilder.build();
+                        }
+                        valuesBuilder.setIntValue(intValueList).setStringValue(stringValueList).setRangeValue(rangeValue);
+                        parameterBuilder.setParameterValues(valuesBuilder.build());
+                        parameters.add(parameterBuilder.build());
+                    }
+                    builder.setTemplateParameter(parameters);
+                }
+
+                errorInfo = updateTemplateInstance.checkTemplateInstance(userId,builder.build());
+            }
+        }
+        else {
+            errorInfo = checkDefinition(node);
+            if (errorInfo !=null){
+                return errorInfo;
+            }
+            else{
+                errorInfo = checkInstance(userId, node);
+                if (errorInfo!=null){
+                    return errorInfo;
+                }
+                else {
+                    tenantManage.setNode(userId, node.getNodeId(),node);
                 }
             }
         }
@@ -102,35 +151,35 @@ public class UpdateNode {
     }
 
     private String checkInstance(UserId userId, Node node){
-        String errorInfo = null;
-        tenantManage.fetchVNSpace(userId);
-        User user = tenantManage.getUser();
-
-        if (user!=null){
-            if (user.getObjects()!=null){
-                if (user.getObjects().getNode()!=null){
-                    List<Node> nodeList = user.getObjects().getNode();
-                    for (Node node1 : nodeList){
-                        if (node1.getNodeId().equals(node.getNodeId())){
-                            if ( !node1.getNodeName().equals(node.getNodeName())) {
-                                errorInfo = "The node name should not be changed.";
-                                break;
-                            }
-                            if  (!node1.getNodeType().equals(node.getNodeType())){
-                                errorInfo = "The node type should not be changed.";
-                                break;
-                            }
-                        }
-                    }
+        if (tenantManage.getNode(userId)!=null){
+            if (tenantManage.getNode(userId).containsKey(node.getNodeId())){
+                Node nodeExist = tenantManage.getNode(userId).get(node.getNodeId());
+                if (!nodeExist.getNodeName().equals(node.getNodeName())){
+                    return  "The node name should not be changed.";
+                }
+                if (!nodeExist.getNodeType().equals(node.getNodeType())){
+                    return "The node type should not be changed.";
                 }
             }
         }
-        return errorInfo;
+
+        if (tenantManage.getNodeDataStore(userId)!=null){
+            if (tenantManage.getNodeDataStore(userId).containsKey(node.getNodeId())){
+                Node nodeExist = tenantManage.getNodeDataStore(userId).get(node.getNodeId());
+                if (!nodeExist.getNodeName().equals(node.getNodeName())){
+                    return  "The node name should not be changed.";
+                }
+                if (!nodeExist.getNodeType().equals(node.getNodeType())){
+                    return "The node type should not be changed.";
+                }
+            }
+        }
+        return null;
     }
 
     private String checkDefinition(Node node){
         String errorInfo = null;
-        final Map<NodeType, NodeDefinition> map = getDefinitions.getNodeDefinition();
+        Map<NodeType, NodeDefinition> map = getDefinitions.getNodeDefinition();
         if (map.isEmpty()){
             return "This type of Node has not been defined.";
         }
@@ -217,7 +266,7 @@ public class UpdateNode {
                             }
                         }
                         if (!requiredProperty){
-                            errorInfo = "The required property "+ propertyDefinition.getPropertyName().getValue() + "is not included in the intent.";
+                            errorInfo = "The required property "+ propertyDefinition.getPropertyName().getValue() + " is not included in the intent.";
                             break;
                         }
                     }

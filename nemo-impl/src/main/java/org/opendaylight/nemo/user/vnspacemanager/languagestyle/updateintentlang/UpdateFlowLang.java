@@ -15,7 +15,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.com
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.flow.instance.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.match.item.instance.MatchItemValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.match.item.instance.match.item.value.RangeValueBuilder;
@@ -69,48 +68,12 @@ public class UpdateFlowLang {
                         return "The property " + propertyValues.get(iterator.next()) + " should be string.";
                     }
                 }
-//                else if (valueType.equals(NEMOConstants.ethaddr)){
-//                    if (!iterator.next().equals(NEMOConstants.ethaddr)){
-//                        return "The property " + propertyValues.get(iterator.next()) + " should be an legal mac address.";
-//                    }
-//                }
-//                else if (valueType.equals(NEMOConstants.ipv4pref)){
-//                    if (!iterator.next().equals(NEMOConstants.ipv4pref)){
-//                        return "The property " + propertyValues.get(iterator.next()) + " should be an legal ip prefix.";
-//                    }
-//                }
-//                else if (valueType.equals(NEMOConstants.ipv4addr)){
-//                    if (!iterator.next().equals(NEMOConstants.ipv4addr)){
-//                        return "The property " + propertyValues.get(iterator.next()) + " should be an legal ip address.";
-//                    }
-//                }
                 else if (valueType.equals(NEMOConstants.integer)){
                     if (!iterator.next().equals(NEMOConstants.integer)){
                         return "The property " + propertyValues.get(iterator.next()) + " should be int.";
                     }
                 }
             }
-
-//            if (propertyName.equals(NEMOConstants.src_mac)){
-//                if (!valueType.equals(NEMOConstants.ethaddr)){
-//                    return "The property " + propertyName +"'s value should be an legal mac address.";
-//                }
-//            }
-//            if (propertyName.equals(NEMOConstants.dst_mac)){
-//                if (!valueType.equals(NEMOConstants.ethaddr)){
-//                    return "The property " + propertyName +"'s value should be an legal mac address.";
-//                }
-//            }
-//            if (propertyName.equals(NEMOConstants.src_ip)){
-//                if (!(valueType.equals(NEMOConstants.ipv4addr)||valueType.equals(NEMOConstants.ipv4pref))){
-//                    return "The property " + propertyName +"'s value should be an legal ip address.";
-//                }
-//            }
-//            if (propertyName.equals(NEMOConstants.dst_ip)){
-//                if (!(valueType.equals(NEMOConstants.ipv4addr)||valueType.equals(NEMOConstants.ipv4pref))){
-//                    return "The property " + propertyName +"'s value should be an legal ip address.";
-//                }
-//            }
         }
         return errorInfo;
     }
@@ -118,28 +81,24 @@ public class UpdateFlowLang {
     private String createFlow(UserId userId, String flowname,LinkedHashMap<String,LinkedHashMap<String,String>> flowmatch,LinkedHashMap<String,LinkedHashMap<String,String>> propertyList ){
         String errorInfo = null;
         FlowBuilder flowBuilder = new FlowBuilder();
-        tenantManage.fetchVNSpace(userId);
-        User user = tenantManage.getUser();
-        List<Flow> flowList = new ArrayList<Flow>();
-        Boolean FlowExist = false;
-        if (user.getObjects()!=null){
-            if (user.getObjects().getFlow()!=null){
-                flowList = user.getObjects().getFlow();
+        Flow flow1 = null;
+        if (tenantManage.getObjectId(userId,flowname)!=null){
+            FlowId flowId = new FlowId(tenantManage.getObjectId(userId,flowname));
+            if (tenantManage.getFlow(userId).containsKey(flowId)){
+                flow1 = tenantManage.getFlow(userId).get(flowId);
+            }
+            else if (tenantManage.getFlowDataStore(userId).containsKey(flowId)){
+                flow1 = tenantManage.getFlowDataStore(userId).get(flowId);
             }
         }
-        if (!flowList.isEmpty()){
-            for (Flow flow1:flowList){
-                if (flow1.getFlowName().getValue().equals(flowname)){
-                    FlowExist = true;
-                    flowBuilder.setKey(flow1.getKey());
-                    flowBuilder.setFlowId(flow1.getFlowId());
-                }
-            }
-        }
-        if (!FlowExist){
+        if (flow1==null){
             FlowId flowId = new FlowId(UUID.randomUUID().toString());
-            flowBuilder.setKey(new FlowKey(flowId));
-            flowBuilder.setFlowId(flowId);
+            flowBuilder.setKey(new FlowKey(flowId))
+                       .setFlowId(flowId);
+        }
+        else {
+            flowBuilder.setKey(flow1.getKey())
+                       .setFlowId(flow1.getFlowId());
         }
 
         flowBuilder.setFlowName(new FlowName(flowname));
@@ -152,8 +111,6 @@ public class UpdateFlowLang {
                 LinkedHashMap<String, String> matchvalue = flowmatch.get(matchname);
                 MatchItemValueBuilder matchItemValueBuilder = new MatchItemValueBuilder();
                 for (String value : matchvalue.keySet()){
-//                    if ((matchvalue.get(value).equals(NEMOConstants.string))||matchvalue.get(value).equals(NEMOConstants.ethaddr)
-//                            ||matchvalue.get(value).equals(NEMOConstants.ipv4addr)||matchvalue.get(value).equals(NEMOConstants.ipv4pref)){
                     if (matchvalue.get(value).equals(NEMOConstants.string)){
                         matchItemValueBuilder.setStringValue(value);
                     }

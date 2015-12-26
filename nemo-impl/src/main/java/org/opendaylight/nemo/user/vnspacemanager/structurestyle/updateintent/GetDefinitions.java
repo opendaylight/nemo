@@ -13,7 +13,11 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.PhysicalNetwork;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.PhysicalHosts;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.hosts.PhysicalHost;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.PhysicalHostName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.ConnectionDefinitions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.MatchItemDefinitions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.NodeDefinitions;
@@ -31,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by z00293636 on 2015/12/3.
@@ -42,6 +47,7 @@ public class GetDefinitions {
     private List<MatchItemDefinition> matchItemDefinitionList = null;
     private List<ConditionParameterDefinition> conditionParameterDefinitionList = null;
     private List<ActionDefinition> actionDefinitionList = null;
+    private List<PhysicalHost> physicalHostList = null;
     private static final Logger LOG = LoggerFactory.getLogger(GetDefinitions.class);
 
     public GetDefinitions(DataBroker dataBroker){
@@ -103,6 +109,17 @@ public class GetDefinitions {
         return map;
     }
 
+    public Map<PhysicalHostName, PhysicalHost> getPhysicalHost(){
+        fetchPhysicalHosts();
+        Map<PhysicalHostName, PhysicalHost> map = new HashMap<PhysicalHostName, PhysicalHost>();
+        if (physicalHostList!=null){
+            for (PhysicalHost physicalHost : physicalHostList){
+                map.put(physicalHost.getHostName(),physicalHost);
+            }
+        }
+        return map;
+    }
+
     private void setNodeDefinitionsList(List<NodeDefinition> nodeDefinitiones){
         this.nodeDefinitionList = nodeDefinitiones;
     }
@@ -121,6 +138,10 @@ public class GetDefinitions {
 
     private void setActionDefinitionList(List<ActionDefinition> actionDefinitions){
         this.actionDefinitionList = actionDefinitions;
+    }
+
+    private void setPhysicalHosts(List<PhysicalHost> physicalHosts){
+        this.physicalHostList = physicalHosts;
     }
 
     private void fetchNodeDefinitions(){
@@ -201,6 +222,32 @@ public class GetDefinitions {
             @Override
             public void onFailure(Throwable t) {
                 LOG.error("Can not read condition parameter definition information.", t);
+            }
+        });
+        try {
+            conditionparadefinitionFuture.get();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ExecutionException e){
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return ;
+    }
+
+    private void fetchPhysicalHosts(){
+        InstanceIdentifier<PhysicalHosts> physicalHostsInstanceIdentifier = InstanceIdentifier.builder(PhysicalNetwork.class).child(PhysicalHosts.class).build();
+        ListenableFuture<Optional<PhysicalHosts>> physicalHostsFuture = dataBroker.newReadOnlyTransaction().read(LogicalDatastoreType.OPERATIONAL, physicalHostsInstanceIdentifier);
+        Futures.addCallback(physicalHostsFuture, new FutureCallback<Optional<PhysicalHosts>>() {
+            @Override
+            public void onSuccess(Optional<PhysicalHosts> result) {
+                setPhysicalHosts(result.get().getPhysicalHost());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                LOG.error("Can not read physical hosts information.", t);
             }
         });
         return ;

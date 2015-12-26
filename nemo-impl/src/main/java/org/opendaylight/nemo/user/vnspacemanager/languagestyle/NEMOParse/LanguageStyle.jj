@@ -17,20 +17,21 @@ options {
 PARSER_BEGIN(NEMOparser)
 
 package org.opendaylight.nemo.parser;
-
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.updateintentlang.UpdateNodeLang;
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.updateintentlang.UpdateConnectionLang;
-import org.opendaylight.nemo.user.vnspacemanager.languagestyle.updateintentlang.UpdateFlowlang;
+import org.opendaylight.nemo.user.vnspacemanager.languagestyle.updateintentlang.UpdateFlowLang;
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.updateintentlang.UpdateOperationLang;
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.deleteintentlang.DeleteNodeLang;
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.deleteintentlang.DeleteConnectionLang;
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.deleteintentlang.DeleteFlowLang;
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.deleteintentlang.DeleteOperationLang;
+import org.opendaylight.nemo.user.vnspacemanager.languagestyle.Query;
+import org.opendaylight.nemo.user.vnspacemanager.languagestyle.NEMOConstants;
+import org.opendaylight.nemo.user.vnspacemanager.languagestyle.updateintentlang.UpdateTemplateDefinitionLang;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -82,6 +83,7 @@ TOKEN :
 |	< LTHAN: "<" >
 |	< NLTHAN: ">=" >
 |	< NMTHAN: "<=" >
+| 	< BETWEEN: "*" >
 |	< #UNDERSCORE: "_" >
 |   < #JOINER: "-" >
 |	< #FSLASH: "/" >
@@ -93,7 +95,7 @@ TOKEN :
    < CREATE: "CREATE" >
 |   < IMPORT: "IMPORT" >
 |   < UPDATE: "UPDATE" >
-|   < DELETE: "DELETE" >  
+|   < DELETE: "DELETE" >
 |	< NODE: "Node" >
 |	< TYPE: "Type" >
 |	< CONTAIN: "Contain" >
@@ -109,26 +111,42 @@ TOKEN :
 |	< QUERY: "Query" >
 |	< FROM: "From" >
 |   < PRIORITY: "Priority" >
-|   < TRUE: "true" >
-|   < FALSE: "false" >
 |   < TRANSACTION: "Transaction" >
 |   < BEGIN: "Begin" >
 |   < END: "End" >
+|   < NODES : "nodes" >
+| 	< CONNECTIONS: "connections" >
+| 	< FLOWS: "flows" >
+| 	< OPERATIONS: "operations" >
+| 	< NODEMODEL: "NodeModel" >
+| 	< STRING: "string" >
+|   < INTEGER: "integer" >
+| 	< RANGE: "range" >
 }
 TOKEN :
 {
 	< UNUMBER: "0" | ["1" - "9"](<DIGIT>)* >
-|	< ID: (<LETTER> | <LETTER>(<LETTER> | <DIGIT> | <UNDERSCORE>|< JOINER >)*(<LETTER> | <DIGIT>)+) > 
-|   < #DIGIT: ["0" - "9"] >
-|	< #LETTER: ["a" - "z"] >
+|	< ID: (<LETTER> | <LETTER>(<LETTER> | <DIGIT> | <UNDERSCORE>|< JOINER >)*(<LETTER> | <DIGIT>)+) >
+| 	< TEMPID: (<LETTER> | <LETTER>(<LETTER> | <DIGIT> | <UNDERSCORE>|< JOINER >|< COLON >|< DOT >)*(<LETTER> | <DIGIT>)+) > 
 | 	< ETHPREF: <ETHADDR>(<FSLASH>(["1" - "9"] | ["1" - "3"]<DIGIT> | "4"["0" - "8"]))? >
 |	< IPV4PREF: <IPV4ADDR>(<FSLASH>(["1" - "9"] | ["1" - "2"]<DIGIT> | "3"["0" - "2"]))? >
-| 	< #ETHADDR: ((<HEXDIGIT>){2}<COLON>){5}(<HEXDIGIT>){2} >
-|	< #IPV4ADDR: (<UBYTE>"."){3}<UBYTE> >
+|	< DATEVAL: <YEAR>"-"(<SMONDAY> | <LMONDAY> | <FEBDAY>) >
+|	< TIMEVAL: <HOUR><COLON><MINUTE><COLON><SECOND> >
+| 	< FULLTIME: (<YEAR>"-"(<SMONDAY> | <LMONDAY> | <FEBDAY>))< COMMA >(<HOUR><COLON><MINUTE><COLON><SECOND>) >
+| 	< ETHADDR: ((<HEXDIGIT>){2}<COLON>){5}(<HEXDIGIT>){2} >
+|	< IPV4ADDR: (<UBYTE>"."){3}<UBYTE> >
 |	< #UBYTE: (["0" - "9"] | ["1" - "9"]<DIGIT> | "1"(<DIGIT>){2} | "2"["0" - "4"]<DIGIT> | "25"["0" - "5"]) >
 |	< #HEXDIGIT: ["0" - "9", "a" - "f"] >
+|   < #YEAR: (<DIGIT>){4} >
+|	< #SMONDAY: (("0")?("1" | "3" | "5" | "7" | "8") | "10" | "12")"-"(("0")?["1" - "9"] | ["1" - "2"]<DIGIT> | "3"["0" - "1"]) >
+|	< #LMONDAY: (("0")?("4" | "6" | "9") | "11")"-"(("0")?["1" - "9"] | ["1" - "2"]<DIGIT> | "30") >
+|	< #FEBDAY: ("0")?"2-"(("0")?["1" - "9"] | ["1" - "2"]<DIGIT>) >
+|	< #HOUR: ("0")?<DIGIT> | "1"<DIGIT> | "2"["0" - "3"] >
+|	< #MINUTE: ("0")?<DIGIT> | ["1" - "5"]<DIGIT> >
+|	< #SECOND: ("0")?<DIGIT> | ["1" - "5"]<DIGIT> >
+|   < #DIGIT: ["0" - "9"] >
+|	< #LETTER: ["a" - "z"] >
 }
-
 String NEMO(UserId userId, DataBroker dataBroker, TenantManage tenantManage ):
 {
 }
@@ -146,8 +164,8 @@ String NEMO(UserId userId, DataBroker dataBroker, TenantManage tenantManage ):
 
 String UpdateIntent(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
 {}
-{
-  < NODE >
+{ 
+   < NODE >
 	{
 	  return UpdateNode(userId,dataBroker,tenantManage);
 	}
@@ -162,12 +180,15 @@ String UpdateIntent(UserId userId, DataBroker dataBroker, TenantManage tenantMan
 | < OPERATION >
 	{
 	  return UpdateOperation(userId,dataBroker,tenantManage);
-	}}
+	}
+| < NODEMODEL >
+	{
+	  return NodeModel(userId,dataBroker,tenantManage);	}	}
 
 String DeleteIntent(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
 {}
-{
-  < NODE >
+{ 
+   < NODE >
 	{
 	  return DeleteNode(userId,dataBroker,tenantManage);
 	}
@@ -186,175 +207,64 @@ String DeleteIntent(UserId userId, DataBroker dataBroker, TenantManage tenantMan
 
 String UpdateNode(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
 {
-  	String strReturn = null;
-  	Token objNodeNameToken = null;
-  	Token objNodeTypeToken = null;
-  	Token objContainNodeToken = null;
-  	Token objPropertyNameToken = null;
-  	Token objPropertyValueToken = null;
-  	Token objRangeLeft = null;
-  	Token objRangeRight = null;
-  	Boolean typeRight=false;
-  	List<String> subNodeNameList = new ArrayList<String>();  	
-    LinkedHashMap<String,LinkedHashMap<String,String>> properties = new LinkedHashMap<String,LinkedHashMap<String,String>>();
-    UpdateNodeLang updateNodelang = new UpdateNodeLang(dataBroker, tenantManage);   
-}
-{  	
-  	objNodeNameToken = < ID >  	
- 	< TYPE >
- 	objNodeTypeToken = < ID > 	
-	(	  < CONTAIN >
-	  (
-	    objContainNodeToken = < ID >
-	    {
-	      subNodeNameList.add(objContainNodeToken.image);	    }	    	  )
-	  (
-	    < COMMA >
-	    objContainNodeToken = < ID >
-	    {
-	      subNodeNameList.add(objContainNodeToken.image);	   
-	    }	  )*
-	)?
-	(	  < PROPERTY >
-	 (
-	   objPropertyNameToken = < ID >	   
-	   < COLON >
-	   {
-	     LinkedHashMap<String,String> propertyvalue = new LinkedHashMap<String,String>();	   }
-	   < LBRACKET >
-	   ((objPropertyValueToken = < ID >
-		   {
-		     propertyvalue.put(objPropertyValueToken.image, "string");		   }
-		| objPropertyValueToken=< ETHPREF >
-			{
-			  propertyvalue.put(objPropertyValueToken.image, "string");			}
-		| objPropertyValueToken=< IPV4PREF >
-			{
-			  propertyvalue.put(objPropertyValueToken.image, "string");			}
-		|objPropertyValueToken=< UNUMBER >
-		   {
-		     propertyvalue.put(objPropertyValueToken.image, "int");		   }
-	    |(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	      {
-	        propertyvalue.put(objRangeLeft.image+","+objRangeRight.image,"range");	      }))	   
-	   (< COMMA >
-	     (objPropertyValueToken = < UNUMBER >
-		   {
-		     propertyvalue.put(objPropertyValueToken.image,"int");
-		   }
-		| objPropertyValueToken=< ETHPREF >
-			{
-			  propertyvalue.put(objPropertyValueToken.image, "string");
-			}
-		| objPropertyValueToken=< IPV4PREF >
-			{
-			  propertyvalue.put(objPropertyValueToken.image, "string");
-			}
-		| objPropertyValueToken=< ID >
-			{
-			  propertyvalue.put(objPropertyValueToken.image, "string");			}
-	    |(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	      {
-	        propertyvalue.put(objRangeLeft.image+","+objRangeRight.image,"range");
-	      }))
-	   )*
-	   < RBRACKET >
-	   {
-	     properties.put(objPropertyNameToken.image, propertyvalue);	   })
-	  )
-
-	  (
-	    < COMMA >
-	   objPropertyNameToken = < ID >
-	   < COLON >
-	   {
-	     LinkedHashMap<String,String> propertyvalue1 = new LinkedHashMap<String,String>();
-	   }
-	   < LBRACKET >
-	   ((objPropertyValueToken = < ID >
-		   {
-		     propertyvalue1.put(objPropertyValueToken.image, "string");
-		   }
-		| objPropertyValueToken=< ETHPREF >
-			{
-			  propertyvalue1.put(objPropertyValueToken.image, "string");
-			}
-		| objPropertyValueToken=< IPV4PREF >
-			{
-			  propertyvalue1.put(objPropertyValueToken.image, "string");
-			}
-		|objPropertyValueToken=< UNUMBER >
-		   {
-		     propertyvalue1.put(objPropertyValueToken.image, "int");
-		   }
-	    |(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	      {
-	        propertyvalue1.put(objRangeLeft.image+","+objRangeRight.image,"range");
-	      }))
-	   
-	   (< COMMA >
-	     (objPropertyValueToken = < UNUMBER >
-		   {
-		     propertyvalue1.put(objPropertyValueToken.image,"int");
-		   }
-		| objPropertyValueToken=< ETHPREF >
-			{
-			  propertyvalue1.put(objPropertyValueToken.image, "string");
-			}
-		| objPropertyValueToken=< IPV4PREF >
-			{
-			  propertyvalue1.put(objPropertyValueToken.image, "string");
-			}
-		| objPropertyValueToken=< ID >
-			{
-			  propertyvalue1.put(objPropertyValueToken.image, "string");
-			}
-	    |(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	      {
-	        propertyvalue1.put(objRangeLeft.image+","+objRangeRight.image,"range");
-	      }))
-	   )*
-	   < RBRACKET >
-	   {
-	     properties.put(objPropertyNameToken.image, propertyvalue1);
-	   })
-	  )*
-	 )?
-	< SEMICOLON >
-	{
-	  strReturn = updateNodelang.NodeHandling(userId, objNodeNameToken.image, objNodeTypeToken.image,subNodeNameList, properties);	  return strReturn;
-	}
-}
-
-String DeleteNode(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
-{
-  	String strReturn = null;
-  	Token objNodeNameToken = null;
-  	DeleteNodeLang deleteNodelang = new DeleteNodeLang(dataBroker, tenantManage);   
+  Token objNameToken = null;
+  Token objTypeToken = null;
+  Token objSubNodeNameToken = null;
+  Token objSubNodeNameToken1 = null;
+  Token objPropertyNameToken = null;
+  Token objPropertyNameToken1 = null;
+  List<String> subNodeNameList = new ArrayList<String>();
+  LinkedHashMap<String,LinkedHashMap<String,String>> properties = new LinkedHashMap<String,LinkedHashMap<String,String>>();
+  UpdateNodeLang updateNodeLang = new UpdateNodeLang(dataBroker, tenantManage);   	
 }
 {
-  objNodeNameToken = < ID >
+  objNameToken = < ID >
+  < TYPE >
+  objTypeToken = < ID >
+  (    < CONTAIN >
+    objSubNodeNameToken= <ID >
+    {
+      subNodeNameList.add(objSubNodeNameToken.image);    }
+    (
+      < COMMA >
+      objSubNodeNameToken1= <ID >
+      {
+        subNodeNameList.add(objSubNodeNameToken1.image);
+   	  }    )*    
+  )?
+  (    < PROPERTY >
+    objPropertyNameToken = < ID >
+    < COLON >
+    {
+      LinkedHashMap<String,String> property = property();      properties.put(objPropertyNameToken.image, property);    }
+    (
+      < COMMA >
+      objPropertyNameToken1 = < ID >
+      < COLON >
+      {
+        LinkedHashMap<String,String> property1 = property();
+        properties.put(objPropertyNameToken1.image, property1);
+      }
+    )*
+  )?
   < SEMICOLON >
-  {
-    strReturn = deleteNodelang.DeleteNodeHandling(userId, objNodeNameToken.image);
-    return strReturn;  }
+  {   
+    return updateNodeLang.NodeHandling(userId, objNameToken.image, objTypeToken.image,subNodeNameList, properties);
+  }
 }
 
 String UpdateConnection(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
-  {
-    String strReturn = null;
+{
     Token objConnNameToken = null;
     Token objConnTypeToken = null;
     Token objConnEndNodeToken = null;
     Token objPropertyNameToken = null;
-  	Token objPropertyValueToken = null;
-  	Token objRangeLeft = null;
-  	Token objRangeRight = null;
-    List<String> endNodes = new ArrayList<String>();    
+ 	Token objPropertyNameToken1 = null;
+    List<String> endNodes = new ArrayList<String>();
     LinkedHashMap<String,LinkedHashMap<String,String>> properties = new LinkedHashMap<String,LinkedHashMap<String,String>>();
-    UpdateConnectionLang updateConnLang = new UpdateConnectionLang(dataBroker,tenantManage);  }
-  {
-    objConnNameToken = < ID >
+    UpdateConnectionLang updateConnLang = new UpdateConnectionLang(dataBroker,tenantManage); 	    }
+{
+  objConnNameToken = < ID >
     < TYPE >
     objConnTypeToken = < ID >
     (
@@ -362,100 +272,462 @@ String UpdateConnection(UserId userId, DataBroker dataBroker, TenantManage tenan
       (
         objConnEndNodeToken = < ID >
         {
+           endNodes.add(objConnEndNodeToken.image);
+        }
+      | objConnEndNodeToken = < TEMPID >
+        {
           endNodes.add(objConnEndNodeToken.image);        }      )
+      (
+        < COMMA >
+        (
+          objConnEndNodeToken = < ID >
+        {
+          endNodes.add(objConnEndNodeToken.image);        }      | objConnEndNodeToken = < TEMPID >
+        {
+          endNodes.add(objConnEndNodeToken.image);
+        }
+      )      )*
+    )?
+    (
+    < PROPERTY >
+    objPropertyNameToken = < ID >
+    < COLON >
+    {
+      LinkedHashMap<String,String> property = property();
+      properties.put(objPropertyNameToken.image, property);    }    (
+      < COMMA >
+      objPropertyNameToken1 = < ID >
+      < COLON >
+      {
+        LinkedHashMap<String,String> property1 = property();
+        properties.put(objPropertyNameToken1.image, property1);
+      }
+    )*
+  )?
+  < SEMICOLON >
+  {
+    return updateConnLang.ConnectionHandling(userId, objConnNameToken.image, objConnTypeToken.image,endNodes, properties);
+  }
+}
+
+String UpdateFlow(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
+{
+  Token objFlowNameToken = null;
+  Token objFlowMatchItem = null;
+  Token objFlowMatchItem1 = null;
+  Token objPropertyNameToken = null;
+  Token objPropertyNameToken1 = null;
+  LinkedHashMap<String,LinkedHashMap<String,String>> matchItems = new LinkedHashMap<String,LinkedHashMap<String,String>>();  
+  LinkedHashMap<String,LinkedHashMap<String,String>> properties = new LinkedHashMap<String,LinkedHashMap<String,String>>();
+  UpdateFlowLang updateFlowLang = new UpdateFlowLang(dataBroker, tenantManage);}
+{
+  objFlowNameToken = < ID >
+  < MATCH >
+   objFlowMatchItem = < ID >
+    < COLON >
+    {
+      LinkedHashMap<String,String> match = property();      matchItems.put(objFlowMatchItem.image, match);
+    }
+    (      < COMMA >
+      objFlowMatchItem1 = < ID >
+      < COLON >
+      {
+        LinkedHashMap<String,String> match1= property();        matchItems.put(objFlowMatchItem1.image, match1);      }
+    )*
+    (
+    < PROPERTY >
+    objPropertyNameToken = < ID >
+    < COLON >
+    {
+      LinkedHashMap<String,String> property = property();      properties.put(objPropertyNameToken.image, property);
+    }
+    (
+      < COMMA >
+      objPropertyNameToken1 = < ID >
+      < COLON >
+      {
+        LinkedHashMap<String,String> property1 = property();
+        properties.put(objPropertyNameToken1.image, property1);
+      }
+    )*
+  )?
+  < SEMICOLON >
+  {
+    return updateFlowLang.FlowHandling(userId, objFlowNameToken.image, matchItems, properties);
+  }}
+
+String UpdateOperation(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
+{
+  Token objOperNameToken = null;
+  Token objOperTargetToken = null;
+  Token objOperPrioToken = null;
+  Token objCondRelationToken = null;
+  Token objCondNameToken = null;
+  Token objCondMatchPattern = null;
+  Token objActionNameToken = null;
+  LinkedHashMap<String,LinkedHashMap<String,String>> conditions = new LinkedHashMap<String,LinkedHashMap<String,String>>();    
+  LinkedHashMap<String,LinkedHashMap<String,String>> actions = new LinkedHashMap<String,LinkedHashMap<String,String>>();
+  UpdateOperationLang updateOperationLang  = new UpdateOperationLang(dataBroker, tenantManage);}
+{
+   objOperNameToken = < ID >
+  < TARGET >
+  objOperTargetToken = < ID >
+  < PRIORITY >
+  objOperPrioToken = < UNUMBER >
+  (
+    < CONDITION >
+    (objCondRelationToken=< NOT >)?
+    < LPAREN >
+    objCondNameToken=< ID >
+    (objCondMatchPattern=<EQUAL >|objCondMatchPattern=<GTHAN >|objCondMatchPattern=<LTHAN >|objCondMatchPattern=<NLTHAN >
+        |objCondMatchPattern=<NMTHAN >| objCondMatchPattern=<BETWEEN >)
+    {
+      LinkedHashMap<String,String> targetValue = conditionTarget();      String s = (objCondRelationToken==null)?null:objCondRelationToken.image;  
+      conditions.put(s+","+objCondNameToken.image+","+objCondMatchPattern.image, targetValue);
+    }
+    < RPAREN >
+    (
+      (objCondRelationToken=< NOT >|objCondRelationToken=< AND >|objCondRelationToken=< OR >)
+      < LPAREN >
+       (objCondMatchPattern=<EQUAL >|objCondMatchPattern=<GTHAN >|objCondMatchPattern=<LTHAN >|objCondMatchPattern=<NLTHAN >
+        |objCondMatchPattern=<NMTHAN >| objCondMatchPattern=<BETWEEN >)
+	    {
+	      LinkedHashMap<String,String> targetValue1 = conditionTarget();	      String s1 = (objCondRelationToken==null)?null:objCondRelationToken.image;  
+	      conditions.put(s1+","+objCondNameToken.image+","+objCondMatchPattern.image, targetValue1);
+	    }
+      < RPAREN >
+    )*  )?
+  (
+    < ACTION >
+    objActionNameToken = < ID >
+    {      LinkedHashMap<String,String> action = null;
+    }
+    (
+      < COLON >
+    {
+      action = property();     
+    })?
+    {
+      actions.put(objActionNameToken.image, action);    }
+    (
+      < COMMA >
+      objActionNameToken = < ID >
+      {
+        LinkedHashMap<String,String> action1 = null;      }
+     (
+        < COLON >
+      {
+        action1 = property();       
+      })?
+      {
+        actions.put(objActionNameToken.image, action1);
+      }      
+    )*  )?
+  < SEMICOLON >
+  {
+    return updateOperationLang.OperationHandling(userId, objOperNameToken.image, objOperTargetToken.image, objOperPrioToken.image,conditions,actions);  }}
+
+String NodeModel(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
+{
+  String strReturn = null;
+  Token nodeModelName = null;
+  Token parameterType = null;
+  Token parameterName = null;
+  Token parameterType1 = null;
+  Token parameterName1 = null;
+  LinkedHashMap<String, String> parameters = new LinkedHashMap< String, String >();
+  UpdateTemplateDefinitionLang definition = new UpdateTemplateDefinitionLang(dataBroker, tenantManage);}
+{
+  nodeModelName = < ID >
+  < PROPERTY >
+  (    ( (parameterType = < STRING>) | (parameterType = < INTEGER >) | (parameterType=< RANGE >))
+	  < COLON >
+	  parameterName = < ID >
+	  {
+	    parameters.put(parameterName.image, parameterType.image);	  }
+  )
+  (
+    < COMMA >
+    ( (parameterType1 = < STRING>) | (parameterType1 = < INTEGER >) | (parameterType1 = < RANGE >))
+	  < COLON >
+	  parameterName1 = < ID >
+	  {
+	    parameters.put(parameterName1.image, parameterType1.image);
+	  }  )*
+  < SEMICOLON>
+  (    < NODE >
+    {
+      strReturn = abstractNode(definition);    }
+|   < CONNECTION >
+	{
+	  strReturn = abstractConnection(definition);	}
+|   < FLOW >
+	{
+	  strReturn = abstractFlow(definition);	}
+|   < OPERATION >
+	{
+	  strReturn = abstractOperation(definition);	}
+)*
+	{
+	  if(strReturn !=null)	  {
+	    return strReturn;	  }
+	  else	  {
+	    return definition.templateDefinitionLang(userId, nodeModelName.image, parameters);	  }	  	}}
+
+String abstractNode(UpdateTemplateDefinitionLang definition):
+{
+  Token objNameToken = null;
+  Token objTypeToken = null;
+  Token objSubNodeNameToken = null;
+  Token objSubNodeNameToken1 = null;
+  Token objPropertyNameToken = null;
+  Token objPropertyNameToken1 = null;
+  List<String> subNodeNameList = new ArrayList<String>();
+  LinkedHashMap<String,LinkedHashMap<String,String>> properties = new LinkedHashMap<String,LinkedHashMap<String,String>>(); 	
+}
+{
+  objNameToken = < ID >
+  < TYPE >
+  objTypeToken = < ID >
+  (
+    < CONTAIN >
+    objSubNodeNameToken= <ID >
+    {
+      subNodeNameList.add(objSubNodeNameToken.image);
+    }
+    (
+      < COMMA >
+      objSubNodeNameToken1= <ID >
+      {
+        subNodeNameList.add(objSubNodeNameToken1.image);
+   	  }
+    )*    
+  )?
+  (
+    < PROPERTY >
+    objPropertyNameToken = < ID >
+    < COLON >
+    {
+      LinkedHashMap<String,String> property = property();
+      properties.put(objPropertyNameToken.image, property);
+    }
+    (
+      < COMMA >
+      objPropertyNameToken1 = < ID >
+      < COLON >
+      {
+        LinkedHashMap<String,String> property1 = property();
+        properties.put(objPropertyNameToken1.image, property1);
+      }
+    )*
+  )?
+  < SEMICOLON >
+  {   
+    return definition.createAbstractNode(objNameToken.image, objTypeToken.image,subNodeNameList, properties);;
+  }
+}
+
+String abstractConnection(UpdateTemplateDefinitionLang definition):
+{
+    Token objConnNameToken = null;
+    Token objConnTypeToken = null;
+    Token objConnEndNodeToken = null;
+    Token objPropertyNameToken = null;
+ 	Token objPropertyNameToken1 = null;
+    List<String> endNodes = new ArrayList<String>();
+    LinkedHashMap<String,LinkedHashMap<String,String>> properties = new LinkedHashMap<String,LinkedHashMap<String,String>>(); 	    
+}
+{
+  objConnNameToken = < ID >
+    < TYPE >
+    objConnTypeToken = < ID >
+    (
+      < ENDNODES >
+      (
+        objConnEndNodeToken = < ID >
+        {
+          endNodes.add(objConnEndNodeToken.image);
+        }
+      )
       (
         < COMMA >
         objConnEndNodeToken = < ID >
         {
-          endNodes.add(objConnEndNodeToken.image);        }      )+    )?
+          endNodes.add(objConnEndNodeToken.image);
+        }
+      )*
+    )?
     (
-      < PROPERTY >
-      (
-	   objPropertyNameToken = < ID >
-	   < COLON >
-	   {
-	     LinkedHashMap<String,String> propertyvalue = new LinkedHashMap<String,String>();	   }
-	   < LBRACKET >
-	   ((objPropertyValueToken = < ID >
-		   {
-		     propertyvalue.put(objPropertyValueToken.image, "string");
-		   }
-		|objPropertyValueToken=< UNUMBER >
-		   {
-		     propertyvalue.put(objPropertyValueToken.image, "int");
-		   }
-	    |(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	      {
-	        propertyvalue.put(objRangeLeft.image+","+objRangeRight.image,"range");
-	      }))
-	   )
-	   (< COMMA >
-	     (objPropertyValueToken = < UNUMBER >
-		   {
-		     propertyvalue.put(objPropertyValueToken.image,"int");
-		   }
-		| objPropertyValueToken=< ID >
-			{
-			  propertyvalue.put(objPropertyValueToken.image, "string");
-			}
-	    |(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	      {
-	        propertyvalue.put(objRangeLeft.image+","+objRangeRight.image,"range");
-	      }))
-	   )*
-	   < RBRACKET >
-	   {
-	     properties.put(objPropertyNameToken.image, propertyvalue);
-	   }
-	  )
-
-	  (
-	    < COMMA >
-	   objPropertyNameToken = < ID >
-	   < COLON >
-	   {
-	     LinkedHashMap<String,String> propertyvalue1 = new LinkedHashMap<String,String>();	   }
-	   < LBRACKET >
-	   ((objPropertyValueToken = < ID >
-		   {
-		     propertyvalue1.put(objPropertyValueToken.image, "string");
-		   }
-		|objPropertyValueToken=< UNUMBER >
-		   {
-		     propertyvalue1.put(objPropertyValueToken.image, "int");
-		   }
-	    |(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	      {
-	        propertyvalue1.put(objRangeLeft.image+","+objRangeRight.image,"range");
-	      }))
-	   )
-	   (< COMMA >
-	     (objPropertyValueToken = < UNUMBER >
-		   {
-		     propertyvalue1.put(objPropertyValueToken.image,"int");
-		   }
-		| objPropertyValueToken=< ID >
-			{
-			  propertyvalue1.put(objPropertyValueToken.image, "string");
-			}
-	    |(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	      {
-	        propertyvalue1.put(objRangeLeft.image+","+objRangeRight.image,"range");
-	      }))
-	   )*
-	   < RBRACKET >
-	   {
-	     properties.put(objPropertyNameToken.image, propertyvalue1);
-	   }
-	  )*    )?
-    < SEMICOLON >
+    < PROPERTY >
+    objPropertyNameToken = < ID >
+    < COLON >
     {
-      strReturn = updateConnLang.ConnectionHandling(userId, objConnNameToken.image, objConnTypeToken.image,endNodes, properties);
-      return strReturn;    }}
+      LinkedHashMap<String,String> property = property();
+      properties.put(objPropertyNameToken.image, property);
+    }
+    (
+      < COMMA >
+      objPropertyNameToken1 = < ID >
+      < COLON >
+      {
+        LinkedHashMap<String,String> property1 = property();
+        properties.put(objPropertyNameToken1.image, property1);
+      }
+    )*
+  )?
+  < SEMICOLON >
+  {
+    return definition.createAbstractConnection(objConnNameToken.image, objConnTypeToken.image,endNodes, properties);
+  }
+}
+
+String abstractFlow(UpdateTemplateDefinitionLang definition):
+{
+  Token objFlowNameToken = null;
+  Token objFlowMatchItem = null;
+  Token objFlowMatchItem1 = null;
+  Token objPropertyNameToken = null;
+  Token objPropertyNameToken1 = null;
+  LinkedHashMap<String,LinkedHashMap<String,String>> matchItems = new LinkedHashMap<String,LinkedHashMap<String,String>>();  
+  LinkedHashMap<String,LinkedHashMap<String,String>> properties = new LinkedHashMap<String,LinkedHashMap<String,String>>();
+}
+{
+  objFlowNameToken = < ID >
+  < MATCH >
+   objFlowMatchItem = < ID >
+    < COLON >
+    {
+      LinkedHashMap<String,String> match = property();
+      matchItems.put(objFlowMatchItem.image, match);
+    }
+    (
+      < COMMA >
+      objFlowMatchItem1 = < ID >
+      < COLON >
+      {
+        LinkedHashMap<String,String> match1 = property();
+        matchItems.put(objFlowMatchItem1.image, match1);
+      }
+    )*
+    (
+    < PROPERTY >
+    objPropertyNameToken = < ID >
+    < COLON >
+    {
+      LinkedHashMap<String,String> property = property();
+      properties.put(objPropertyNameToken.image, property);
+    }
+    (
+      < COMMA >
+      objPropertyNameToken1 = < ID >
+      < COLON >
+      {
+        LinkedHashMap<String,String> property1 = property();
+        properties.put(objPropertyNameToken1.image, property1);
+      }
+    )*
+  )?
+  < SEMICOLON >
+  {
+    return definition.createAbstractFlow(objFlowNameToken.image, matchItems, properties);;
+  }
+}
+
+String abstractOperation(UpdateTemplateDefinitionLang definition):
+{
+  Token objOperNameToken = null;
+  Token objOperTargetToken = null;
+  Token objOperPrioToken = null;
+  Token objCondRelationToken = null;
+  Token objCondNameToken = null;
+  Token objCondMatchPattern = null;
+  Token objActionNameToken = null;
+  LinkedHashMap<String,LinkedHashMap<String,String>> conditions = new LinkedHashMap<String,LinkedHashMap<String,String>>();    
+  LinkedHashMap<String,LinkedHashMap<String,String>> actions = new LinkedHashMap<String,LinkedHashMap<String,String>>();
+}
+{
+   objOperNameToken = < ID >
+  < TARGET >
+  objOperTargetToken = < ID >
+  < PRIORITY >
+  objOperPrioToken = < UNUMBER >
+  (
+    < CONDITION >
+    (objCondRelationToken=< NOT >)?
+    < LPAREN >
+    objCondNameToken=< ID >
+    (objCondMatchPattern=<EQUAL >|objCondMatchPattern=<GTHAN >|objCondMatchPattern=<LTHAN >|objCondMatchPattern=<NLTHAN >
+        |objCondMatchPattern=<NMTHAN >| objCondMatchPattern=<BETWEEN >)
+    {
+      LinkedHashMap<String,String> targetValue = conditionTarget();
+      String s = (objCondRelationToken==null)?null:objCondRelationToken.image;  
+      conditions.put(s+","+objCondNameToken.image+","+objCondMatchPattern.image, targetValue);
+    }
+    < RPAREN >
+    (
+      (objCondRelationToken=< NOT >|objCondRelationToken=< AND >|objCondRelationToken=< OR >)
+      < LPAREN >
+      objCondNameToken=< ID >
+       (objCondMatchPattern=<EQUAL >|objCondMatchPattern=<GTHAN >|objCondMatchPattern=<LTHAN >|objCondMatchPattern=<NLTHAN >
+        |objCondMatchPattern=<NMTHAN >| objCondMatchPattern=<BETWEEN >)
+	    {
+	      LinkedHashMap<String,String> targetValue1 = conditionTarget();	       
+	      conditions.put(objCondRelationToken.image+","+objCondNameToken.image+","+objCondMatchPattern.image, targetValue1);
+	    }
+      < RPAREN >
+    )*
+  )?
+  (
+    < ACTION >
+    objActionNameToken = < ID >
+    {
+      LinkedHashMap<String,String> action = null;
+    }
+    (
+      < COLON >
+    {
+      action = property();     
+    })?
+    {
+      actions.put(objActionNameToken.image, action);
+    }
+    (
+      < COMMA >
+      objActionNameToken = < ID >
+      {
+        LinkedHashMap<String,String> action1 = null;
+      }
+     (
+        < COLON >
+      {
+        action1 = property();       
+      })?
+      {
+        actions.put(objActionNameToken.image, action1);
+      }      
+    )*
+  )?
+  < SEMICOLON >
+  {
+    return definition.createAbstractOperation(objOperNameToken.image, objOperTargetToken.image, objOperPrioToken.image,conditions,actions);;
+  }
+}
+
+String DeleteNode(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
+{
+  	Token objNodeNameToken = null;
+  	DeleteNodeLang deleteNodelang = new DeleteNodeLang(dataBroker, tenantManage);   
+}
+{
+  objNodeNameToken = < ID >
+  < SEMICOLON >
+  {
+    return deleteNodelang.DeleteNodeHandling(userId, objNodeNameToken.image);
+  }
+}
 
 String DeleteConnection(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
 {
-  	String strReturn = null;
   	Token objConnNameToken = null;
   	DeleteConnectionLang deleteConnectionlang = new DeleteConnectionLang(dataBroker, tenantManage);   
 }
@@ -463,168 +735,12 @@ String DeleteConnection(UserId userId, DataBroker dataBroker, TenantManage tenan
   objConnNameToken = < ID >
   < SEMICOLON >
   {
-    strReturn = deleteConnectionlang.DeleteConnectionHandling(userId, objConnNameToken.image);
-    return strReturn;
+    return deleteConnectionlang.DeleteConnectionHandling(userId, objConnNameToken.image);
   }
 }
 
-String UpdateFlow(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
-{
-  String strReturn = null;
-  Token objFlowNameToken = null;
-  Token objFlowMatchItem = null;
-  Token objFlowMatchValue = null;
-  Token objPropertyNameToken = null;
-  Token objPropertyValueToken = null;
-  Token objRangeLeft = null;
-  Token objRangeRight = null;  
-  LinkedHashMap<String,LinkedHashMap<String,String>> matchItems = new LinkedHashMap<String,LinkedHashMap<String,String>>();
-  
-  LinkedHashMap<String,LinkedHashMap<String,String>> properties = new LinkedHashMap<String,LinkedHashMap<String,String>>();
-  UpdateFlowLang updateFlowLang = new UpdateFlowLang(dataBroker, tenantManage);}
-{
-  objFlowNameToken = < ID >
-  (
-    < MATCH >
-    objFlowMatchItem = < ID >
-    < COLON >
-    {
-      LinkedHashMap<String,String> matchvalue = new LinkedHashMap<String,String>();    }
-    (      (objFlowMatchValue = < ID >
-	    {
-	      matchvalue.put(objFlowMatchValue.image,"string");	    }
-	| objFlowMatchValue = < ETHPREF >
-		{
-		  matchvalue.put(objFlowMatchValue.image,"string");		}
-	| objFlowMatchValue = < IPV4PREF >
-		{
-		  matchvalue.put(objFlowMatchValue.image,"string");		}
-  	| objFlowMatchValue = < UNUMBER >
-  		{
-  		  matchvalue.put(objFlowMatchValue.image,"int");  		}
- 	| (< LPAREN >(objRangeLeft=< UNUMBER >)<COMMA >(objRangeRight=< UNUMBER >)<RPAREN >
- 		{
- 		  matchvalue.put(objRangeLeft.image+","+objRangeRight.image,"range"); 		}))
- 	{
- 	  matchItems.put(objFlowMatchItem.image,matchvalue); 	}
- 	)  
-  (
-    < COMMA >
-    objFlowMatchItem = < ID >
-    {
-      LinkedHashMap<String,String> matchvalue1 = new LinkedHashMap<String,String>();    }
-    < COLON >
-    (objFlowMatchValue = < ID >
-	    {
-	      matchvalue1.put(objFlowMatchValue.image,"string");
-	    }
-	| objFlowMatchValue = < ETHPREF >
-		{
-		  matchvalue1.put(objFlowMatchValue.image,"string");		}
-	| objFlowMatchValue = < IPV4PREF >
-		{
-		   matchvalue1.put(objFlowMatchValue.image,"string");		}
-  	| objFlowMatchValue = < UNUMBER >
-  		{
-  		  matchvalue1.put(objFlowMatchValue.image,"int");
-  		}
- 	| (< LPAREN >(objRangeLeft=< UNUMBER >)<COMMA >(objRangeRight=< UNUMBER >)<RPAREN >
- 		{
- 		  matchvalue1.put(objRangeLeft.image+","+objRangeRight.image,"range");
- 		}))
- 	{
- 	  matchItems.put(objFlowMatchItem.image,matchvalue1);
- 	}   )*
- )
- (
-	  < PROPERTY >
-	 (
-	   objPropertyNameToken = < ID >
-	   < COLON >
-	   {
-	     LinkedHashMap<String,String> propertyvalue = new LinkedHashMap<String,String>();	   }
-	   < LBRACKET >
-	   ((objPropertyValueToken = < ID >
-		   {
-		     propertyvalue.put(objPropertyValueToken.image, "string");
-		   }
-		|objPropertyValueToken=< UNUMBER >
-		   {
-		     propertyvalue.put(objPropertyValueToken.image, "int");
-		   }
-	    |(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	      {
-	        propertyvalue.put(objRangeLeft.image+","+objRangeRight.image,"range");
-	      }))
-	   )
-	   (< COMMA >
-	     (objPropertyValueToken = < UNUMBER >
-		   {
-		     propertyvalue.put(objPropertyValueToken.image,"int");
-		   }
-		| objPropertyValueToken=< ID >
-			{
-			  propertyvalue.put(objPropertyValueToken.image, "string");
-			}
-	    |(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	      {
-	        propertyvalue.put(objRangeLeft.image+","+objRangeRight.image,"range");
-	      }))
-	   )*
-	   < RBRACKET >
-	   {
-	     properties.put(objPropertyNameToken.image, propertyvalue);
-	   }
-	  )
-
-	  (
-	    < COMMA >
-	   objPropertyNameToken = < ID >
-	   < COLON >
-	   {
-	     LinkedHashMap<String,String> propertyvalue1 = new LinkedHashMap<String,String>();	   }
-	   < LBRACKET >
-	   ((objPropertyValueToken = < ID >
-		   {
-		     propertyvalue1.put(objPropertyValueToken.image, "string");
-		   }
-		|objPropertyValueToken=< UNUMBER >
-		   {
-		     propertyvalue1.put(objPropertyValueToken.image, "int");
-		   }
-	    |(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	      {
-	        propertyvalue1.put(objRangeLeft.image+","+objRangeRight.image,"range");
-	      }))
-	   )
-	   (< COMMA >
-	     (objPropertyValueToken = < UNUMBER >
-		   {
-		     propertyvalue1.put(objPropertyValueToken.image,"int");
-		   }
-		| objPropertyValueToken=< ID >
-			{
-			  propertyvalue1.put(objPropertyValueToken.image, "string");
-			}
-	    |(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	      {
-	        propertyvalue1.put(objRangeLeft.image+","+objRangeRight.image,"range");
-	      }))
-	   )*
-	   < RBRACKET >
-	   {
-	     properties.put(objPropertyNameToken.image, propertyvalue1);
-	   }
-	  )*
-	 )?
-  < SEMICOLON >
-  {
-    strReturn = updateFlowLang.FlowHandling(userId, objFlowNameToken.image, matchItems, properties);
-    return strReturn;  }}
-
 String DeleteFlow(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
 {
-  	String strReturn = null;
   	Token objFlowNameToken = null;
   	DeleteFlowLang deleteFlowlang = new DeleteFlowLang(dataBroker, tenantManage);   
 }
@@ -632,167 +748,12 @@ String DeleteFlow(UserId userId, DataBroker dataBroker, TenantManage tenantManag
   objFlowNameToken = < ID >
   < SEMICOLON >
   {
-    strReturn = deleteFlowlang.DeleteFlowHandling(userId, objFlowNameToken.image);
-    return strReturn;
+    return deleteFlowlang.DeleteFlowHandling(userId, objFlowNameToken.image);
   }
 }
 
-String UpdateOperation(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
-{
-  String strReturn = null;
-  Token objOperNameToken = null;
-  Token objOperTargetToken = null;
-  Token objOperPrioToken = null;
-  Token objCondRelationToken = null;
-  Token objCondNameToken = null;
-  Token objCondMatchPattern = null;
-  Token objCondTarget = null;
-  Token objActionNameToken = null;
-  Token objActionValueToken = null;
-  Token objRangeLeft = null;
-  Token objRangeRight = null;  
-  LinkedHashMap<String,LinkedHashMap<String,String>> conditions = new LinkedHashMap<String,LinkedHashMap<String,String>>();
-    
-  LinkedHashMap<String,LinkedHashMap<String,String>> actions = new LinkedHashMap<String,LinkedHashMap<String,String>>();
-  UpdateOperationLang updateOperationLang  = new UpdateOperationLang(dataBroker, tenantManage);}
-{
-  objOperNameToken = < ID >
-  < TARGET >
-  objOperTargetToken = < ID >
-  < PRIORITY >
-  objOperPrioToken = < UNUMBER >
-  (
-    < CONDITION >
-    (
-      (objCondRelationToken=< NOT >)?
-      < LPAREN >
-      objCondNameToken=< ID >
-      (objCondMatchPattern=<EQUAL >|objCondMatchPattern=<GTHAN >|objCondMatchPattern=<LTHAN >|objCondMatchPattern=<NLTHAN >|objCondMatchPattern=<NMTHAN >)
-      {
-        LinkedHashMap<String,String> targetValue = new LinkedHashMap<String,String>();      }
-      (		objCondTarget=<ID>
-		      {
-		        targetValue.put(objCondTarget.image,"string");		      }
-      	|	objCondTarget=<UNUMBER>
-      		  {
-		        targetValue.put(objCondTarget.image,"int");
-		      }
-      	|(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-      		  {
-		        targetValue.put(objRangeLeft.image+","+objRangeRight.image,"range");
-		      }))
-       < RPAREN >
-       {         
-         conditions.put(objCondRelationToken.image+","+objCondNameToken.image+","+objCondMatchPattern.image,targetValue);       }    )
-    (
-    	(objCondRelationToken=< NOT >|objCondRelationToken=< AND >|objCondRelationToken=< OR >)
-    	< LPAREN >
-	      objCondNameToken=< ID >
-	      (objCondMatchPattern=<EQUAL >|objCondMatchPattern=<GTHAN >|objCondMatchPattern=<LTHAN >|objCondMatchPattern=<NLTHAN >|objCondMatchPattern=<NMTHAN >)
-	      {
-	        LinkedHashMap<String,String> targetValue1 = new LinkedHashMap<String,String>();	      }
-	      (		objCondTarget=<ID>
-			      {
-			        targetValue1.put(objCondTarget.image,"string");
-			      }
-	      	|	objCondTarget=<UNUMBER>
-	      		  {
-			        targetValue1.put(objCondTarget.image,"int");
-			      }
-	      	|(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	      		  {
-			        targetValue1.put(objRangeLeft.image+","+objRangeRight.image,"range");
-			      }))
-	       < RPAREN >
-	       {         
-	         conditions.put(objCondRelationToken.image+","+objCondNameToken.image+","+objCondMatchPattern.image,targetValue1);
-	       }    )*  )?
-  (
-    < ACTION >
-    (      (
-      objActionNameToken = < ID >
-      (        < COLON >
-        {
-          LinkedHashMap<String,String> actionvalues = new LinkedHashMap<String,String>();        }
-     (
-       < LBRACKET >        objActionValueToken = < ID >
-        {
-          actionvalues.put(objActionValueToken.image, "string");        }
-    | 	objActionValueToken = < UNUMBER >
-	    {
-	      actionvalues.put(objActionValueToken.image, "int");	    }
-    | 	(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	    {
-	      actionvalues.put(objRangeLeft.image+","+objRangeRight.image, "range");	    } ))        
-     (
-       < COMMA >
-        objActionValueToken = < ID >
-        {
-          actionvalues.put(objActionValueToken.image, "string");
-        }
-    | 	objActionValueToken = < UNUMBER >
-	    {
-	      actionvalues.put(objActionValueToken.image, "int");
-	    }
-    | 	(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	    {
-	      actionvalues.put(objRangeLeft.image+","+objRangeRight.image, "range");
-	    }))*
-	    < RBRACKET >
-	    {
-	      actions.put(objActionNameToken.image,actionvalues);	    }
-	  )?
-     )
-    (
-      < COMMA >
-      (
-      objActionNameToken = < ID >
-     (               < COLON >
-        {
-          LinkedHashMap<String,String> actionvalues1 = new LinkedHashMap<String,String>();        }
-     (
-       < LBRACKET >
-        objActionValueToken = < ID >
-        {
-          actionvalues1.put(objActionValueToken.image, "string");
-        }
-    | 	objActionValueToken = < UNUMBER >
-	    {
-	      actionvalues1.put(objActionValueToken.image, "int");
-	    }
-    | 	(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	    {
-	      actionvalues1.put(objRangeLeft.image+","+objRangeRight.image, "range");
-	    }  ))       
-     (
-       < COMMA >
-        objActionValueToken = < ID >
-        {
-          actionvalues1.put(objActionValueToken.image, "string");
-        }
-    | 	objActionValueToken = < UNUMBER >
-	    {
-	      actionvalues1.put(objActionValueToken.image, "int");
-	    }
-    | 	(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
-	    {
-	      actionvalues1.put(objRangeLeft.image+","+objRangeRight.image, "range");
-	    }))*
-	    < RBRACKET >
-	    {
-	      actions.put(objActionNameToken.image,actionvalues1);
-	    }
-	  )?
-     )    )*  )
-)?
-  < SEMICOLON >
-  {
-    strReturn = updateOperationLang.OperationHandling(userId, objOperNameToken.image, objOperTargetToken.image, objOperPrioToken.image,conditions,actions);
-    return strReturn;  }}
-
 String DeleteOperation(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
 {
-  	String strReturn = null;
   	Token objOperationNameToken = null;
   	DeleteOperationLang deleteOperationlang = new DeleteOperationLang(dataBroker, tenantManage);   
 }
@@ -800,8 +761,266 @@ String DeleteOperation(UserId userId, DataBroker dataBroker, TenantManage tenant
   objOperationNameToken = < ID >
   < SEMICOLON >
   {
-    strReturn = deleteOperationlang.DeleteOperationHandling(userId, objOperationNameToken.image);
-    return strReturn;
+    return deleteOperationlang.DeleteOperationHandling(userId, objOperationNameToken.image);
   }
 }
 
+String Query(UserId userId, DataBroker dataBroker, TenantManage tenantManage):
+{
+  String strReturn = null;
+  Token objItemToken = null;
+  Token objTargetToken = null;
+  Query query = new Query(tenantManage);
+}
+{
+  (
+    objItemToken = <TYPE> | objItemToken=< CONTAIN > | objItemToken = < PROPERTY > | objItemToken = <ENDNODES>
+    | objItemToken = < MATCH > | objItemToken = < PRIORITY > | objItemToken = < TARGET > | objItemToken = < CONDITION >
+    | objItemToken = < ACTION > | objItemToken = < ID > | objItemToken = < NODES > | objItemToken = < CONNECTIONS >
+    | objItemToken = < FLOWS > | objItemToken = < OPERATIONS >
+  )
+  (
+    < FROM>
+    (
+      objTargetToken = <ID > 
+    )
+  )?
+  < SEMICOLON >
+  {
+    if (objTargetToken == null)
+    {
+      String target = null;
+      return query.query(userId,objItemToken.image,target);        
+    }
+    else
+    {
+      return query.query(userId,objItemToken.image,objTargetToken.image);     
+    }            
+  }
+}
+
+
+
+LinkedHashMap<String,String> conditionTarget():
+{
+  Token objCondTarget = null;
+  Token objRangeLeft = null;
+  Token objRangeRight = null;  
+  LinkedHashMap<String,String> targetValue = new LinkedHashMap<String,String>();
+}
+{
+     (
+       objCondTarget=<ID>
+      {
+        targetValue.put(objCondTarget.image,"string");
+      }
+| 	objCondTarget=<TIMEVAL>
+      {
+        targetValue.put(objCondTarget.image,"string");
+      }
+|   objCondTarget=<FULLTIME>
+      {
+        targetValue.put(objCondTarget.image,"string");
+      }
+|	objCondTarget=<UNUMBER>
+	  {
+        targetValue.put(objCondTarget.image,"integer");
+      }
+|(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
+	  {
+        targetValue.put(objRangeLeft.image+","+objRangeRight.image,"range");
+      }))
+  {
+    return targetValue;
+  }
+}
+
+LinkedHashMap<String,String> property():
+{
+  Token objPropertyValueToken = null;
+  Token objRangeLeft = null;
+  Token objRangeRight = null;
+  LinkedHashMap<String,String> propertyvalue= new LinkedHashMap<String,String>();
+}
+{
+  (
+    (
+     (objPropertyValueToken = < ID >
+     	{
+		  propertyvalue.put(objPropertyValueToken.image, "string");
+		}
+	
+    | objPropertyValueToken=< ETHADDR >
+    	{
+		  propertyvalue.put(objPropertyValueToken.image, "string");
+		}
+    | objPropertyValueToken=< IPV4PREF >
+    	{
+		  propertyvalue.put(objPropertyValueToken.image, "string");
+		}
+    |objPropertyValueToken=< IPV4ADDR >
+    	{
+		  propertyvalue.put(objPropertyValueToken.image, "string");
+		}
+    |objPropertyValueToken=< TIMEVAL >
+    	{
+		  propertyvalue.put(objPropertyValueToken.image, "string");
+		}
+    |objPropertyValueToken=< FULLTIME >
+		{
+		  propertyvalue.put(objPropertyValueToken.image, "string");
+		}
+	|objPropertyValueToken = < TEMPID >
+     	{
+		  propertyvalue.put(objPropertyValueToken.image, "string");
+		}
+	)
+    |objPropertyValueToken=< UNUMBER >
+	   {
+	     propertyvalue.put(objPropertyValueToken.image, "integer");
+	   }
+	|(< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
+	  {
+	    propertyvalue.put(objRangeLeft.image+","+objRangeRight.image,"range");
+	  })
+  )
+| (
+  	{  	  
+  	  LinkedHashMap<String,String> multiProperty = nodeMultiProperty();
+  	  for (String value : multiProperty.keySet())
+  	  {
+  	    propertyvalue.put(value, multiProperty.get(value));
+  	  }
+  	}  	
+  )
+)
+{
+  return propertyvalue;
+} 
+}
+
+LinkedHashMap<String,String> nodeMultiProperty():
+{
+  Token objPropertyValueToken = null;
+  Token objRangeLeft = null;
+  Token objRangeRight = null;
+  LinkedHashMap<String,String> propertyvalue= new LinkedHashMap<String,String>();
+}
+{
+  < LBRACKET >
+ (
+    (
+    objPropertyValueToken = < ID >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    (
+    < COMMA >
+    objPropertyValueToken = < ID >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    )*
+  )
+| (
+    objPropertyValueToken = < TEMPID >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    (
+    < COMMA >
+    objPropertyValueToken = < TEMPID >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    )*
+  )
+| (
+    objPropertyValueToken = < ETHADDR >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    (
+    < COMMA >
+    objPropertyValueToken = < ETHADDR >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    )*
+  )
+| (
+    objPropertyValueToken = < IPV4PREF >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    (
+    < COMMA >
+    objPropertyValueToken = < IPV4PREF >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    )*
+  )
+| (
+    objPropertyValueToken = < IPV4ADDR >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    (
+    < COMMA >
+    objPropertyValueToken = < IPV4ADDR >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    )*
+  )
+| (
+    objPropertyValueToken = < TIMEVAL >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    (
+    < COMMA >
+    objPropertyValueToken = < TIMEVAL >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    )*
+  )
+| (
+    objPropertyValueToken = < FULLTIME >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    (
+    < COMMA >
+    objPropertyValueToken = < FULLTIME >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "string");
+	  }
+    )*
+  )
+| (
+    objPropertyValueToken = < UNUMBER >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "integer");
+	  }
+    (
+    < COMMA >
+    objPropertyValueToken = < UNUMBER >
+	  {
+	    propertyvalue.put(objPropertyValueToken.image, "integer");
+	  }
+    )*
+  )
+| (< LPAREN >(objRangeLeft = < UNUMBER >)< COMMA >(objRangeRight = < UNUMBER >)< RPAREN >
+      {
+        propertyvalue.put(objRangeLeft.image+","+objRangeRight.image,"range");
+      }
+   )
+ )
+ < RBRACKET >
+ {
+   return propertyvalue;
+ }
+}

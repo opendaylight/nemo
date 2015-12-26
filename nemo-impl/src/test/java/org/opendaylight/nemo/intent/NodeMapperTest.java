@@ -219,7 +219,7 @@ public class NodeMapperTest extends TestCase {
         //get into for circle subnodes
         when(subNode.getNodeId()).thenReturn(subnodeId);
         when(subNode1.getNodeId()).thenReturn(subnodeId1);
-            //power mock
+        //power mock
         PowerMockito.mockStatic(IntentResolverUtils.class);
         PowerMockito.when(IntentResolverUtils.getNode(nodeList, subNode.getNodeId())).thenReturn(node1);
         PowerMockito.when(IntentResolverUtils.getNode(nodeList, subNode1.getNodeId())).thenReturn(node2);

@@ -7,35 +7,11 @@
  */
 package org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.*;
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.NEMOConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.ActionName;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.ParameterName;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.Users;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.Operations;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Connection;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.operations.Operation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.operations.OperationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.operations.OperationKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.UserKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.ActionDefinitions;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.ConditionParameterDefinitions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.action.definitions.ActionDefinition;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.action.instance.ParameterValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.condition.instance.ConditionSegment;
@@ -43,30 +19,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.ope
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.condition.parameter.definitions.ConditionParameterDefinition;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.condition.parameter.definitions.condition.parameter.definition.ParameterMatchPatterns;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.operation.instance.Action;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by z00293636 on 2015/8/31.
  */
 public class UpdateOperation {
-
-    private DataBroker dataBroker;
     private TenantManage tenantManage;
     private GetDefinitions getDefinitions;
     private ValueCheck valueCheck;
-    private static final Logger LOG = LoggerFactory.getLogger(UpdateOperation.class);
 
     public UpdateOperation(DataBroker dataBroker, TenantManage tenantManage){
-        this.dataBroker = dataBroker;
         this.tenantManage = tenantManage;
         getDefinitions = new GetDefinitions(dataBroker);
         valueCheck = new ValueCheck();
@@ -84,112 +49,83 @@ public class UpdateOperation {
                 return errorInfo;
             }
             else {
-                WriteTransaction t = dataBroker.newWriteOnlyTransaction();
-                if (userId != null && operation.getOperationId() != null)
-                {
-                    Operation operation1 = new OperationBuilder(operation).build();
-                    OperationKey operationKey = new OperationKey(operation.getOperationId());
-
-                    UserKey userKey = new UserKey(userId);
-
-                    InstanceIdentifier<Operation> operationid = InstanceIdentifier.builder(Users.class).child(User.class, userKey).child(Operations.class).child(Operation.class,operationKey).build();
-                    t.put(LogicalDatastoreType.CONFIGURATION, operationid, operation1,true);
-                    CheckedFuture<Void, TransactionCommitFailedException> f = t.submit();
-                    Futures.addCallback(f, new FutureCallback<Void>() {
-                        @Override
-                        public void onFailure(Throwable t) {
-                            LOG.error("Could not write endpoint base container", t);
-                        }
-
-                        @Override
-                        public void onSuccess(Void result) {
-
-                        }
-                    });
-                }
+                tenantManage.setOperation(userId,operation.getOperationId(),operation);
             }
         }
         return null;
     }
 
     private String checkInstance(UserId userId, Operation operation){
-        String errorInfo = null;
-        tenantManage.fetchVNSpace(userId);
-        User user = tenantManage.getUser();
-
         if (operation.getPriority()==null){
-            errorInfo = "The priority should not be empty.";
+            return  "The priority should not be empty.";
         }
         if (operation.getTargetObject()==null){
-            errorInfo = "The target should not be empty.";
+            return  "The target should not be empty.";
         }
-        if (operation.getTargetObject()!=null){
-            if (user!=null){
-                if (user.getObjects()!=null){
-                    Boolean targetExist = false;
-                    if (user.getObjects().getNode()!=null){
-                        List<Node> nodeList = user.getObjects().getNode();
-                        for (Node node : nodeList){
-                            if (node.getNodeId().getValue().equals(operation.getTargetObject().getValue())){
-                                targetExist = true;
-                            }
-                        }
-                    }
-                    if (user.getObjects().getConnection()!=null){
-                        List<Connection> connectionList = user.getObjects().getConnection();
-                        for (Connection connection : connectionList){
-                            if (connection.getConnectionId().getValue().equals(operation.getTargetObject().getValue())){
-                                targetExist = true;
-                            }
-                        }
-                    }
-                    if (user.getObjects().getFlow()!=null){
-                        List<Flow> flowList = user.getObjects().getFlow();
-                        for (Flow flow : flowList){
-                            if (flow.getFlowId().getValue().equals(operation.getTargetObject().getValue())){
-                                targetExist = true;
-                            }
-                        }
-                    }
-                    if (!targetExist){
-                        errorInfo = "The target object is not exist.";
-                    }
-                }
-                else {
-                    errorInfo = "The target object is not exist.";
-                }
-            }
-            else {
-                errorInfo = "The target object is not exist.";
-            }
-        }
-        if (user!=null){
-            if (user.getOperations()!=null){
-                if (user.getOperations().getOperation()!=null){
-                    List<Operation> operationList = user.getOperations().getOperation();
-                    for (Operation operation1 : operationList){
-                        if (operation.getOperationId().equals(operation1.getOperationId())){
-                            if (!operation.getOperationName().equals(operation1.getOperationName())){
-                                errorInfo="The operation name should not be changed.";
-                                return errorInfo;
-                            }
-                        }
-                    }
+
+        if (tenantManage.getOperation(userId)!=null){
+            if (tenantManage.getOperation(userId).containsKey(operation.getOperationId())){
+                Operation operationExist = tenantManage.getOperation(userId).get(operation.getOperationId());
+                if (!operationExist.getOperationName().equals(operation.getOperationName())){
+                    return "The operation name should not be changed.";
                 }
             }
         }
-        return errorInfo;
+        if (tenantManage.getOperationDataStore(userId)!=null){
+            if (tenantManage.getOperationDataStore(userId).containsKey(operation.getOperationId())){
+                Operation operationExist = tenantManage.getOperationDataStore(userId).get(operation.getOperationId());
+                if (!operationExist.getOperationName().equals(operation.getOperationName())){
+                    return "The operation name should not be changed.";
+                }
+            }
+        }
+
+        Boolean targetExist = false;
+        if (tenantManage.getNode(userId)!=null){
+            if (tenantManage.getNode(userId).containsKey(new NodeId(operation.getTargetObject()))){
+                targetExist = true;
+            }
+        }
+        if (tenantManage.getConnection(userId)!=null){
+            if (tenantManage.getConnection(userId).containsKey(new ConnectionId(operation.getTargetObject()))){
+                targetExist = true;
+            }
+        }
+        if (tenantManage.getFlow(userId)!=null){
+            if (tenantManage.getFlow(userId).containsKey(new FlowId(operation.getTargetObject()))){
+                targetExist = true;
+            }
+        }
+
+        if (tenantManage.getNodeDataStore(userId)!=null){
+            if (tenantManage.getNodeDataStore(userId).containsKey(new NodeId(operation.getTargetObject()))){
+                targetExist = true;
+            }
+        }
+        if (tenantManage.getConnectionDataStore(userId)!=null){
+            if (tenantManage.getConnectionDataStore(userId).containsKey(new ConnectionId(operation.getTargetObject()))){
+                targetExist = true;
+            }
+        }
+        if (tenantManage.getFlowDataStore(userId)!=null){
+            if (tenantManage.getFlowDataStore(userId).containsKey(new FlowId(operation.getTargetObject()))){
+                targetExist = true;
+            }
+        }
+
+        if (!targetExist){
+            return "The target " + operation.getTargetObject().getValue() + " is not exist.";
+        }
+        return null;
     }
 
     private String checkDefinition(Operation operation){
         String errorInfo = null;
 
-        if (operation.getAction() != null )
-        {
+        if (operation.getAction() != null ){
             errorInfo = checkAction(operation);
         }
-        if (errorInfo == null && operation.getConditionSegment() != null)
-        {
+        if (errorInfo == null && operation.getConditionSegment() != null){
             errorInfo = checkCondition(operation);
         }
         return errorInfo;
@@ -242,8 +178,9 @@ public class UpdateOperation {
             }
             else {
                 for (ConditionSegment conditionSegment :operation.getConditionSegment()){
-                    if (conditionParameterDefinitionMap.containsKey(conditionSegment.getConditionParameterName())){
-                        ConditionParameterDefinition conditionParameterDefinition = conditionParameterDefinitionMap.get(conditionSegment.getConditionParameterName());
+                    if (conditionParameterDefinitionMap.containsKey(new ParameterName(conditionSegment.getConditionParameterName().getValue()))){
+//                    if (conditionParameterDefinitionMap.containsKey(conditionSegment.getConditionParameterName())){
+                        ConditionParameterDefinition conditionParameterDefinition = conditionParameterDefinitionMap.get(new ParameterName(conditionSegment.getConditionParameterName().getValue()));
 
                         if (conditionSegment.getConditionParameterMatchPattern() != null)
                         {
