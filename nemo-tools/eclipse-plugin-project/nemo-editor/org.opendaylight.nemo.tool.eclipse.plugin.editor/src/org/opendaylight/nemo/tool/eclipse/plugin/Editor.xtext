@@ -1,0 +1,74 @@
+
+grammar org.opendaylight.nemo.tool.eclipse.plugin.Editor with org.eclipse.xtext.common.Terminals
+
+generate editor "http://www.huawei.com/nemo/Editor"
+
+Model:
+	sentences+=Sentence*;
+
+Sentence:
+	SenEngines | User| Node | NodeOperating | Connection|ConnectionUpdate|Flow|FlowUpdate|Operation;
+	
+	
+	
+//Engines sentence
+SenEngines:
+	'Engines:' Ipv4 (',' Ipv4)* ';';
+
+Ipv4:
+	IPV4_SUB '.' IPV4_SUB '.' IPV4_SUB '.' IPV4_SUB ;
+
+terminal IPV4_SUB:
+	('0'..'9') | ('1'..'9') ('0'..'9') | '1' ('0'..'9') ('0'..'9') | '2' ('0'..'4') ('0'..'9') | '25' ('0'..'5');
+terminal NemoId: ('a'..'z'|'A'..'Z'|'$'|'_') ('a'..'z'|'A'..'Z'|'$'|'_'|'-'|'0'..'9')*;
+
+
+//User
+User:'CREATE'  (STRING) (STRING) (STRING)   ';' ;	
+	
+////Node
+Node:NewObj  'Node'  name=NemoId   ('Type'  NemoId) ('Contain' nodes+=[Node|NemoId] (',' nodes+=[Node|NemoId])*)? (Property)?  ';' ;
+
+//NodeModel
+NodeModel: 'NodeModel' name=NemoId (ModelProperty)?;
+
+
+NodeOperating:('UPDATE'|'DELETE')  'Node'  nodename+=[Node|NemoId] ('Type'  NemoId)? ('Contain' nodes+=[Node|NemoId] (',' nodes+=[Node|NemoId])*)? (Property)?  ';';
+
+//Connection
+Connection:'CREATE' 'Connection' name=NemoId 'Type' NemoId  ('Endnodes' endnode+=[Node|NemoId] (',' endnode+=[Node|NemoId])*) (Property)?  ';';
+
+//Connection operating
+ConnectionUpdate:('UPDATE'|'DELETE') 'Connection'  connectionname+=[Connection|NemoId]   ('Type'   NemoId)? ('Endnodes' endnode+=[Node|NemoId] (',' endnode+=[Node|NemoId])*)? (Property)?  ';';
+
+//flow
+Flow:'CREATE' 'Flow' name=NemoId (Matches)? ';';
+FlowUpdate: ('UPDATE'|'DELETE') 'Flow' flowId+=[Flow|NemoId] (Matches)? ';';
+Matches:   'Match'   Match (',' Match)*;
+Match: NemoId ':' STRING ;
+
+
+
+
+//Operation
+Operation:'CREATE'   'Operation'   name=NemoId (  'Priority' value+=INT)?   'Target'   targetId=[Flow|NemoId] (Condition)?   'Action'   (NemoId|(NemoId ':' targetNode=[Node|NemoId])) ';';
+
+
+
+
+Condition: 'Condition' STRING(','STRING)*;
+Property: 'Property ' OneProperty(',' OneProperty)*;
+OneProperty:NemoId ':' (STRING|INT);
+ModelProperty: 'Property' OneModelProperty (',' OneModelProperty)*;
+OneModelProperty: (STRING|INT)':'NemoId;
+
+NewObj:'CREATE'|'IMPORT';
+
+
+
+//PropertyType:'location'|'ip-prifix'|'is-enable'|'ac-info-network';
+//terminal Mac_sub: (('0'..'9')|('a'..'f'))(('0'..'9')|('a'..'f'));
+//Mac: Mac_sub ':' Mac_sub ':' Mac_sub ':' Mac_sub ':' Mac_sub ':' Mac_sub;
+
+//Query
+//Query:'Query' BLANK Condition BLANK 'From' BLANK (tar=[Node])|(tar=[Operation])|(tar=[Flow])|(tar=[Connection]);

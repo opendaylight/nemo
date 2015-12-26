@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.opendaylight.nemo.tool.eclipse.plugin.editor/src-gen"
+    editDirectory="/org.opendaylight.nemo.tool.eclipse.plugin.editor.edit/src" editorDirectory="/org.opendaylight.nemo.tool.eclipse.plugin.editor.editor/src"
+    modelPluginID="org.opendaylight.nemo.tool.eclipse.plugin.editor" forceOverwrite="true"
+    modelName="Editor" updateClasspath="false" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
+    complianceLevel="6.0" copyrightFields="false" editPluginID="org.opendaylight.nemo.tool.eclipse.plugin.editor.edit"
+    editorPluginID="org.opendaylight.nemo.tool.eclipse.plugin.editor.editor" runtimeVersion="2.11">
+  <genPackages prefix="Editor" basePackage="org.opendaylight.nemo.tool.eclipse.plugin"
+      disposableProviderFactory="true" fileExtensions="nemo" ecorePackage="Editor.ecore#/">
+    <genClasses ecoreClass="Editor.ecore#//Model">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Editor.ecore#//Model/sentences"/>
+    </genClasses>
+    <genClasses ecoreClass="Editor.ecore#//Sentence"/>
+    <genClasses ecoreClass="Editor.ecore#//Node">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Editor.ecore#//Node/name"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Editor.ecore#//Node/nodes"/>
+    </genClasses>
+    <genClasses ecoreClass="Editor.ecore#//NodeModel">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Editor.ecore#//NodeModel/name"/>
+    </genClasses>
+    <genClasses ecoreClass="Editor.ecore#//NodeOperating">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Editor.ecore#//NodeOperating/nodename"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Editor.ecore#//NodeOperating/nodes"/>
+    </genClasses>
+    <genClasses ecoreClass="Editor.ecore#//Connection">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Editor.ecore#//Connection/name"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Editor.ecore#//Connection/endnode"/>
+    </genClasses>
+    <genClasses ecoreClass="Editor.ecore#//ConnectionUpdate">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Editor.ecore#//ConnectionUpdate/connectionname"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Editor.ecore#//ConnectionUpdate/endnode"/>
+    </genClasses>
+    <genClasses ecoreClass="Editor.ecore#//Flow">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Editor.ecore#//Flow/name"/>
+    </genClasses>
+    <genClasses ecoreClass="Editor.ecore#//FlowUpdate">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Editor.ecore#//FlowUpdate/flowId"/>
+    </genClasses>
+    <genClasses ecoreClass="Editor.ecore#//Operation">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Editor.ecore#//Operation/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Editor.ecore#//Operation/value"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Editor.ecore#//Operation/targetId"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Editor.ecore#//Operation/targetNode"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
