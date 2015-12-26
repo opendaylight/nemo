@@ -7,56 +7,28 @@
  */
 package org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.ConnectionType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.Users;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Connection;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.ConnectionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.ConnectionKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.UserKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.ConnectionDefinitions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.connection.definitions.ConnectionDefinition;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.connection.instance.EndNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.connection.instance.Property;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.property.definitions.PropertyDefinition;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.property.instance.PropertyValues;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by z00293636 on 2015/8/31.
  */
 public class UpdateConnection {
-
-    private DataBroker dataBroker;
     private TenantManage tenantManage;
     private GetDefinitions getDefinitions;
-    private static final Logger LOG = LoggerFactory.getLogger(UpdateConnection.class);
 
     public UpdateConnection(DataBroker dataBroker, TenantManage tenantManage){
-        this.dataBroker = dataBroker;
         this.tenantManage = tenantManage;
         getDefinitions = new GetDefinitions(dataBroker);
     }
@@ -73,91 +45,61 @@ public class UpdateConnection {
                 return errorInfo;
             }
             else {
-                WriteTransaction t = dataBroker.newWriteOnlyTransaction();
-                if (userId != null && connection != null){
-                    Connection connection1 = new ConnectionBuilder(connection).build();
-                    ConnectionKey connectionKey = new ConnectionKey(connection.getConnectionId());
-
-                    UserKey userKey = new UserKey(userId);
-
-                    InstanceIdentifier<Connection> connectionid = InstanceIdentifier.builder(Users.class).child(User.class, userKey).child(Objects.class).child(Connection.class,connectionKey).build();
-                    t.put(LogicalDatastoreType.CONFIGURATION, connectionid, connection1,true);
-                    CheckedFuture<Void, TransactionCommitFailedException> f = t.submit();
-                    Futures.addCallback(f, new FutureCallback<Void>() {
-                        @Override
-                        public void onFailure(Throwable t) {
-                            LOG.error("Could not write endpoint base container", t);
-                        }
-
-                        @Override
-                        public void onSuccess(Void result) {
-                        }
-                    });
-                }
+                tenantManage.setConnection(userId,connection.getConnectionId(),connection);
             }
         }
         return errorInfo;
     }
 
     private String checkInstance(UserId userId, Connection connection){
-        String errorInfo = null;
-        tenantManage.fetchVNSpace(userId);
-        User user = tenantManage.getUser();
-
-        if (user!=null){
-            if (user.getObjects()!=null){
-                if (user.getObjects().getConnection()!=null){
-                    List<Connection> connectionList = tenantManage.getUser().getObjects().getConnection();
-
-                    for (Connection connection1 : connectionList){
-                        if (connection1.getConnectionId().equals(connection.getConnectionId())){
-                            if (!connection1.getConnectionType().equals(connection.getConnectionType())){
-                                errorInfo = "The connection type should not be changed.";
-                                break;
-                            }
-                            if (!connection1.getConnectionName().equals(connection.getConnectionName())){
-                                errorInfo = "The End node should not be changed.";
-                                break;
-                            }
-
-                        }
-                    }
+        if (tenantManage.getConnection(userId)!=null){
+            if (tenantManage.getConnection(userId).containsKey(connection.getConnectionId())){
+                Connection connExist = tenantManage.getConnection(userId).get(connection.getConnectionId());
+                if (!connExist.getConnectionName().equals(connection.getConnectionName())){
+                    return "The connection name should not be changed.";
                 }
-                if (connection.getEndNode()!=null){
-                    if (user.getObjects().getNode()!=null){
-                        List<EndNode> endnodeList = connection.getEndNode();
-                        List<Node> nodeList = user.getObjects().getNode();
-                        Boolean nodeExist = false;
-
-                        for (EndNode endNode : endnodeList){
-                            for (Node node : nodeList){
-                                if (endNode.getNodeId().equals(node.getNodeId())){
-                                    nodeExist = true;
-                                }
-                            }
-                            if (!nodeExist){
-                                errorInfo = "The endnode is not exist in user vn space.";
-                            }
-                        }
-                    }
-                    else
-                    {
-                        errorInfo = "The endnodes are not exist in the user vn space.";
-                    }
+                if (!connExist.getConnectionType().equals(connection.getConnectionType())){
+                    return "The connection type should not be changed.";
                 }
-            }
-            else {
-                if (connection.getEndNode() != null){
-                    errorInfo = "There are no nodes in user vn space.";
+                if (!connExist.getEndNode().equals(connection.getEndNode())){
+                    return "The connection end node should not be changed.";
                 }
             }
         }
-        else {
-            if (connection.getEndNode() != null){
-                errorInfo = "There are no nodes in user vn space.";
+
+        if (tenantManage.getConnectionDataStore(userId)!=null){
+            if (tenantManage.getConnectionDataStore(userId).containsKey(connection.getConnectionId())){
+                Connection connExist = tenantManage.getConnectionDataStore(userId).get(connection.getConnectionId());
+                if (!connExist.getConnectionName().equals(connection.getConnectionName())){
+                    return "The connection name should not be changed.";
+                }
+                if (!connExist.getConnectionType().equals(connection.getConnectionType())){
+                    return "The connection type should not be changed.";
+                }
+                if (!connExist.getEndNode().equals(connection.getEndNode())){
+                    return "The connection end node should not be changed.";
+                }
             }
         }
-        return errorInfo;
+
+        List<EndNode> endNodeList = connection.getEndNode();
+        for (EndNode endNode : endNodeList){
+            Boolean endNodeExist = false;
+            if (tenantManage.getNode(userId)!=null){
+                if (tenantManage.getNode(userId).containsKey(endNode.getNodeId())){
+                    endNodeExist = true;
+                }
+            }
+            if (tenantManage.getNodeDataStore(userId)!=null){
+                if (tenantManage.getNodeDataStore(userId).containsKey(endNode.getNodeId())){
+                    endNodeExist = true;
+                }
+            }
+            if (!endNodeExist){
+                return "The endnode "+ endNode.getNodeId().getValue() +" is not exist;";
+            }
+        }
+        return null;
     }
 
     private String checkDefinition(Connection connection){
@@ -176,7 +118,7 @@ public class UpdateConnection {
                 }
                 else if (connectionProperties != null && propertyDefinitions != null)
                 {
-                    errorInfo = CheckProperty(connection.getProperty(), propertyDefinitions);
+                    errorInfo = checkProperty(connection.getProperty(), propertyDefinitions);
                 }
             }
             else {
@@ -186,7 +128,7 @@ public class UpdateConnection {
         return errorInfo;
     }
 
-    private String CheckProperty(List<Property> connectionProperty, List<PropertyDefinition> propertyDefinitionList ){
+    private String checkProperty(List<Property> connectionProperty, List<PropertyDefinition> propertyDefinitionList ){
         String errorInfo = null;
         for (Property property : connectionProperty)
         {

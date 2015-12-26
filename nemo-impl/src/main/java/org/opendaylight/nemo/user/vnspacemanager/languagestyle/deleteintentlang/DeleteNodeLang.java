@@ -7,14 +7,11 @@
  */
 package org.opendaylight.nemo.user.vnspacemanager.languagestyle.deleteintentlang;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
 import org.opendaylight.nemo.user.vnspacemanager.structurestyle.deleteintent.DeleteNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-
-import java.util.List;
 
 /**
  * Created by z00293636 on 2015/11/6.
@@ -29,31 +26,12 @@ public class DeleteNodeLang {
     }
 
     public String DeleteNodeHandling(UserId userId, String nodename){
-        String errorInfo = null;
-        tenantManage.fetchVNSpace(userId);
-        User user =tenantManage.getUser();
-        if (user.getObjects()!=null){
-            if (!user.getObjects().getNode().isEmpty()){
-                List<Node> nodeList = user.getObjects().getNode();
-                Boolean nodeExist = false;
-                for (Node node1 : nodeList){
-                    if (node1.getNodeName().getValue().equals(nodename)){
-                        nodeExist = true;
-                        errorInfo = deleteNode.DeleNodeHandling(userId,node1.getNodeId());
-                    }
-                }
-                if (!nodeExist){
-                    errorInfo = "The node "+nodename + " is not exist in this user vn space.";
-                }
-            }
-            else{
-                errorInfo = "The node "+nodename + " is not exist in this user vn space.";
-            }
+        if (tenantManage.getObjectId(userId,nodename)!=null){
+            NodeId nodeId = new NodeId(tenantManage.getObjectId(userId,nodename));
+            return deleteNode.DeleNodeHandling(userId,nodeId);
         }
-        else{
-            errorInfo = "The node "+nodename + " is not exist in this user vn space.";
+        else {
+            return "The node " + nodename + " is not exist.";
         }
-
-        return errorInfo;
     }
 }

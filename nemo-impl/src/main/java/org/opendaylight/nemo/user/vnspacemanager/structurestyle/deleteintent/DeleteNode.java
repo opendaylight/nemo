@@ -7,27 +7,14 @@
  */
 package org.opendaylight.nemo.user.vnspacemanager.structurestyle.deleteintent;
 
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
+import org.opendaylight.nemo.user.vnspacemanager.languagestyle.NEMOConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.Users;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Connection;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.UserKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.operations.Operation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.connection.instance.EndNode;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -35,83 +22,74 @@ import java.util.List;
  * Created by z00293636 on 2015/9/2.
  */
 public class DeleteNode {
-
-    private DataBroker dataBroker;
     private TenantManage tenantManage;
-    private static final Logger LOG = LoggerFactory.getLogger(DeleteNode.class);
-    private DeleteConnection deleteConnection;
 
     public DeleteNode(DataBroker dataBroker, TenantManage tenantManage){
-        this.dataBroker = dataBroker;
         this.tenantManage = tenantManage;
-        deleteConnection = new DeleteConnection(dataBroker, tenantManage);
     }
 
     public String DeleNodeHandling(UserId userId,NodeId nodeId){
-        String errorInfo = null;
-        Boolean NodeInstanceExist = false;
-        tenantManage.fetchVNSpace(userId);
-        User user = tenantManage.getUser();
-        if (user != null){
-            if (user.getObjects() != null){
-                if (user.getObjects().getNode() != null){
-                    List<Node> nodeList = tenantManage.getUser().getObjects().getNode();
-                    for (Node node : nodeList){
-                        if (node.getNodeId().equals(nodeId)){
-                            NodeInstanceExist = true;
-                            DeleteNodeInstance(userId,nodeId);
+        Boolean nodeExist = false;
 
-                            if (user.getObjects().getConnection()!=null) {
-                                Boolean nodeconn = false;
-                                List<Connection> connectionList = user.getObjects().getConnection();
-                                for (Connection connection : connectionList){
-                                    if (connection.getEndNode() != null){
-                                        for (EndNode endNode : connection.getEndNode()){
-                                            if (endNode.getNodeId().equals(nodeId)){
-                                                nodeconn = true;
-                                            }
-                                        }
-                                        if (nodeconn){
-                                            errorInfo = deleteConnection.DeleteConnectionHandling(userId,connection.getConnectionId());
-                                        }
-                                    }
-                                }
-                            }
+        if (tenantManage.getNode(userId)!=null){
+            if (tenantManage.getNode(userId).containsKey(nodeId)){
+                nodeExist = true;
+                tenantManage.getNode(userId).remove(nodeId);
+                tenantManage.getUserNameIdMap(userId).remove(tenantManage.getName(userId,nodeId.getValue()));
+            }
+        }
+        if (tenantManage.getNodeDataStore(userId)!=null){
+            if (tenantManage.getNodeDataStore(userId).containsKey(nodeId)){
+                nodeExist = true;
+                tenantManage.setUserDeleteIntent(userId, NEMOConstants.node,nodeId.getValue());
+                tenantManage.getUserNameIdMap(userId).remove(tenantManage.getName(userId,nodeId.getValue()));
+            }
+        }
+        if (!nodeExist){
+            return "The node instance " +nodeId.getValue()+" is not exist.";
+        }
+        else {
+            if (tenantManage.getConnection(userId)!=null){
+                for (Connection connection : tenantManage.getConnection(userId).values()){
+                    List<EndNode> endNodeList = connection.getEndNode();
+                    for (EndNode endNode :endNodeList){
+                        if (endNode.getNodeId().equals(nodeId)){
+                            tenantManage.getConnection(userId).remove(connection.getConnectionId());
+                            tenantManage.getUserNameIdMap(userId).remove(tenantManage.getName(userId,connection.getConnectionId().getValue()));
+                            break;
                         }
                     }
-                    if (!NodeInstanceExist) {
-                        errorInfo = "The node instance " +nodeId.getValue()+" is not exist.Could not be deleted";
+                }
+            }
+            if (tenantManage.getConnectionDataStore(userId)!=null){
+                for (Connection connection : tenantManage.getConnectionDataStore(userId).values()){
+                    List<EndNode> endNodeList = connection.getEndNode();
+                    for (EndNode endNode :endNodeList){
+                        if (endNode.getNodeId().equals(nodeId)){
+                            tenantManage.setUserDeleteIntent(userId,NEMOConstants.connection,connection.getConnectionId().getValue());
+                            tenantManage.getUserNameIdMap(userId).remove(tenantManage.getName(userId,connection.getConnectionId().getValue()));
+                            break;
+                        }
                     }
                 }
-                else{
-                    errorInfo = "There are no nodes instances in data store.";
+            }
+            if (tenantManage.getOperation(userId)!=null){
+                for (Operation operation : tenantManage.getOperation(userId).values()){
+                    if (operation.getTargetObject().getValue().equals(nodeId.getValue())){
+                        tenantManage.getOperation(userId).remove(operation.getOperationId());
+                        tenantManage.getUserNameIdMap(userId).remove(tenantManage.getName(userId,operation.getOperationId().getValue()));
+                    }
+                }
+            }
+            if (tenantManage.getOperationDataStore(userId)!=null){
+                for (Operation operation : tenantManage.getOperationDataStore(userId).values()){
+                    if (operation.getTargetObject().getValue().equals(nodeId.getValue())){
+                        tenantManage.setUserDeleteIntent(userId,NEMOConstants.operation,operation.getOperationId().getValue());
+                        tenantManage.getUserNameIdMap(userId).remove(tenantManage.getName(userId,operation.getOperationId().getValue()));
+                    }
                 }
             }
         }
-        else{
-            errorInfo = "There are no user in data store.";
-        }
-
-        return errorInfo;
-    }
-
-    private void DeleteNodeInstance(UserId userId,NodeId nodeId){
-        WriteTransaction t = dataBroker.newWriteOnlyTransaction();
-        UserKey userKey = new UserKey(userId);
-        NodeKey nodeKey = new NodeKey(nodeId);
-
-        InstanceIdentifier<Node> nodeid = InstanceIdentifier.builder(Users.class).child(User.class, userKey).child(Objects.class).child(Node.class,nodeKey).build();
-        t.delete(LogicalDatastoreType.CONFIGURATION, nodeid);
-        CheckedFuture<Void, TransactionCommitFailedException> f = t.submit();
-        Futures.addCallback(f, new FutureCallback<Void>() {
-            @Override
-            public void onFailure(Throwable t) {
-                LOG.error("Could not write endpoint base container", t);
-            }
-
-            @Override
-            public void onSuccess(Void result) {
-            }
-        });
+        return null;
     }
 }

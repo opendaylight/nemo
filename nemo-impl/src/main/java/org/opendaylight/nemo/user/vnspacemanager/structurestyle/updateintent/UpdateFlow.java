@@ -7,56 +7,29 @@
  */
 package org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.NEMOConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.MatchItemName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.Users;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.FlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.UserKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.MatchItemDefinitions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.flow.instance.MatchItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.match.item.definitions.MatchItemDefinition;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.match.item.instance.MatchItemValue;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by z00293636 on 2015/8/31.
  */
 public class UpdateFlow {
-
-    private DataBroker dataBroker;
     private TenantManage tenantManage;
-    private GetDefinitions getDefinitions;
     private ValueCheck valueCheck;
-    private static final Logger LOG = LoggerFactory.getLogger(UpdateFlow.class);
+    private GetDefinitions getDefinitions;
 
     public UpdateFlow(DataBroker dataBroker, TenantManage tenantManage)
     {
-        this.dataBroker = dataBroker;
         this.tenantManage = tenantManage;
         getDefinitions = new GetDefinitions(dataBroker);
         valueCheck = new ValueCheck();
@@ -74,51 +47,30 @@ public class UpdateFlow {
                 return errorInfo;
             }
             else {
-                WriteTransaction t = dataBroker.newWriteOnlyTransaction();
-                if (userId!=null && flow!=null){
-                    Flow flow1 = new FlowBuilder(flow).build();
-                    FlowKey flowKey = new FlowKey(flow.getFlowId());
-                    UserKey userKey = new UserKey(userId);
-
-                    InstanceIdentifier<Flow> flowid = InstanceIdentifier.builder(Users.class).child(User.class, userKey).child(Objects.class).child(Flow.class,flowKey).build();
-                    t.put(LogicalDatastoreType.CONFIGURATION, flowid, flow1,true);
-                    CheckedFuture<Void, TransactionCommitFailedException> f = t.submit();
-                    Futures.addCallback(f, new FutureCallback<Void>() {
-                        @Override
-                        public void onFailure(Throwable t) {
-                            LOG.error("Could not write endpoint base container", t);
-                        }
-
-                        @Override
-                        public void onSuccess(Void result) {
-                        }
-                    });
-                }
+                tenantManage.setFlow(userId,flow.getFlowId(),flow);
             }
         }
         return null;
     }
 
     private String checkInstance(UserId userId, Flow flow){
-        String errorInfo = null;
-        tenantManage.fetchVNSpace(userId);
-        User user = tenantManage.getUser();
-        if (user != null){
-            if (user.getObjects() != null){
-                if (user.getObjects().getFlow() != null){
-                    List<Flow> flowList = tenantManage.getUser().getObjects().getFlow();
-                    for (Flow flow1 : flowList){
-                        if (flow1.getFlowId().equals(flow.getFlowId())){
-                            if (!flow1.getFlowName().equals(flow.getFlowName())){
-                                errorInfo = "The flow name should not be changed.";
-                                break;
-                            }
-                        }
-                    }
+        if (tenantManage.getFlow(userId)!=null){
+            if (tenantManage.getFlow(userId).containsKey(flow.getFlowId())){
+                Flow flowExist = tenantManage.getFlow(userId).get(flow.getFlowId());
+                if (!flowExist.getFlowName().equals(flow.getFlowName())){
+                    return "The flow name should not be changed.";
                 }
             }
         }
-        return errorInfo;
+        if (tenantManage.getFlowDataStore(userId)!=null){
+            if (tenantManage.getFlowDataStore(userId).containsKey(flow.getFlowId())){
+                Flow flowExist = tenantManage.getFlowDataStore(userId).get(flow.getFlowId());
+                if (!flowExist.getFlowName().equals(flow.getFlowName())){
+                    return "The flow name should not be changed.";
+                }
+            }
+        }
+        return null;
     }
 
     private String checkPredefine(List<MatchItem> matchItems){
