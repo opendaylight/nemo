@@ -3,7 +3,7 @@
         {
           "node-id":"openflow:3",
           "port-id":"openflow:3:4",
-          "mac-address":"08:00:27:6e:f2:07"
+          "mac-address":"00:00:00:00:00:04"
         },
         {
           "node-id":"openflow:4",
@@ -13,22 +13,22 @@
         {
           "node-id":"openflow:1",
           "port-id":"openflow:1:1",
-          "mac-address":"08:00:27:65:4c:f6"
+          "mac-address":"00:00:00:00:00:01"
         },
         {
           "node-id":"openflow:1",
           "port-id":"openflow:1:2",
-          "mac-address":"00:00:00:00:00:01"
+          "mac-address":"00:00:00:00:00:05"
         },
         {
           "node-id":"openflow:2",
           "port-id":"openflow:2:1",
-          "mac-address":"00:00:00:00:00:02"
+          "mac-address":"00:00:00:00:00:06"
         },
         {
           "node-id":"openflow:2",
           "port-id":"openflow:2:2",
-          "mac-address":"08:00:27:90:0f:a5"
+          "mac-address":"00:00:00:00:00:02"
         }
     ]
 }

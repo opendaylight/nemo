@@ -6,7 +6,7 @@
           "ip-addresses":[
             {"ip-address":"192.168.11.2"}
           ],
-          "mac-address":"00:00:00:00:00:03",
+          "mac-address":"00:00:00:00:00:01",
           "node-id":"openflow:1",
           "connector-id":"openflow:1:1"
         },
@@ -16,7 +16,7 @@
           "ip-addresses":[
             {"ip-address":"192.168.12.2"}
           ],
-          "mac-address":"00:00:00:00:00:01",
+          "mac-address":"00:00:00:00:00:02",
           "node-id":"openflow:1",
           "connector-id":"openflow:1:2"
         },
@@ -26,7 +26,7 @@
           "ip-addresses":[
             {"ip-address":"192.168.12.3"}
           ],
-          "mac-address":"00:00:00:00:00:02",
+          "mac-address":"00:00:00:00:00:03",
           "node-id":"openflow:2",
           "connector-id":"openflow:2:1"
         },
@@ -36,7 +36,7 @@
           "ip-addresses":[
             {"ip-address":"192.168.12.4"}
           ],
-          "mac-address":"08:00:27:a0:a9:b3",
+          "mac-address":"00:00:00:00:00:04",
           "node-id":"openflow:2",
           "connector-id":"openflow:2:2"
         }
