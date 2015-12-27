@@ -6,9 +6,11 @@
     <link href="src/app/nemo/css/nemo_user_main.css" rel="stylesheet" />
 
     <!-- // <script src="src/app/nemo/module/migrate.js"></script> -->
+    <!-- // <script src="src/app/nemo/module/migrate_js.js"></script> -->
 
     <script src="src/app/nemo/module/keyWords.js"></script>
-    <!-- // <script src="src/app/nemo/module/bod_userJson.js"></script> -->
+    <!-- // <script src="src/app/nemo/module/test/bod_userJson.js"></script> -->
+    <!-- // <script src="src/app/nemo/module/test/servicechain_userJson.js"></script> -->
     <script src="src/app/nemo/js/Nemo_Main.js"></script>
     <script src="src/app/nemo/js/Nemo_Annouce_vis.js"></script>
     <script src="src/app/nemo/js/phyNetwork.js"></script>
@@ -18,30 +20,46 @@
 		var user_str = localStorage.getItem("nemo_userInfo");
         console.log(user_str);
         jQuery(document).ready(function ($) {
+        
+        (function(){
         if(user_str){
             user_str=JSON.parse(user_str);
             var userName=user_str.userName;
             //get topo data
+            if(!userName) return true;
             $('.header p').html($('.header p').html().replace('xxx',userName));
             var user_data=getIntentInfoByName(userName,IntentInfos);
-             analyjson_topo(user_data);
-             parseNemoLan(user_data);
+            // var user_data=getIntentInfoByName(userName,userinfo);
+            console.log(user_data);
+            analyjson_topo(user_data);
+            parseNemoLan(user_data);
 
              //set keyWords style
-           $("#nemo_str_show p").each(function(){
-            var $res=$(this);
-            keyWords.forEach(function(item,index,array){
-                // console.log(item);
-                $res.html($res.html().replace(item,"<span class='keyWords'>"+item+"</span>"));
-            });
-        });
+            $("#nemo_str_show p").each(function(){
+             var $res=$(this);
+             keyWords.forEach(function(item,index,array){
+                 // console.log(item);
+                 $res.html($res.html().replace(item,"<span class='keyWords'>"+item+"</span>"));
+                });
+             });
+        } 
+       }());
 
-        }      
+        $('#user_logout').click(function(){
+        // console.log(1);
+        // alert(1);
+        setCookie('nemo_userpwd','',-1);
+        $("#pageContent").empty();
+        $("#pageContent").load('src/app/nemo/register.html');
+        // alert(2);
+       });   
+
+      
         });
     </script>
 </head>
 <body>
-      <div class="header"><p>Hello xxx!</p></div>
+      <div class="header"><p>Hello xxx!</p><span id='user_logout'>Logout</span></div>
 
         <div class="group">
             <div class="up">

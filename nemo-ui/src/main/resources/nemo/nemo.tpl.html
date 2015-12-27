@@ -74,7 +74,7 @@
             // SFC
             //userId='af4fc2be-e3f4-4388-a8ef-3aabae872f2b';
             //Bod
-            //userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
+            //var userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
              //if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
             $('#service_svg2').empty();
             $("#nemo_str_show").empty();
@@ -98,8 +98,8 @@
            // var virtualData=getVirtualJson();
             var userId=$("#selectUser option:selected").val();
             jQuery('#vir_graph').empty();
-            jQuery("#virNodeTab").find('tr:gt(1)').empty();
-            jQuery("#virLinkTab").find('tr:gt(1)').empty();
+            jQuery("#virNodeTab").find('tr:gt(0)').empty();
+            jQuery("#virLinkTab").find('tr:gt(0)').empty();
             // SFC
             //userId='af4fc2be-e3f4-4388-a8ef-3aabae872f2b';
             //Bod
@@ -117,14 +117,15 @@
          // $(".tabs ul li[aria-controls='Mapping']").click();
         $(".tabs ul li[aria-controls='Mapping']").click(function(){
             var userId=$("#selectUser option:selected").val();
-            //if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
-            jQuery("#mapVirNodeTab").find('tr:gt(1)').empty();
-            jQuery("#mapVirLinkTab").find('tr:gt(1)').empty();
+            userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
+            jQuery("#mapVirNodeTab").find('tr:gt(0)').empty();
+            jQuery("#mapVirLinkTab").find('tr:gt(0)').empty();
             if(!physicalData||!PnMappingResults||!VirtualDatas) return;
             var virtualData = getVirtualInfoById(userId);
             if(!virtualData) return;
             if(!getPnMappingResultById(userId)) return;
             // console.log(createMappingTables);
+            console.log(virtualData);
               createMappingTables.createVirtualNodeTable('mapVirNodeTab',virtualData);
             // console.log(linkArray);
               createMappingTables.createVirtualLinkTable('mapVirLinkTab',virtualData,getPnMappingResultById(userId),physicalData);
@@ -141,13 +142,14 @@
             //Bod
             //userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
 
-            //if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
-            if(!intent_info) return;
+            if(!IntentInfos) return;
             var user_data = getIntentInfoById(userId);
             if(!user_data) return;
+            
             analyjson_topo(user_data);
             parseNemoLan(user_data);
-        //set keyWords style
+            
+            //set keyWords style
            $("#nemo_str_show p").each(function(){
             var $res=$(this);
             keyWords.forEach(function(item,index,array){
@@ -159,11 +161,9 @@
     });
 
        $('#logout').click(function(){
-        // alert(1);
         setCookie('nemo_userpwd','',-1);
         $("#pageContent").empty();
         $("#pageContent").load('src/app/nemo/register.html');
-        // alert(2);
        });
 
         });
@@ -190,22 +190,61 @@
                 <div id='PhyNet'>
                     <div id="phy_graph"></div>
                     <div id='physicalTables'>
-                         <table id="phyNodeTab" border='1'>
-                    <caption>Physical Node</caption>
-                       <tr>
+                      <table class='tableHead'>
+                        <caption>Physical Node</caption>
+                         <colgroup>
+                         <col style="width: 25%;"/>
+                         <col style="width: 25%;" />
+                         <col style="width: 25%;"/>
+                         <col style="width: 25%;" />
+                         </colgroup>
+                        <tr>
                         <th>Physical Node ID</th><th>Physical Node Type</th>
                         <th>Internal Physical Port Number</th><th>External Physical Port Number</th>
                         </tr>
-                   </table>
+                      </table>
 
-                    <table id="phyLinkTab" border='1'>
-                    <caption>Physical Link</caption>
-                       <tr>
+                      <div class='tableBodyContainer'>
+                         <table id="phyNodeTab" border='1'>
+                         <colgroup>
+                         <col style="width: 25%;"/>
+                         <col style="width: 25%;" />
+                         <col style="width: 25%;"/>
+                         <col style="width: 25%;" />
+                         </colgroup>
+                         </table>
+                      </div>
+
+                        <table class='tableHead'>
+                        <caption>Physical Link</caption>
+                         <colgroup>
+                         <col style="width: 30%;"/>
+                         <col style="width: 20%;" />
+                         <col style="width: 20%;"/>
+                         <col style="width: 10%;" />
+                         <col style="width: 10%;" />
+                         <col style="width: 10%;" />
+                         </colgroup>
+                        <tr>
                         <th>Physical Link ID</th><th>Source Physical Node</th>
-                       <th>Destination Physical Node</th><th>Metric</th>
-                       <th>Bandwidth</th> <th>Delay</th>
-                       </tr>
-                   </table>
+                        <th>Destination Physical Node</th><th>Metric</th>
+                        <th>Bandwidth</th><th>Delay</th>
+                        </tr>
+                     </table>
+                    
+                    <div class='tableBodyContainer'>
+                    <table id="phyLinkTab" border='1'>                    
+                       <colgroup>
+                         <col style="width: 30%;"/>
+                         <col style="width: 20%;" />
+                         <col style="width: 20%;"/>
+                         <col style="width: 10%;" />
+                         <col style="width: 10%;" />
+                         <col style="width: 10%;" />
+                         </colgroup>
+                    </table>
+                    </div>
+                    
                     </div>
                 </div>
 
@@ -231,8 +270,16 @@
                <div id="VirNet">
                 <div id="vir_graph"></div>
                 <div id='virtualTables'>
-                         <table id="virNodeTab" border='1'>
+
+                   <table class='tableHead' border='1'>
                     <caption>Virtual Node</caption>
+                    <colgroup>
+                    <col style="width: 20%;"/>
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;"/>
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;"/>
+                    </colgroup>
                        <tr>
                         <th>Virtual Node ID</th><th>Virtual Node Name</th>
                         <th>Virtual Node Type</th>
@@ -240,8 +287,28 @@
                         </tr>
                    </table>
 
-                    <table id="virLinkTab" border='1'>
+                    <div class='tableBodyContainer'>
+                    <table id="virNodeTab" border='1'>
+                    <colgroup>
+                    <col style="width: 20%;"/>
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;"/>
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;"/>
+                    </colgroup>
+                   </table>
+                    </div>
+               
+                   <table class='tableHead' border='1'>
                     <caption>Virtual Link</caption>
+                    <colgroup>
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;"/>
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;"/>
+                    <col style="width: 10%;" />
+                    <col style="width: 10%;"/>
+                    </colgroup>
                        <tr>
                         <th>Virtual Link ID</th><th>Virtual Link Name</th>
                         <th>Source Virtual Node</th>
@@ -250,22 +317,71 @@
                        <th>Bandwidth</th> <th>Delay</th>
                        </tr>
                    </table>
+               
+
+                    <div class='tableBodyContainer'>
+                    <table id="virLinkTab" border='1'>
+                      <colgroup>
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;"/>
+                    <col style="width: 20%;" />
+                    <col style="width: 20%;"/>
+                    <col style="width: 10%;" />
+                    <col style="width: 10%;"/>
+                    </colgroup>
+                   </table>
+                   </div>
                     </div>
                </div>
                <div id="Mapping">
-                   <table id="mapVirNodeTab" border='1'>
+                    
+                    <div id='mappingTable'>
+                   <table class='tableHead' border='1'>
                     <caption>Virtual Node Mapping Table</caption>
+                    <colgroup>
+                    <col style="width: 50%;" />
+                    <col style="width: 50%;"/>
+                    </colgroup>
                        <tr><th>Virtual Node</th><th>Physical Node</th></tr>
                    </table>
+                    
+                   <div class='tableBodyContainer'>
+                   <table id="mapVirNodeTab" border='1'>
+                    <colgroup>
+                    <col style="width: 50%;" />
+                    <col style="width: 50%;"/>
+                    </colgroup>
+                   </table>
+                    </div> 
 
-                    <table id="mapVirLinkTab" border='1'>
+                     <table class='tableHead' border='1'>
                     <caption>Virtual Link Mapping Table</caption>
+                    <colgroup>
+                    <col style="width: 20%;">
+                    <col style="width: 15%;">
+                    <col style="width: 15%;">
+                    <col style="width: 20%;">
+                    <col style="width: 30%;">
+                    </colgroup>                     
                        <tr>
                         <th>Virtual Link</th><th>Source Virtual Node</th>
                        <th>Destination Virtual Node</th><th>Physical Path</th>
                        <th>Physical Nodes passed by Path</th>
                        </tr>
                    </table>
+                    
+                    <div class='tableBodyContainer'>
+                    <table id="mapVirLinkTab" border='1'>
+                    <colgroup>
+                    <col style="width: 20%;">
+                    <col style="width: 15%;">
+                    <col style="width: 15%;">
+                    <col style="width: 20%;">
+                    <col style="width: 30%;">
+                    </colgroup>
+                   </table>
+                   </div>
+                  </div>
                </div>
         </div>
 

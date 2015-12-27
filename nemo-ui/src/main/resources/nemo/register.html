@@ -62,6 +62,40 @@ function getCookie(name)
 			});
       	return user_data;
       }
+      function userLogin(userName,userPassword){
+      	 jQuery.ajax({
+			url: "/restconf/config/nemo-intent:users/",
+			type: "GET",
+			async: false,
+			dataType: "json",
+			success: function(data) {
+			console.log(data);
+			//data=JSON.stringify(data);
+			var name_data_list=data["users"]["user"];
+	        for (var i in name_data_list) {
+			if (name_data_list[i]["user-name"] == userName) {
+				if (name_data_list[i]["user-password"]==userPassword)
+				{
+					userInfoStorage.userName=userName;
+					localStorage.setItem("nemo_userInfo",JSON.stringify(userInfoStorage));
+     				setCookie('nemo_username',userName);
+     		        setCookie('nemo_userpwd',userPassword);
+			    	$("#pageContent").empty();
+                	$("#pageContent").load('src/app/nemo/nemo.tpl.user.html');
+                return;
+			    }
+			    else{
+			    	alert("User's password  is wrong!");
+			    	return;
+			    }
+			}
+		    }
+		    alert("There is no user named "+userName);
+			},
+			error: function(data) {console.log(data);}
+		   });
+      }
+      //use cookie remember the last username and password ,and use them login
       (function(){
       	var cook_username=getCookie('nemo_username');
       	var cook_userpwd=getCookie('nemo_userpwd');
@@ -70,6 +104,9 @@ function getCookie(name)
       	if(cook_username=='admin'&&cook_userpwd=='admin'){
       		$("#pageContent").empty();
             $("#pageContent").load('src/app/nemo/nemo.tpl.html');
+      	}
+      	else{
+      		userPassword(cook_username,cook_userpwd);
       	}
       }());
       $("#usename").focus();
@@ -96,37 +133,7 @@ function getCookie(name)
             $("#pageContent").load('src/app/nemo/nemo.tpl.html');
             }
             else{
-            jQuery.ajax({
-			url: "/restconf/config/nemo-intent:users/",
-			type: "GET",
-			async: false,
-			dataType: "json",
-			success: function(data) {
-			console.log(data);
-			//data=JSON.stringify(data);
-			var name_data_list=data["users"]["user"];
-	        for (var i in name_data_list) {
-			if (name_data_list[i]["user-name"] == userName) {
-				if (name_data_list[i]["user-password"]==userPassword)
-				{
-					userInfoStorage.userName=userName;
-					localStorage.setItem("nemo_userInfo",JSON.stringify(userInfoStorage));
-     				// setCookie('username',userName);
-     				// setCookie('username',userPassword);
-			    	$("#pageContent").empty();
-                	$("#pageContent").load('src/app/nemo/nemo.tpl.user.html');
-                return;
-			    }
-			    else{
-			    	alert("User's password  is wrong!");
-			    	return;
-			    }
-			}
-		    }
-		    alert("There is no user named "+userName);
-			},
-			error: function(data) {console.log(data);}
-		   });
+               userLogin(userName,userPassword);
 	    }
 	    });
 		

@@ -339,7 +339,7 @@ userinfo={
                 }
               ],
               "node-type": "fw",
-              "node-name": "dmz1_fw1"
+              "node-name": "dmz1.fw1"
             },
             {
               "node-id": "ae83ca1d-43ef-4d02-a48b-6c250bb084bd",
@@ -430,7 +430,7 @@ userinfo={
                 }
               ],
               "node-type": "l2-group",
-              "node-name": "dmz1_n2",
+              "node-name": "dmz1.n2",
               "sub-node": [
                 {
                   "node-id": "6c787caa-156a-49ed-8546-547bdccf283c",
@@ -501,7 +501,7 @@ userinfo={
             {
               "node-id": "0dc22c0a-8ff0-448f-afc3-86fa22976242",
               "node-type": "chain-group",
-              "node-name": "dmz1_n1",
+              "node-name": "dmz1.n1",
               "sub-node": [
                 {
                   "node-id": "9d6f5343-f38e-4101-ab60-309e6322ace3",
@@ -539,7 +539,7 @@ userinfo={
                 }
               ],
               "connection-type": "p2p",
-              "connection-name": "dmz1_c1"
+              "connection-name": "dmz1.c1"
             },
             {
               "connection-id": "06c60ef9-f16d-4368-9697-aa6b1cf1340a",
@@ -580,7 +580,7 @@ userinfo={
                   }
                 }
               ],
-              "flow-name": "dmz1_f1"
+              "flow-name": "dmz1.f1"
             }
           ]
         },

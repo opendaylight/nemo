@@ -26,7 +26,7 @@ function getIntentInfos(){
  	if(!Datas){
  	Datas=userinfo;
  	}
- 	// IntentInfos=Datas;
+ 	IntentInfos=Datas;
  	//return virtualDatas;
  }
 
@@ -54,7 +54,7 @@ getIntentInfos();
  }
 
  function getIntentInfoByName(user_name,Data){
- 		//console.log(1);
+     console.log(Data);
  	if(typeof(Data)=='string'){
     var user_json = JSON.parse(Data);
     }
@@ -256,14 +256,14 @@ getIntentInfos();
 
 
 		//get Radio
-		var cir_r = parseInt(jQuery("#" + src_group + " circle:eq(0)").attr("r"));
+		var cir_r = parseInt(jQuery("[id='" + src_group + "'] circle:eq(0)").attr("r"));
 
 
 		//get circle cx cy
-		src_cx = parseInt(jQuery("#" + src_group + " circle:eq(0)").attr("cx"));
-		src_cy = parseInt(jQuery("#" + src_group + " circle:eq(0)").attr("cy"));
-		dest_cx = parseInt(jQuery("#" + dest_group + " circle:eq(0)").attr("cx"));
-		dest_cy = parseInt(jQuery("#" + dest_group + " circle:eq(0)").attr("cy"));
+		src_cx = parseInt(jQuery("[id='" + src_group + "'] circle:eq(0)").attr("cx"));
+		src_cy = parseInt(jQuery("[id='" + src_group + "'] circle:eq(0)").attr("cy"));
+		dest_cx = parseInt(jQuery("[id='" + dest_group + "'] circle:eq(0)").attr("cx"));
+		dest_cy = parseInt(jQuery("[id='" + dest_group + "'] circle:eq(0)").attr("cy"));
 		console.log(src_cx + "  " + src_cy + "  " + dest_cx + "   " + dest_cy);
 
 		//calculate deg
@@ -358,10 +358,10 @@ getIntentInfos();
 		if (conn_name != null && typeof(conn_name) != "undefined")
 			jQuery("#" + conn_name).remove();
 		try {
-			var node_cx_1 = jQuery("#" + node_name_1 + "_group").attr("cx");
-			var node_cy_1 = jQuery("#" + node_name_1 + "_group").attr("cy");
-			var node_cx_2 = jQuery("#" + node_name_2 + "_group").attr("cx");
-			var node_cy_2 = jQuery("#" + node_name_2 + "_group").attr("cy");
+			var node_cx_1 = jQuery("[id='" + node_name_1 + "_group']").attr("cx");
+			var node_cy_1 = jQuery("[id='" + node_name_1 + "_group']").attr("cy");
+			var node_cx_2 = jQuery("[id='" + node_name_2 + "_group']").attr("cx");
+			var node_cy_2 = jQuery("[id='" + node_name_2 + "_group']").attr("cy");
 			// console.log(node_cx_1);
 			// console.log(node_cy_1);
 			// console.log(node_cx_2);
@@ -903,8 +903,8 @@ getIntentInfos();
 				if(myTarget!='go-through') continue;
 				var flow_name = flow_list[user_data["operations"]["operation"][operation_cursor]["target-object"]];
 				var chain_name = node_list[user_data["operations"]["operation"][operation_cursor]["action"][0]["parameter-values"]["string-value"][0]["value"]];
-				var node_start = jQuery("#" + flow_name).attr("node_start");
-				var node_end = jQuery("#" + flow_name).attr("node_end");
+				var node_start = jQuery("[id='" + flow_name+"']").attr("node_start");
+				var node_end = jQuery("[id='" + flow_name+"']").attr("node_end");
 				var c1_flag = 0;
 				var c2_flag = 0;
 				for (var i = 0; i < jQuery("#service_svg2 path").length; i++) {

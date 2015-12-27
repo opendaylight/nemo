@@ -433,7 +433,7 @@ createPhyicalNodeTable:function (id,Data){
  	    physicalnodes[Mynode[i]['node-id']].push([interPort,exterPort]);
  	}
  	console.log(physicalnodes);
- 	jQuery("#"+id).find('tr:gt(1)').empty();
+ 	jQuery("#"+id).find('tr:gt(0)').empty();
  	for(var item in physicalnodes){
  		var $tr='<tr><td>'+item+'</td><td>'+physicalnodes[item][0]+'</td>'
  		$tr+='<td>'+physicalnodes[item][1][0]+'</td><td>'+physicalnodes[item][1][1]+'</td>'
@@ -454,7 +454,7 @@ createPhyicalLinkTable:function (id,Data){
 
  	}
  	console.log(physaicallinks);
- 	jQuery("#"+id).find('tr:gt(1)').empty();
+ 	jQuery("#"+id).find('tr:gt(0)').empty();
  	for(var item in physaicallinks){
  		var $tr='<tr><td>'+item+'</td><td>'+physaicallinks[item][0]+'</td>'
  		 $tr+='<td>'+physaicallinks[item][1]+'</td><td>'+physaicallinks[item][2]+'</td>';

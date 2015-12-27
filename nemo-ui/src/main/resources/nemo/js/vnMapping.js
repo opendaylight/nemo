@@ -26,14 +26,14 @@ function getMappingResults() {
 function getMappingDatas() {
 	var Datas = getMappingResults();
 	if (!Datas) {
-		Datas = MappingResults;
+		Datas = VnMappingJson;
 	}
 	MappingResults = Datas;
 	//return virtualDatas;
 }
 
 getMappingResults();
-
+//getMappingDatas();
 function getMappingResultById(user_id, Data) {
 	if (!Data) Data = MappingResults;
 	if (!Data) return;
@@ -105,7 +105,7 @@ var createMappingTables = {
 					virtualnodes[Mynode[i]['node-id']] = Mynode[i]['physical-resource-requirement'][0]['attribute-value']['string-value'];
 			}
 			console.log(virtualnodes);
-			jQuery("#" + id).find('tr:gt(1)').empty();
+			// jQuery("#" + id).find('tr:gt(0)').empty();
 			var count=0;
 			for(var x in virtual_nodes){count++;}
 			if(count==0) return;
@@ -138,7 +138,7 @@ var createMappingTables = {
 			for(var x in virtual_nodes){count++;}
 			if(count==0) return;
 			for (var i in virtuallinks) {
-				var $tr = '<tr><td>' + virtual_nodes[virtuallinks[i][0]][1] + '-' + virtual_nodes[virtuallinks[i][1]][1] + '</td><td>' + virtual_nodes[virtuallinks[i][0]][1] + '</td><td>' + virtual_nodes[virtuallinks[i][1]][1] + '</td><td>' + PathId[i] + '</td>'
+				var $tr = '<tr><td>' + virtual_nodes[virtuallinks[i][0]][1] + '-' + virtual_nodes[virtuallinks[i][1]][1] + '</td><td>' + virtual_nodes[virtuallinks[i][0]][1] + '</td><td>' + virtual_nodes[virtuallinks[i][1]][1] + '</td><td title='+PathId[i]+'>' + PathId[i].substring(0,14)+'...' + '</td>'
 				var pathsNode = ''
 				for (var nodesPath in paths[PathId[i]]) {
 					pathsNode += paths[PathId[i]][nodesPath] + '-';
@@ -166,7 +166,10 @@ var createMappingTables = {
 			}
 			console.log(PathId);
 			var Paths = [];
-			var sourcePaths = physicalData['physical-network']['physical-paths']['physical-path'];
+			var sourcePaths = physicalData['physical-network']['physical-paths'];
+			if(!sourcePaths) return Paths;
+
+			sourcePaths = physicalData['physical-network']['physical-paths']['physical-path'];
 			// console.log(sourcePaths);
 			for (var path in PathId) {
 				for (var sp in sourcePaths) {

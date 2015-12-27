@@ -21,7 +21,8 @@ var VirtualDatas='';
 					alert("No Virtual Data");
 			},
 			error:function(data){
-			alert("Get Virtual Data Error!");
+			// alert("Get Virtual Data Error!");
+			console.log("Get Virtual Data Error!");
 			}
 		});
 	 return virData;
@@ -36,7 +37,7 @@ var VirtualDatas='';
  	// console.log(VirtualDatas);
  	//return virtualDatas;
  }
-
+//getVirtualDatas();
 function getVirtualInfoById(user_id,Data){
 	if(!Data) Data=VirtualDatas;
 	if(!Data) return;
@@ -286,7 +287,7 @@ createVirtualNodeTable:function (id,Data){
  	for(var item in virtualnodes){		
  		// if(virtualnodes[item][1]!='external-node'){}
 
- 	    var $tr='<tr><td>'+virtualnodes[item].virtual_node_id+'</td><td>'+virtualnodes[item].virtual_node_name+'</td>'
+ 	    var $tr='<tr><td title='+virtualnodes[item].virtual_node_id+'>'+virtualnodes[item].virtual_node_id+'</td><td>'+virtualnodes[item].virtual_node_name+'</td>'
  		$tr+='<td>'+'virtual '+virtualnodes[item].virtual_node_name.substring(1,virtualnodes[item].virtual_node_name.length-1)+'</td>'
  		$tr+='<td>'+virtualnodes[item].internal_port_number+'</td><td>'+virtualnodes[item].external_port_number+'</td>'
  		$tr+='</tr>'
@@ -310,7 +311,7 @@ createVirtualLinkTable:function (id,Data){
  	console.log(virtuallinks);
  	jQuery("#"+id).find('tr:gt(1)').empty();
  	for(var item in virtuallinks){
- 		var $tr='<tr><td>'+item+'</td><td>'+virtual_nodes[virtuallinks[item][0]][1]+'-'+virtual_nodes[virtuallinks[item][1]][1]+'</td>'
+ 		var $tr='<tr><td title='+item+'>'+item+'</td><td>'+virtual_nodes[virtuallinks[item][0]][1]+'-'+virtual_nodes[virtuallinks[item][1]][1]+'</td>'
  		 $tr+='<td>'+virtual_nodes[virtuallinks[item][0]][1]+'<td>'+virtual_nodes[virtuallinks[item][1]][1]+'</td>';
  		 $tr+='<td>'+virtuallinks[item][3]+'kbps'+'</td><td>'+virtuallinks[item][4]+'ms'+'</td>';
  		 $tr+='</tr>'

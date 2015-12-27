@@ -104,18 +104,21 @@ margin-bottom: 20px;
   width:923px !important;
   line-height: 10px;
 }
-#physicalTables{
-
+#mappingTable{
+  width: 850px;
+  margin: 0px auto;
 }
 .group table{
   border-collapse:collapse;
-  margin: 10px auto;
+  /*margin: 10px auto;*/
   border-spacing:0;
  /* border-left:1px solid #888;
   border-top:1px solid #888;*/
   background:#efefef;
-  width: 100%;
-  margin-bottom: 20px;
+  /*width: 100%;*/
+  width: 820px;
+  margin-bottom: 2px;
+   table-layout: fixed;
 }
 .group caption{
   font-size: 18px;
@@ -128,17 +131,39 @@ margin-bottom: 20px;
 }
 .group table th{
    border:1px solid black; 
+   padding:2px 0px;
    font-weight: bold;
    background-color: #ccc;
- 
 }
 .group table th,.group table td{
-  padding:2px 5px;
   text-align: center;
+   font-size: 15px;
+}
+table#virNodeTab,table#virLinkTab{
+  table-layout: fixed;
+}
+table#virNodeTab td,table#virLinkTab td{
+ white-space: nowrap;
+ overflow: hidden;
+ text-overflow:ellipsis;
+}
+table.tableHead{
+ margin-bottom: 5px !important;
+}
+div.tableBodyContainer{
+  height: 200px;
+  width: 835px;
+  overflow: auto;
+  margin-bottom: 20px;
+}
+div.nodetableBodyContainer{
+  height: 150px;
+  overflow: auto;
+   margin-bottom: 20px;
 }
 
 div#pageContent {
-  height: 1020px;
+  /*height: 1020px;*/
 }
   
 body {
