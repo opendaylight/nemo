@@ -18,6 +18,7 @@ import org.opendaylight.nemo.user.vnspacemanager.languagestyle.NEMOParse.SimpleC
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Field;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -29,8 +30,14 @@ public class SimpleCharStreamTest extends TestCase {
     private Reader reader;
     private InputStream inputStream;
     private Reader reader_empty;
+    private Class<SimpleCharStream> class1 ;
+    private Field field;
     @Before
     public void setUp() throws Exception {
+        class1 = SimpleCharStream.class;
+        field = class1.getDeclaredField("inputStream");
+        field.setAccessible(true);
+        field.set(class1,null);
         reader = new Reader() {
             @Override
             public int read(char[] cbuf, int off, int len) throws IOException {
