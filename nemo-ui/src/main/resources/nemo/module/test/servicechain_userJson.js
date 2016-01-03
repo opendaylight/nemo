@@ -69,9 +69,14 @@ var userinfo ={
                   "order": 0
                 },
                 {
+                  "node-id": "c2cd9de6-ab25-4d3f-bff2-c4d785a419952",
+                  "order": 2
+                },
+                {
                   "node-id": "a5a96dc7-51dd-44a5-802b-7e67a309fb36",
                   "order": 1
                 }
+                
               ]
             },
             {
@@ -102,6 +107,35 @@ var userinfo ={
               ],
               "node-type": "fw",
               "node-name": "fw1"
+            },
+            {
+              "node-id": "c2cd9de6-ab25-4d3f-bff2-c4d785a419952",
+              "property": [
+                {
+                  "property-name": "location",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "openflow:1:1",
+                        "order": 0
+                      }
+                    ]
+                  }
+                },
+                {
+                  "property-name": "operating-mode",
+                  "property-values": {
+                    "string-value": [
+                      {
+                        "value": "layer3",
+                        "order": 0
+                      }
+                    ]
+                  }
+                }
+              ],
+              "node-type": "fw",
+              "node-name": "fw2"
             },
             {
               "node-id": "b46cfa7f-93a3-43f4-ac20-09307c75feca",

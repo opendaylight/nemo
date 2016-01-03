@@ -53,7 +53,7 @@ if(!physicalData) return;
  if(!physicalData) physicalData=physicalJson;
  if(!physicalData) return;
  }
-getPhysicalData();
+// getPhysicalData();
 
 function createPhysicalTopo(Data){
 	nodes_phy.clear();
@@ -76,7 +76,7 @@ function createPhysicalTopo(Data){
 			nodes_phy.add({
 				id: +i+1,
                 label: physicalHost[i]["host-name"],
-                image: "src/app/nemo/images/phyHost.png",
+                image: "src/app/nemo/images/host.png",
                 shape: 'image',
 			    fontSize: 15
 			});
@@ -120,7 +120,7 @@ function createPhysicalTopo(Data){
     		externalNode[i]=[nodeslen+1,externalNode[i][0]];
     		nodes_phy.add({
 				id: ++nodeslen,
-                label: '',
+                label: 'ext-network',
                 image: "src/app/nemo/images/ext-group.png",
                 shape: 'image',
 			});
@@ -433,12 +433,21 @@ createPhyicalNodeTable:function (id,Data){
  	    physicalnodes[Mynode[i]['node-id']].push([interPort,exterPort]);
  	}
  	console.log(physicalnodes);
- 	jQuery("#"+id).find('tr:gt(0)').empty();
+ 	jQuery("#"+id).find('tr').remove();
  	for(var item in physicalnodes){
  		var $tr='<tr><td>'+item+'</td><td>'+physicalnodes[item][0]+'</td>'
  		$tr+='<td>'+physicalnodes[item][1][0]+'</td><td>'+physicalnodes[item][1][1]+'</td>'
  		$tr+='</tr>'
  		jQuery("#"+id).append($tr);
+ 	}
+ 	var node_count = jQuery("#"+id).find('tr').length;
+ 	console.log("node_count:",node_count);
+ 	if(!node_count) return;
+ 	if(node_count<10){
+ 		jQuery("div.tableBodyContainer:first").height(node_count*22+5);
+ 	}
+ 	else{
+ 		jQuery("div.tableBodyContainer:first").height(200);
  	}
 },
 createPhyicalLinkTable:function (id,Data){
@@ -454,7 +463,7 @@ createPhyicalLinkTable:function (id,Data){
 
  	}
  	console.log(physaicallinks);
- 	jQuery("#"+id).find('tr:gt(0)').empty();
+ 	jQuery("#"+id).find('tr').remove();
  	for(var item in physaicallinks){
  		var $tr='<tr><td>'+item+'</td><td>'+physaicallinks[item][0]+'</td>'
  		 $tr+='<td>'+physaicallinks[item][1]+'</td><td>'+physaicallinks[item][2]+'</td>';

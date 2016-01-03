@@ -37,7 +37,7 @@ var VirtualDatas='';
  	// console.log(VirtualDatas);
  	//return virtualDatas;
  }
-//getVirtualDatas();
+// getVirtualDatas();
 function getVirtualInfoById(user_id,Data){
 	if(!Data) Data=VirtualDatas;
 	if(!Data) return;
@@ -283,7 +283,7 @@ createVirtualNodeTable:function (id,Data){
  	// 	virtualnodes[Mynode[i]['node-id']]=Mynode[i]['node-type'];
  	// }
  	// console.log(virtualnodes);
- 	jQuery("#"+id).find('tr:gt(1)').empty();
+ 	jQuery("#"+id).find('tr:gt(0)').empty();
  	for(var item in virtualnodes){		
  		// if(virtualnodes[item][1]!='external-node'){}
 
@@ -292,6 +292,15 @@ createVirtualNodeTable:function (id,Data){
  		$tr+='<td>'+virtualnodes[item].internal_port_number+'</td><td>'+virtualnodes[item].external_port_number+'</td>'
  		$tr+='</tr>'
  		jQuery("#"+id).append($tr);
+ 	}
+ 	var node_count = jQuery("#"+id).find('tr').length;
+ 	console.log("node_count:",node_count);
+ 	if(!node_count) return
+ 	if(node_count<10){
+ 		jQuery("div.tableBodyContainer:eq(2)").height(node_count*22+5);
+ 	}
+ 	else{
+ 		jQuery("div.tableBodyContainer:eq(2)").height(200);
  	}
 },
 
@@ -309,7 +318,7 @@ createVirtualLinkTable:function (id,Data){
 
  	}
  	console.log(virtuallinks);
- 	jQuery("#"+id).find('tr:gt(1)').empty();
+ 	jQuery("#"+id).find('tr:gt(0)').empty();
  	for(var item in virtuallinks){
  		var $tr='<tr><td title='+item+'>'+item+'</td><td>'+virtual_nodes[virtuallinks[item][0]][1]+'-'+virtual_nodes[virtuallinks[item][1]][1]+'</td>'
  		 $tr+='<td>'+virtual_nodes[virtuallinks[item][0]][1]+'<td>'+virtual_nodes[virtuallinks[item][1]][1]+'</td>';

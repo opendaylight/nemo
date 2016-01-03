@@ -33,7 +33,7 @@ function getMappingDatas() {
 }
 
 getMappingResults();
-//getMappingDatas();
+// getMappingDatas();
 function getMappingResultById(user_id, Data) {
 	if (!Data) Data = MappingResults;
 	if (!Data) return;
@@ -113,6 +113,15 @@ var createMappingTables = {
 				var $tr = '<tr><td>' + virtual_nodes[i][1] + '</td><td>' + virtualnodes[i] + '</td></tr>'
 				jQuery("#" + id).append($tr);
 			}
+			var node_count = jQuery("#"+id).find('tr').length;
+ 			console.log("node_count:",node_count);
+ 			if(!node_count) return
+ 			if(node_count<10){
+ 				jQuery("div.tableBodyContainer:eq(4)").height(node_count*22+5);
+ 			}
+ 			else{
+ 				jQuery("div.tableBodyContainer:eq(4)").height(200);
+ 			}
 		},
 
 		PathId: [], //virtual-link-id--->physical-path-id

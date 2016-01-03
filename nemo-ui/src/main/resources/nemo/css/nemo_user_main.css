@@ -83,14 +83,16 @@ svg{
 	width:990px !important;
 	line-height: 10px;
 	
-	font-weight: bold;
+	font-weight: normal;
 }
 #nemo_str_show p{
 	white-space:nowrap;
 	/*margin-left: 5px;*/
 }
 #nemo_str_show span.keyWords{
-	color:deeppink;
+	/*color:deeppink;*/
+	/*font-weight: bold;*/
+	color: #eb8f00;
 }
 
 /*jquery ui tab css start*/
@@ -109,7 +111,7 @@ svg{
 .ui-widget-header {
   border: 1px solid #ccc;
   background: #aaa url("../images/ui-bg_gloss-wave_35_f6a828_500x100.png") 50% 50% repeat-x;
-  background:#aaa;
+  background:#9bf;
   color: #fff;
   font-weight: bold;
 }

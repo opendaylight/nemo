@@ -5,7 +5,7 @@
 	<title>nemo-register</title>
 	<link rel="stylesheet" href="src/app/nemo/css/register.css">
 	 <script src="lib/jquery-2.1.4.min.js"></script>
-	 <script src="src/app/nemo/js/jquery.cookie.js"></script>
+	 <script src="src/app/nemo/js/Nemo_Main.js"></script>
 	<script>
 	function setCookie(name,value,Days) 
 { 
@@ -106,7 +106,7 @@ function getCookie(name)
             $("#pageContent").load('src/app/nemo/nemo.tpl.html');
       	}
       	else{
-      		userPassword(cook_username,cook_userpwd);
+      		userLogin(cook_username,cook_userpwd);
       	}
       }());
       $("#usename").focus();

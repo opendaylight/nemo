@@ -6,7 +6,7 @@
     <link href="src/app/nemo/css/nemo_user_main.css" rel="stylesheet" />
     <link href="src/app/nemo/css/nemo_main.css" rel="stylesheet" />
 
-     <!-- // <script src="src/app/nemo/module/migrate_js.js"></script> -->
+    <!-- // <script src="src/app/nemo/module/migrate_js.js"></script> -->
     <script src="src/app/nemo/js/Nemo_Main.js"></script>
     <script src="src/app/nemo/module/keyWords.js"></script>
     <script src="src/app/nemo/module/migrate.js"></script>
@@ -72,15 +72,15 @@
             console.log(userId);
 
             // SFC
-            //userId='af4fc2be-e3f4-4388-a8ef-3aabae872f2b';
+            // userId='af4fc2be-e3f4-4388-a8ef-3aabae872f2b';
             //Bod
-            //var userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
-             //if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
+            // var userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
+             // if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
             $('#service_svg2').empty();
             $("#nemo_str_show").empty();
             console.log(userId);
             if(!IntentInfos) return;
-            var user_data = getIntentInfoById(userId);
+            var user_data = getIntentInfoById(userId,userinfo);
             if(!user_data) return;
 
             analyjson_topo(user_data);
@@ -98,18 +98,18 @@
            // var virtualData=getVirtualJson();
             var userId=$("#selectUser option:selected").val();
             jQuery('#vir_graph').empty();
-            jQuery("#virNodeTab").find('tr:gt(0)').empty();
-            jQuery("#virLinkTab").find('tr:gt(0)').empty();
+            jQuery("#virNodeTab").find('tr').remove();
+            jQuery("#virLinkTab").find('tr').remove();
             // SFC
             //userId='af4fc2be-e3f4-4388-a8ef-3aabae872f2b';
             //Bod
             //userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
 
-            //if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
+            // if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
             // virtualData=virtualJson;
 
-            if(!IntentInfos||!MappingResults||!VirtualDatas) return;
-            if(!getVirtualInfoById(userId)||!getIntentInfoById(userId)||!getMappingResultById(userId)) return;
+             if(!IntentInfos||!MappingResults||!VirtualDatas) return;
+             if(!getVirtualInfoById(userId)||!getIntentInfoById(userId)||!getMappingResultById(userId)) return;
             create_virtual_topo(getVirtualInfoById(userId),getIntentInfoById(userId),getMappingResultById(userId));
             creataVirtualTables.createVirtualNodeTable('virNodeTab',getVirtualInfoById(userId));
             creataVirtualTables.createVirtualLinkTable('virLinkTab',getVirtualInfoById(userId));
@@ -117,13 +117,13 @@
          // $(".tabs ul li[aria-controls='Mapping']").click();
         $(".tabs ul li[aria-controls='Mapping']").click(function(){
             var userId=$("#selectUser option:selected").val();
-            userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
-            jQuery("#mapVirNodeTab").find('tr:gt(0)').empty();
-            jQuery("#mapVirLinkTab").find('tr:gt(0)').empty();
-            if(!physicalData||!PnMappingResults||!VirtualDatas) return;
+            // userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
+            jQuery("#mapVirNodeTab").find('tr').remove();
+            jQuery("#mapVirLinkTab").find('tr').remove();
+             if(!physicalData||!PnMappingResults||!VirtualDatas) return;
             var virtualData = getVirtualInfoById(userId);
-            if(!virtualData) return;
-            if(!getPnMappingResultById(userId)) return;
+             if(!virtualData) return;
+             if(!getPnMappingResultById(userId)) return;
             // console.log(createMappingTables);
             console.log(virtualData);
               createMappingTables.createVirtualNodeTable('mapVirNodeTab',virtualData);
@@ -251,7 +251,7 @@
                 <div id="intent_info">
                      <div id="intent_topo">
                     
-                    <svg id="service_svg2"  width="800" height="560"  viewBox="100 40 900 780">
+                    <svg id="service_svg2"  width="800" height="560"  viewBox="100 20 900 780">
                     <defs>
                     <marker id="idArrow2" viewBox="0 0 20 20" refX="0" refY="10" markerUnits="strokeWidth" markerWidth="6" markerHeight="15" orient="auto"><path d="M 0 0 L 20 10 L0 20 z"fill="purple"stroke="black"/> </marker>
                     <marker id="idtext2" viewBox="0 0 120 50" refX="0" refY="0" markerUnits="strokeWidth" markerWidth="20" markerHeight="20"  orient="auto"><text style="font-family:sans-serif; font-size:14pt;"  x="20" y="20">text</text></marker>  

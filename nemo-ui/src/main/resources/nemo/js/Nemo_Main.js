@@ -20,7 +20,11 @@ jQuery(document).ready(function ($) {
      //localStorage.clear();
      //show the tab
     $(".tabs").tabs();
-    // $(".tabs ul li[aria-controls='intent_topo']").trigger('click');
+    
+    jQuery('a[href="#/nemo"]').click(function(){
+        jQuery("#page_logo").attr("src","src/app/nemo/images/logo_nemo.png").attr("ng-src","src/app/nemo/images/logo_nemo.png");
+    })
+    jQuery('a[href="#/nemo"]').click();
 });
 
 

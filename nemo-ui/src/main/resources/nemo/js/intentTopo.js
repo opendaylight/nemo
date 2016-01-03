@@ -31,7 +31,7 @@ function getIntentInfos(){
  }
 
 getIntentInfos();
-//getIntentDatas();
+// getIntentDatas();
  function getIntentInfoById(user_id,Data){
  		//console.log(1);
  	if(!Data) Data=IntentInfos;
@@ -462,7 +462,7 @@ getIntentInfos();
 			var text2_main = jQuery(text2).attr({
 				id: node_name + "_title2",
 				x: circle_x,
-				y: circle_y + 10,
+				y: circle_y + 0 - 100,
 				fill: "                       ",
 				'text-anchor': 'middle'
 			});
@@ -523,7 +523,7 @@ getIntentInfos();
 			var text2_main = jQuery(text2).attr({
 				id: node_name + "_title2",
 				x: circle_x,
-				y: circle_y - 30,
+				y: (circle_y - 0 - 100),
 				fill: "black",
 				'text-anchor': 'middle'
 			});
@@ -532,7 +532,7 @@ getIntentInfos();
 			var text3_main = jQuery(text3).attr({
 				id: node_list[0] + '_text',
 				x: circle_x,
-				y: circle_y,
+				y: circle_y + 5,
 				fill: "black",
 				'text-anchor': 'middle'
 			});
@@ -598,7 +598,7 @@ getIntentInfos();
 			var text2_main = jQuery(text2).attr({
 				id: node_name + "_title2",
 				x: circle_x,
-				y: circle_y - 31,
+				y: circle_y - 0 - 100,
 				fill: "black",
 				'text-anchor': 'middle'
 			});
@@ -696,7 +696,7 @@ getIntentInfos();
 			var text2_main = jQuery(text2).attr({
 				id: node_name + "_title2",
 				x: circle_x,
-				y: circle_y - 36,
+				y: circle_y - 0 - 100,
 				fill: "black",
 				'text-anchor': 'middle'
 			});
@@ -714,7 +714,7 @@ getIntentInfos();
 			var text4_main = jQuery(text4).attr({
 				id: node_list[1] + '_text',
 				x: circle_x,
-				y: circle_y + 13,
+				y: circle_y + 15,
 				fill: "black",
 				'text-anchor': 'middle'
 			});
@@ -723,7 +723,7 @@ getIntentInfos();
 			var text5_main = jQuery(text5).attr({
 				id: node_list[2] + '_text',
 				x: circle_x,
-				y: circle_y + 43,
+				y: circle_y + 45,
 				fill: "black",
 				'text-anchor': 'middle'
 			});
@@ -737,6 +737,124 @@ getIntentInfos();
 			jQuery(g).append(text3_main);
 			jQuery(g).append(text4_main);
 			jQuery(g).append(text5_main);
+			jQuery(g).attr("id", node_name);
+			jQuery(g).attr("type", node_type);
+			jQuery(g).attr("sub", node_name,node_list[0] + "," + node_list[1] + "," + node_list[2]);
+			if (node_type.indexOf("chain") > -1)
+				jQuery(g).attr("flow", 0);
+			jQuery('#service_svg2').append(g);
+		}
+		else if(node_number >=4){
+			var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+			var circle_main = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+			var inCircle1_main = jQuery(circle_main).attr({
+				id: node_name + "_group",
+				cx: circle_x,
+				cy: circle_y,
+				r: 90,
+				'stroke': "black",
+				'stroke-width': 3,
+				fill: "white"
+			});
+			var host1 = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+			var host1_main = jQuery(host1).attr({
+				id: node_list[0],
+				x: circle_x - 55,
+				y: circle_y - 31,
+				width: 110,
+				height: 25,
+				'stroke': "black",
+				'stroke-width': 1,
+				fill: "white"
+			});
+			var host2 = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+			var host2_main = jQuery(host2).attr({
+				id: node_list[1],
+				x: circle_x - 55,
+				y: circle_y - 3,
+				width: 110,
+				height: 25,
+				'stroke': "black",
+				'stroke-width': 1,
+				fill: "white"
+			});
+			var host3 = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+			var host3_main = jQuery(host3).attr({
+				id: node_list[2],
+				x: circle_x - 55,
+				y: circle_y + 27,
+				width: 110,
+				height: 25,
+				'stroke': "black",
+				'stroke-width': 1,
+				fill: "white"
+			});
+			var text1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+			var text1_main = jQuery(text1).attr({
+				id: node_name + "_title1",
+				x: circle_x,
+				y: circle_y - 51,
+				fill: "black",
+				'text-anchor': 'middle',
+				"stroke": "black",
+				"stroke-width": 0.8
+			});
+			jQuery(text1).text(node_name);
+			var text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+			var text2_main = jQuery(text2).attr({
+				id: node_name + "_title2",
+				x: circle_x,
+				y: circle_y - 0 - 100,
+				fill: "black",
+				'text-anchor': 'middle'
+			});
+			jQuery(text2).text(node_type);
+			var text3 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+			var text3_main = jQuery(text3).attr({
+				id: node_list[0] + '_text',
+				x: circle_x,
+				y: circle_y - 13,
+				fill: "black",
+				'text-anchor': 'middle'
+			});
+			jQuery(text3).text(node_list[0]);
+			var text4 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+			var text4_main = jQuery(text4).attr({
+				id: node_list[1] + '_text',
+				x: circle_x,
+				y: circle_y + 15,
+				fill: "black",
+				'text-anchor': 'middle'
+			});
+			jQuery(text4).text(node_list[1]);
+			var text5 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+			var text5_main = jQuery(text5).attr({
+				id: node_list[2] + '_text',
+				x: circle_x,
+				y: circle_y + 45,
+				fill: "black",
+				'text-anchor': 'middle'
+			});
+			jQuery(text5).text(node_list[2]);
+			var text6 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+			var text6_main = jQuery(text6).attr({
+				id: node_list[2] + '_text',
+				x: circle_x,
+				y: circle_y + 43+25,
+				fill: "black",
+				'text-anchor': 'middle'
+			});
+			jQuery(text6).text("........");
+			var g_main = jQuery(g).append(inCircle1_main);
+			jQuery(g).append(host1_main);
+			jQuery(g).append(host2_main);
+			jQuery(g).append(host3_main);
+			jQuery(g).append(text1_main);
+			jQuery(g).append(text2_main);
+			jQuery(g).append(text3_main);
+			jQuery(g).append(text4_main);
+			jQuery(g).append(text5_main);
+			jQuery(g).append(text6_main);
 			jQuery(g).attr("id", node_name);
 			jQuery(g).attr("type", node_type);
 			jQuery(g).attr("sub", node_name,node_list[0] + "," + node_list[1] + "," + node_list[2]);
