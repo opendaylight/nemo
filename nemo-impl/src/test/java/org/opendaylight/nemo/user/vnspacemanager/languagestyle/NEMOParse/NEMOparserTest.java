@@ -37,6 +37,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.StringReader;
+import java.util.Map;
+
 import static org.mockito.Mockito.*;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.api.support.membermodification.MemberMatcher;
@@ -160,21 +162,219 @@ public class NEMOparserTest extends TestCase {
 
     @Test
     public void testNodeModel() throws Exception {
+        UserId userId = mock(UserId.class);
+        DataBroker dataBroker = mock(DataBroker.class);
+        TenantManage tenantManage = mock(TenantManage.class);
 
+        Field field_jj_ntk = class1.getDeclaredField("jj_ntk");
+        field_jj_ntk.setAccessible(true);
+        Field field_token = class1.getDeclaredField("token");
+        field_token.setAccessible(true);
+
+        Token token = new Token();
+        Token token_ID = new Token();
+        token_ID.kind = NEMOparserConstants.ID;
+        token_ID.image = "test";
+        Token token_PROPERTY = new Token();
+        token_PROPERTY.kind = NEMOparserConstants.PROPERTY;
+        Token token_STRING = new Token();
+        token_STRING.kind = NEMOparserConstants.STRING;
+        token_STRING.image = "test_string";
+        Token token_COLON = new Token();
+        token_COLON.kind = NEMOparserConstants.COLON;
+        Token token_ID1 = new Token();
+        token_ID1.kind = NEMOparserConstants.ID;
+        token_ID1.image = "test1";
+        Token token_SEMICOLON = new Token();
+        token_SEMICOLON.kind = NEMOparserConstants.SEMICOLON;
+        Token token_NODE = new Token();
+        token_NODE.kind = NEMOparserConstants.NODE;
+
+
+        //connect
+        token.next = token_ID;
+        token_ID.next = token_PROPERTY;
+        token_PROPERTY.next = token_STRING;
+        token_STRING.next = token_COLON;
+        token_COLON.next = token_ID1;
+        token_ID1.next = token_SEMICOLON;
+        token_SEMICOLON.next = token_NODE;
+
+        field_jj_ntk.set(class1, NEMOparserConstants.STRING);
+        field_token.set(class1, token);
+        PowerMockito.spy(NEMOparser.class);
+        PowerMockito.when(NEMOparser.class,"jj_ntk")
+                .thenReturn(NEMOparserConstants.NODE)
+                .thenReturn(NEMOparserConstants.NODE)
+                .thenReturn(NEMOparserConstants.SEMICOLON);
+        PowerMockito.mockStatic(NEMOparser.class);
+        PowerMockito.when(NEMOparser.abstractNode(any(UpdateTemplateDefinitionLang.class))).thenReturn("zhangmeng");
+        Assert.assertTrue(NEMOparser.NodeModel(userId, dataBroker, tenantManage) == null);
     }
 
     @Test
     public void testAbstractNode() throws Exception {
+        UpdateTemplateDefinitionLang definition = mock(UpdateTemplateDefinitionLang.class);
+
+        Field field_jj_ntk = class1.getDeclaredField("jj_ntk");
+        field_jj_ntk.setAccessible(true);
+        Field field_token = class1.getDeclaredField("token");
+        field_token.setAccessible(true);
+
+        Token token = new Token();
+        Token token_ID = new Token();
+        token_ID.kind = NEMOparserConstants.ID;
+        token_ID.image = "test";
+        Token token_TYPE = new Token();
+        token_TYPE.kind = NEMOparserConstants.TYPE;
+        Token token_ID1 = new Token();
+        token_ID1.kind = NEMOparserConstants.ID;
+        token_ID1.image = "test1";
+        Token token_CONTAIN = new Token();
+        token_CONTAIN.kind = NEMOparserConstants.CONTAIN;
+        Token token_ID2 = new Token();
+        token_ID2.kind = NEMOparserConstants.ID;
+        token_ID2.image = "test2";
+        Token token_SEMICOLON = new Token();
+        token_SEMICOLON.kind = NEMOparserConstants.SEMICOLON;
+
+        //connect
+        token.next = token_ID;
+        token_ID.next = token_TYPE;
+        token_TYPE.next = token_ID1;
+        token_ID1.next = token_CONTAIN;
+        token_CONTAIN.next = token_ID2;
+        token_ID2.next = token_SEMICOLON;
+
+        field_jj_ntk.set(class1, NEMOparserConstants.CONTAIN);
+        field_token.set(class1, token);
+        Assert.assertTrue(NEMOparser.abstractNode(definition) == null);
+
+        //branch PROPERTY
+        //connect aggin
+        Token token_PROPERTY = new Token();
+        token_PROPERTY.kind = NEMOparserConstants.PROPERTY;
+        Token token_COLON = new Token();
+        token_COLON.kind = NEMOparserConstants.COLON;
+        PowerMockito.mockStatic(NEMOparser.class);
+        PowerMockito.when(NEMOparser.property()).thenReturn(new LinkedHashMap<String, String>());
+        token.next = token_ID;
+        token_ID.next = token_TYPE;
+        token_TYPE.next = token_ID1;
+        token_ID1.next = token_PROPERTY;
+        token_PROPERTY.next = token_ID2;
+        token_ID2.next = token_COLON;
+        token_COLON.next = token_SEMICOLON;
+
+        field_jj_ntk.set(class1, NEMOparserConstants.PROPERTY);
+        field_token.set(class1, token);
+        Assert.assertTrue(NEMOparser.abstractNode(definition) == null);
 
     }
 
     @Test
     public void testAbstractConnection() throws Exception {
+        UpdateTemplateDefinitionLang definition = mock(UpdateTemplateDefinitionLang.class);
 
+        Field field_jj_ntk = class1.getDeclaredField("jj_ntk");
+        field_jj_ntk.setAccessible(true);
+        Field field_token = class1.getDeclaredField("token");
+        field_token.setAccessible(true);
+
+        Token token = new Token();
+        Token token_ID = new Token();
+        token_ID.kind = NEMOparserConstants.ID;
+        token_ID.image = "test";
+        Token token_TYPE = new Token();
+        token_TYPE.kind = NEMOparserConstants.TYPE;
+        Token token_ID1 = new Token();
+        token_ID1.kind = NEMOparserConstants.ID;
+        token_ID1.image = "test1";
+        Token token_ENDNODES = new Token()  ;
+        token_ENDNODES.kind = NEMOparserConstants.ENDNODES;
+        Token token_ID2 = new Token();
+        token_ID2.kind = NEMOparserConstants.ID;
+        token_ID2.image = "test2";
+        Token token_SEMICOLON = new Token();
+        token_SEMICOLON.kind = NEMOparserConstants.SEMICOLON;
+        //connect
+        token.next = token_ID;
+        token_ID.next = token_TYPE;
+        token_TYPE.next = token_ID1;
+        token_ID1.next = token_ENDNODES;
+        token_ENDNODES.next = token_ID2;
+        token_ID2.next = token_SEMICOLON;
+
+        field_jj_ntk.set(class1, NEMOparserConstants.ENDNODES);
+        field_token.set(class1, token);
+
+        Assert.assertTrue(NEMOparser.abstractConnection(definition) == null);
+
+        //branch PROPERTY
+        //connect aggin
+        Token token_PROPERTY = new Token();
+        token_PROPERTY.kind = NEMOparserConstants.PROPERTY;
+        Token token_COLON = new Token();
+        token_COLON.kind = NEMOparserConstants.COLON;
+        PowerMockito.mockStatic(NEMOparser.class);
+        PowerMockito.when(NEMOparser.property()).thenReturn(new LinkedHashMap<String, String>());
+        token.next = token_ID;
+        token_ID.next = token_TYPE;
+        token_TYPE.next = token_ID1;
+        token_ID1.next = token_PROPERTY;
+        token_PROPERTY.next = token_ID2;
+        token_ID2.next = token_COLON;
+        token_COLON.next = token_SEMICOLON;
+
+        field_jj_ntk.set(class1, NEMOparserConstants.PROPERTY);
+        field_token.set(class1, token);
+        Assert.assertTrue(NEMOparser.abstractConnection(definition) == null);
     }
 
     @Test
     public void testAbstractFlow() throws Exception {
+        UpdateTemplateDefinitionLang definition = mock(UpdateTemplateDefinitionLang.class);
+
+        Field field_jj_ntk = class1.getDeclaredField("jj_ntk");
+        field_jj_ntk.setAccessible(true);
+        Field field_token = class1.getDeclaredField("token");
+        field_token.setAccessible(true);
+
+        Token token = new Token();
+        Token token_ID = new Token();
+        token_ID.kind = NEMOparserConstants.ID;
+        token_ID.image = "test";
+        Token token_MATCH = new Token();
+        token_MATCH.kind = NEMOparserConstants.MATCH;
+        Token token_ID1 = new Token();
+        token_ID1.kind = NEMOparserConstants.ID;
+        Token token_COLON = new Token();
+        token_COLON.kind = NEMOparserConstants.COLON;
+        Token token_PROPERTY = new Token();
+        token_PROPERTY.kind = NEMOparserConstants.PROPERTY;
+        Token token_ID2 = new Token();
+        token_ID2.kind = NEMOparserConstants.ID;
+        Token token_COLON1 = new Token();
+        token_COLON1.kind = NEMOparserConstants.COLON;
+        Token token_SEMICOLON = new Token();
+        token_SEMICOLON.kind = NEMOparserConstants.SEMICOLON;
+        //connect
+        token.next = token_ID;
+        token_ID.next = token_MATCH;
+        token_MATCH.next = token_ID1;
+        token_ID1.next = token_COLON;
+        token_COLON.next = token_PROPERTY;
+        token_PROPERTY.next = token_ID2;
+        token_ID2.next = token_COLON1;
+        token_COLON1.next = token_SEMICOLON;
+
+        field_jj_ntk.set(class1, NEMOparserConstants.PROPERTY);
+        field_token.set(class1, token);
+
+        PowerMockito.mockStatic(NEMOparser.class);
+        PowerMockito.when(NEMOparser.property()).thenReturn(new LinkedHashMap<String, String>());
+        when(definition.createAbstractFlow(any(String.class), any(LinkedHashMap.class), any(LinkedHashMap.class))).thenReturn("test");
+        Assert.assertTrue(NEMOparser.abstractFlow(definition) == null);
 
     }
 

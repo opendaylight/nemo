@@ -13,12 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.lang.reflect.Method; 
-import java.util.*;
 
 
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
@@ -47,6 +41,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import  java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * Created by Thomas Liu on 2015/12/14.
@@ -61,6 +57,9 @@ public class UpdateConnectionLangTest extends TestCase {
     private List<String> endnodes;
     private LinkedHashMap<String, LinkedHashMap<String,String>> propertyList;
     private LinkedHashMap<String,String> properties;
+    private Field field;
+    private Class class1;
+    private Method method;
 
     //createConnection
     private User user;
@@ -82,7 +81,7 @@ public class UpdateConnectionLangTest extends TestCase {
         connectionname = new String("conn1");
         connectiontype = new String("p2p");
         endnodes = new ArrayList<String>(){{add(new String("123"));}};
-
+        class1 = UpdateConnectionLang.class;
         //createConnection
         user = mock(User.class);
         object = mock(Objects.class);
@@ -99,41 +98,17 @@ public class UpdateConnectionLangTest extends TestCase {
 
     @org.junit.Test
     public void testConnectionHandling() throws Exception {
-
-
+        field = class1.getDeclaredField("updateConnection");
+        UpdateConnection updateConnection = mock(UpdateConnection.class);
+        field.setAccessible(true);
+        field.set(updateConnectionLangTest,updateConnection);
+        field = class1.getDeclaredField("connection");
+        Connection connection = mock(Connection.class);
+        field.setAccessible(true);
+        field.set(updateConnectionLangTest,connection);
         //errorInfo == null
-        properties = new LinkedHashMap<String,String>(){{
-            put(new String("1"),NEMOConstants.range);
-            put(new String("group"),NEMOConstants.string);
-            //put(new String("100"),NEMOConstants.integer);
-            put(new String("100,200"),NEMOConstants.range);
-        }};
-        propertyList.put(new String("p1"),properties);
-        //createConnection()
-        //userId,connectionname,connectiontype,endnodes,propertyList
-        doNothing().when(tenantManage).fetchVNSpace(userId);
-        when(tenantManage.getUser()).thenReturn(user);
-        when(user.getObjects()).thenReturn(object);
-        when(object.getNode()).thenReturn(nodeList);
-        when(object.getNode()).thenReturn(nodeList);
-        when(object.getConnection()).thenReturn(connList);
-        when(object.getConnection()).thenReturn(connList);
-
-        //connection
-        //connection exists
-        when(connList.get(0).getConnectionName()).thenReturn(connectionName);
-        when(connectionName.getValue()).thenReturn(new String("conn1"));
-        when(connList.get(0).getConnectionId()).thenReturn(connectionId);
-
-        //endnodes
-        when(nodeList.get(0).getNodeName()).thenReturn(nodeName);
-        when(nodeName.getValue()).thenReturn(new String("node1"));
-        when(nodeList.get(0).getNodeId()).thenReturn(nodeId);
-        when(nodeList.get(0).getNodeId()).thenReturn(nodeId);
-
-        //propertylist
-        updateConnectionLangTest.ConnectionHandling(userId, connectionname, connectiontype, endnodes, propertyList);
-
+        endnodes = new ArrayList<String>(){{add(new String("123"));}};
+        connectiontype = new String("p2p");
         properties = new LinkedHashMap<String,String>(){{
             //put(new String("1"),NEMOConstants.range);
             //put(new String("group"),NEMOConstants.string);
@@ -141,128 +116,96 @@ public class UpdateConnectionLangTest extends TestCase {
             put(new String("100,200"),NEMOConstants.range);
         }};
         propertyList.put(new String("p1"),properties);
+        //checkProperties()
         //createConnection()
         //userId,connectionname,connectiontype,endnodes,propertyList
-        doNothing().when(tenantManage).fetchVNSpace(userId);
-        when(tenantManage.getUser()).thenReturn(user);
-        when(user.getObjects()).thenReturn(object);
-        when(object.getNode()).thenReturn(nodeList);
-        when(object.getNode()).thenReturn(nodeList);
-        when(object.getConnection()).thenReturn(connList);
-        when(object.getConnection()).thenReturn(connList);
+        when(tenantManage.getObjectId(userId,connectionname)).thenReturn("11111111-1111-1111-1111-111111111111");
+        HashMap<ConnectionId,Connection> connectionMap = new HashMap<ConnectionId,Connection>();
+        ConnectionId connectionId = new ConnectionId("11111111-1111-1111-1111-111111111111");
+        Connection connection2 = mock(Connection.class);
+        connectionMap.put(connectionId,connection2);
+        when(tenantManage.getConnection(userId)).thenReturn(connectionMap);
+        when(tenantManage.getConnection(userId)).thenReturn(connectionMap);
+        //if (!endnodes.isEmpty())
+        when(tenantManage.getObjectId(userId,"123")).thenReturn("11111111-1111-1111-1111-111111111111");
+        when(tenantManage.getObjectId(userId,"123")).thenReturn("11111111-1111-1111-1111-111111111111");
+        when(updateConnection.ConnectionHandling(userId,connection)).thenReturn("ConnectionHandling");
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@ Result1 :"+updateConnectionLangTest.ConnectionHandling(userId, connectionname, connectiontype, endnodes, propertyList));
 
-        //connection
-        //connection exists
-        when(connList.get(0).getConnectionName()).thenReturn(connectionName);
-        when(connectionName.getValue()).thenReturn(new String("conn1"));
-        when(connList.get(0).getConnectionId()).thenReturn(connectionId);
 
-        //endnodes
-        when(nodeList.get(0).getNodeName()).thenReturn(nodeName);
-        when(nodeName.getValue()).thenReturn(new String("node1"));
-        when(nodeList.get(0).getNodeId()).thenReturn(nodeId);
-        when(nodeList.get(0).getNodeId()).thenReturn(nodeId);
-
-        //propertylist
-        updateConnectionLangTest.ConnectionHandling(userId, connectionname, connectiontype, endnodes, propertyList);
-
-        /*connList = new ArrayList<Connection>();
-        endnodes = new ArrayList<String>();
+        //
         properties = new LinkedHashMap<String,String>(){{
-            //put(new String("1"),NEMOConstants.range);
-            //put(new String("group"),NEMOConstants.string);
-            //put(new String("100"),NEMOConstants.integer);
             put(new String("100,200"),NEMOConstants.range);
+            put(new String("100"),NEMOConstants.integer);
         }};
         propertyList.put(new String("p1"),properties);
-        //createConnection()
-        //userId,connectionname,connectiontype,endnodes,propertyList
-        doNothing().when(tenantManage).fetchVNSpace(userId);
-        when(tenantManage.getUser()).thenReturn(user);
-        when(user.getObjects()).thenReturn(object);
-        when(object.getNode()).thenReturn(nodeList);
-        when(object.getNode()).thenReturn(nodeList);
-        when(object.getConnection()).thenReturn(connList);
-        when(object.getConnection()).thenReturn(connList);
-
-
-        updateConnectionLangTest.ConnectionHandling(userId, connectionname, connectiontype, endnodes, propertyList);*/
-
-
-        properties = new LinkedHashMap<String,String>(){{
-            //put(new String("1"),NEMOConstants.range);
-            //put(new String("group"),NEMOConstants.string);
-            //put(new String("100"),NEMOConstants.integer);
-            //put(new String("100,200"),NEMOConstants.range);
-        }};
-        propertyList.put(new String("p1"),properties);
-        //createConnection()
-        //userId,connectionname,connectiontype,endnodes,propertyList
-
-        //updateConnectionLangTest.ConnectionHandling(userId, connectionname, connectiontype, endnodes, propertyList);
-
-
-
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@ Result2 :"+updateConnectionLangTest.ConnectionHandling(userId, connectionname, connectiontype, endnodes, propertyList));
     }
-	@org.junit.Test
-	public void createConnectionTest() throws Exception{
-     UserId userId1=mock(UserId.class);
-	 String connectionname1;
-	 String connectiontype1;
-	 connectionname1 = new String("conn1");
-     connectiontype1 = new String("p2p");
-	 List<String> endnodes1=null;
-	 LinkedHashMap<String, LinkedHashMap<String,String>> propertyList1=null;
-	 Class<?>[] args=new Class<?>[5];
-		args[0]=userId1.getClass();
-		args[1]=connectionname1.getClass();
-		args[2]=connectiontype1.getClass();
-		args[3]=endnodes1.getClass();
-		args[4]=propertyList1.getClass();
-		Object[] args1 = new Object[4]; 
-		for(int i=0;i<5;i++)
-	    args1[i]=new Object();
-		args1[0]=userId1;
-		args1[1]=connectionname1;
-		args1[2]=connectiontype1;
-		args1[3]=endnodes1;
-		args1[4]=propertyList1;
-	Method methon=updateConnectionLangTest.getClass().getDeclaredMethod("createConnection",args);
-	methon.setAccessible(true);
-	//branch 1 
-	 when(tenantManage.getObjectId(userId1,connectionname1)).thenReturn(null);
-     Assert.assertNull(methon.invoke(updateConnectionLangTest,args1));
-	//branch 2 
-	Map<ConnectionId, Connection> map=new HashMap<ConnectionId,Connection>();
-	ConnectionId connectionId1=new ConnectionId("111111111111");
-	Connection connection1=mock(Connection.class);
-	map.put(connectionId1,connection1);
-	ConnectionKey connectionkey=mock(ConnectionKey.class);
-	when(tenantManage.getObjectId(userId1,connectionname1)).thenReturn("111111111111");
-	when(tenantManage.getObjectId(userId1,connectionname1)).thenReturn("111111111111");
-	when(tenantManage.getConnection(userId1)).thenReturn(map);
-    when(connection1.getKey()).thenReturn(connectionkey);
-	when(connection1.getConnectionId()).thenReturn(connectionId1);
-	Assert.assertNull(methon.invoke(updateConnectionLangTest,args1));
-	//branch 3
-	when(tenantManage.getObjectId(userId1,connectionname1)).thenReturn(null);
-	 endnodes1 = new ArrayList<String>(){{add(new String("123"));}};
-	args1[3]=endnodes1;
-	when(tenantManage.getObjectId(userId,"123")).thenReturn(null);
-	Assert.assertNotNull(methon.invoke(updateConnectionLangTest,args1));
-	//branch 4
-	when(tenantManage.getObjectId(userId1,connectionname1)).thenReturn(null);
-	propertyList1 = new LinkedHashMap<String, LinkedHashMap<String,String>>();
-	LinkedHashMap<String,String> properties1 = new LinkedHashMap<String,String>(){{
-            put(new String("1"),NEMOConstants.range);
+
+    @org.junit.Test
+    public void testcheckProperty() throws Exception {
+        method = class1.getDeclaredMethod("checkProperty",new Class[]{
+                LinkedHashMap.class,
+        });
+        properties = new LinkedHashMap<String,String>(){{
+            put(new String("100"),NEMOConstants.integer);
+            put(new String("group"),NEMOConstants.string);
+            put(new String("100,200"),NEMOConstants.range);
+        }};
+        propertyList.put(new String("s1"),properties);
+        method.setAccessible(true);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@ Result3 :"+method.invoke(updateConnectionLangTest,propertyList));
+
+        properties = new LinkedHashMap<String,String>(){{
             put(new String("group"),NEMOConstants.string);
             put(new String("100"),NEMOConstants.integer);
             put(new String("100,200"),NEMOConstants.range);
         }};
-    propertyList1.put(new String("p1"),properties1);
-	endnodes1=null;
-	args1[3]=endnodes1;
-	args1[4]=propertyList1;
-	Assert.assertNull(methon.invoke(updateConnectionLangTest,args1));
-	}
+        propertyList.put(new String("s1"),properties);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@ Result4 :"+method.invoke(updateConnectionLangTest,propertyList));
+    }
+
+    @org.junit.Test
+    public void testcreateConnection() throws Exception {
+
+        method = class1.getDeclaredMethod("createConnection",new Class[]{
+                UserId.class,
+                String.class,
+                String.class,
+                List.class,
+                LinkedHashMap.class,
+        });
+        method.setAccessible(true);
+
+
+        properties = new LinkedHashMap<String,String>(){{
+            put(new String("group"),NEMOConstants.string);
+        }};
+        propertyList.put(new String("p1"),properties);
+        endnodes = new ArrayList<String>();
+        when(tenantManage.getObjectId(userId,connectionname)).thenReturn(null);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@ Result5 :"+method.invoke(updateConnectionLangTest,userId,connectionname,connectiontype,endnodes,propertyList));
+
+
+
+        properties = new LinkedHashMap<String,String>(){{
+            put(new String("100"),NEMOConstants.integer);
+
+        }};
+        propertyList.put(new String("p1"),properties);
+        endnodes = new ArrayList<String>();
+        HashMap<ConnectionId,Connection> connectionMap = new HashMap<ConnectionId,Connection>();
+        ConnectionId connectionId = new ConnectionId("11111111-1111-1111-1111-111121111111");
+        Connection connection2 = mock(Connection.class);
+        connectionMap.put(connectionId,connection2);
+        when(tenantManage.getObjectId(userId,connectionname)).thenReturn("11111111-1111-1111-1111-111111111111");
+        when(tenantManage.getConnection(userId)).thenReturn(connectionMap);
+        connectionMap.clear();
+        connectionMap.put(new ConnectionId("11111111-1111-1111-1111-111111111111"),connection2);
+        when(tenantManage.getConnectionDataStore(userId)).thenReturn(connectionMap);
+        when(tenantManage.getConnectionDataStore(userId)).thenReturn(connectionMap);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@ Result6 :"+method.invoke(updateConnectionLangTest,userId,connectionname,connectiontype,endnodes,propertyList));
+    }
+
+
 }
