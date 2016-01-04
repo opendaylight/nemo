@@ -18,15 +18,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.lang.reflect.Method; 
-import java.util.*;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.Objects;
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.NEMOConstants;
+import org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent.UpdateConnection;
 import org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent.UpdateFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Connection;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.FlowKey;
@@ -39,7 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.obj
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.FlowName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.Objects;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow;
+
 /**
  * Created by Thomas Liu on 2015/12/15.
  */
@@ -56,6 +58,9 @@ public class UpdateFlowLangTest extends TestCase {
     private Objects object;
     private List<Flow> flows;
     private LinkedHashMap<String,String> matches,properties;
+    private Class class1;
+    private Method method;
+    private Field field;
 
 
     @org.junit.Before
@@ -64,6 +69,7 @@ public class UpdateFlowLangTest extends TestCase {
         tenantManage = mock(TenantManage.class);
         updateFlowLangTest = new UpdateFlowLang(dataBroker,tenantManage);
         flowname = new String("flow1");
+        class1 = UpdateFlowLang.class;
 
         user = mock(User.class);
         object = mock(Objects.class);
@@ -75,106 +81,128 @@ public class UpdateFlowLangTest extends TestCase {
 
     @org.junit.Test
     public void testFlowHandling() throws Exception {
-        doNothing().when(tenantManage).fetchVNSpace(userId);
-        when(tenantManage.getUser()).thenReturn(user);
 
-        when(user.getObjects()).thenReturn(object);
-        when(user.getObjects()).thenReturn(object);
-        when(object.getFlow()).thenReturn(flows);
-        when(user.getObjects()).thenReturn(object);
-        when(object.getFlow()).thenReturn(flows);
-
-        when(flows.get(0).getFlowName()).thenReturn(new FlowName("flow1"));
-        when(flows.get(0).getFlowId()).thenReturn(new FlowId("11111111-1111-1111-1111-111111111111"));
-
+        field = class1.getDeclaredField("updateFlow");
+        UpdateFlow updateFlow = mock(UpdateFlow.class);
+        field.setAccessible(true);
+        field.set(updateFlowLangTest,updateFlow);
+        field = class1.getDeclaredField("flow");
+        Flow flow2 = mock(Flow.class);
+        field.setAccessible(true);
+        field.set(updateFlowLangTest,flow2);
         matches = new LinkedHashMap<String,String>(){{
             put(new String("group"),NEMOConstants.string);
             put(new String("100"),NEMOConstants.integer);
             put(new String("100,200"),NEMOConstants.range);
+            put(new String("200,100"),NEMOConstants.range);
         }};
-        flowmatch.put(new String("1"),matches);
+        flowmatch.put(new String("s1"),matches);
 
         properties = new LinkedHashMap<String,String>(){{
             //put(new String("1"),NEMOConstants.range);
-            put(new String("group"),NEMOConstants.string);
-            put(new String("100"),NEMOConstants.integer);
+            //put(new String("group"),NEMOConstants.string);
+            //put(new String("100"),NEMOConstants.integer);
             put(new String("100,200"),NEMOConstants.range);
         }};
-        propertyList.put(new String("1"),properties);
+        propertyList.put(new String("s1"),properties);
+        //createflow
+        when(tenantManage.getObjectId(userId,flowname)).thenReturn("11111111-1111-1111-1111-111111111111");
+        HashMap<FlowId,Flow> flowMap = new HashMap<FlowId,Flow>();
+        FlowId flowId = new FlowId("11111111-1111-1111-1111-111111111111");
+        Flow flow = mock(Flow.class);
+        flowMap.put(flowId,flow);
+        when(tenantManage.getObjectId(userId,flowname)).thenReturn("11111111-1111-1111-1111-111111111111");
+        when(tenantManage.getFlow(userId)).thenReturn(flowMap);
+        when(tenantManage.getFlow(userId)).thenReturn(flowMap);
+        when(updateFlow.FlowHandling(userId,flow2)).thenReturn("FlowHandling");
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&& Result1: " + updateFlowLangTest.FlowHandling(userId, flowname, flowmatch, propertyList));
 
 
-        updateFlowLangTest.FlowHandling(userId,flowname,flowmatch,propertyList);
+        properties = new LinkedHashMap<String,String>(){{
+            put(new String("100,200"),NEMOConstants.range);
+            put(new String("1"),NEMOConstants.range);
+        }};
+        propertyList.put(new String("s1"),properties);
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&& Result2: " + updateFlowLangTest.FlowHandling(userId, flowname, flowmatch, propertyList));
 
     }
-	@org.junit.Test
-	public void createFlowTest() throws Exception{
-		UserId userid=mock(UserId.class);
-		String flowname="flowname";
-		LinkedHashMap<String,LinkedHashMap<String,String>> flowmatch=null;
-		LinkedHashMap<String,LinkedHashMap<String,String>> propertyList=null;
-		doNothing().when(tenantManage).fetchVNSpace(userId);
-		when(tenantManage.getUser()).thenReturn(user);
-		when(user.getObjects()).thenReturn(null);
-		Class<?>[] args=new Class<?>[4];
-		args[0]=userid.getClass();
-		args[1]=flowname.getClass();
-		args[2]=flowmatch.getClass();
-		args[3]=propertyList.getClass();
-		Object[] args1 = new Object[4]; 
-		args1[0]=userid;
-		args1[1]=flowname;
-		args1[2]=flowmatch;
-		args1[3]=propertyList;
-		Method setupdateintentlang= updateFlowLangTest.getClass().getDeclaredMethod("createFlow",args);  
-		setupdateintentlang.setAccessible(true);
-		Assert.assertNull(setupdateintentlang.invoke(updateFlowLangTest,args1));
-		//branch 2
-		Objects objects=mock(Objects.class);
-		Flow flow=mock(Flow.class);
-		doNothing().when(tenantManage).fetchVNSpace(userId);
-		when(tenantManage.getUser()).thenReturn(user);
-		List<Flow> flows = new ArrayList<Flow>();
-		flows.add(flow);
-		FlowId flowId = new FlowId(UUID.randomUUID().toString());
-		when(user.getObjects()).thenReturn(objects);
-		when(objects.getFlow()).thenReturn(flows);
-		when(flow.getFlowName().getValue()).thenReturn(flowname);
-		when(flow.getKey()).thenReturn(new FlowKey(flowId));
-		when(flow.getFlowId()).thenReturn(flowId);
-		Assert.assertNull(setupdateintentlang.invoke(updateFlowLangTest,args1));
-		//branch 3
-		doNothing().when(tenantManage).fetchVNSpace(userId);
-		when(tenantManage.getUser()).thenReturn(user);
-		when(user.getObjects()).thenReturn(objects);
-		when(objects.getFlow()).thenReturn(flows);
-		when(flow.getFlowName().getValue()).thenReturn(flowname);
-		when(flow.getKey()).thenReturn(new FlowKey(flowId));
-		when(flow.getFlowId()).thenReturn(flowId);
-        flowmatch = new LinkedHashMap<String,LinkedHashMap<String,String>>();
 
-		args1[0]=userid;
-		args1[1]=flowname;
-		args1[3]=flowmatch;
-		args1[4]=propertyList;
-        matches = new LinkedHashMap<String,String>(){{
-            put(new String("group"),NEMOConstants.string);
+    @org.junit.Test
+    public void testcheckProperty() throws Exception {
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" );
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" );
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" );
+        method = class1.getDeclaredMethod("checkProperty",new Class[]{
+                LinkedHashMap.class,
+        });
+        method.setAccessible(true);
+
+        properties = new LinkedHashMap<String,String>(){{
             put(new String("100"),NEMOConstants.integer);
+            put(new String("group"),NEMOConstants.string);
             put(new String("100,200"),NEMOConstants.range);
-			put(new String("300,200"),NEMOConstants.range);
         }};
-		flowmatch.put(new String("1"),matches);
-		Assert.assertNull(setupdateintentlang.invoke(updateFlowLangTest,args1));
-		//branch 4
-        propertyList = new LinkedHashMap<String,LinkedHashMap<String,String>>();
+        propertyList.put(new String("s1"),properties);
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&& Result3: " + method.invoke(updateFlowLangTest, propertyList));
+
         properties = new LinkedHashMap<String,String>(){{
             put(new String("group"),NEMOConstants.string);
             put(new String("100"),NEMOConstants.integer);
             put(new String("100,200"),NEMOConstants.range);
-			put(new String("300,200"),NEMOConstants.range);
         }};
-        propertyList.put(new String("1"),properties);
-		args1[4]=propertyList;
-        Assert.assertNotNull(setupdateintentlang.invoke(updateFlowLangTest,args1));	
-        	
-	}
+        propertyList.put(new String("s1"),properties);
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&& Result4: " +  method.invoke(updateFlowLangTest, propertyList));
+    }
+
+
+    @org.junit.Test
+    public void testcreateFlow() throws Exception{
+        method = class1.getDeclaredMethod("createFlow",new Class[]{
+                UserId.class,
+                String.class,
+                LinkedHashMap.class,
+                LinkedHashMap.class,
+        });
+        method.setAccessible(true);
+
+        properties = new LinkedHashMap<String,String>(){{
+            put(new String("100"),NEMOConstants.string);
+        }};
+        propertyList.put(new String("p1"),properties);
+        matches = new LinkedHashMap<String,String>();
+        flowmatch.put(new String("s1"),matches);
+        when(tenantManage.getObjectId(userId,flowname)).thenReturn(null);
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&& Result5: " +  method.invoke(updateFlowLangTest, userId,flowname,flowmatch,propertyList));
+
+
+        properties = new LinkedHashMap<String,String>(){{
+            put(new String("200,100"),NEMOConstants.range);
+        }};
+        propertyList.put(new String("p1"),properties);
+        when(tenantManage.getObjectId(userId,flowname)).thenReturn(null);
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&& Result6: " +  method.invoke(updateFlowLangTest, userId,flowname,flowmatch,propertyList));
+
+        properties = new LinkedHashMap<String,String>(){{
+            put(new String("1"),NEMOConstants.integer);
+        }};
+        propertyList.put(new String("p1"),properties);
+        when(tenantManage.getObjectId(userId,flowname)).thenReturn(null);
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&& Result7: " +  method.invoke(updateFlowLangTest, userId,flowname,flowmatch,propertyList));
+
+        properties = new LinkedHashMap<String,String>(){{
+            put(new String("1"),NEMOConstants.integer);
+        }};
+        propertyList.put(new String("p1"),properties);
+        HashMap<FlowId,Flow> flowMap = new HashMap<FlowId,Flow>();
+        FlowId flowId = new FlowId("11111111-1111-1111-1111-111111111111");
+        Flow flow = mock(Flow.class);
+        when(tenantManage.getObjectId(userId,flowname)).thenReturn("11111111-1111-1111-1111-111111111111");
+        when(tenantManage.getObjectId(userId,flowname)).thenReturn("11111111-1111-1111-1111-111111111111");
+        when(tenantManage.getFlow(userId)).thenReturn(flowMap);
+        flowMap.put(flowId,flow);
+        when(tenantManage.getFlowDataStore(userId)).thenReturn(flowMap);
+        when(tenantManage.getFlowDataStore(userId)).thenReturn(flowMap);
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&& Result8: " +  method.invoke(updateFlowLangTest, userId,flowname,flowmatch,propertyList));
+
+    }
 }
