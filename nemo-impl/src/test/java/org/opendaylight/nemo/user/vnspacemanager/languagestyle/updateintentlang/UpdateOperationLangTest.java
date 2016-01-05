@@ -12,21 +12,23 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import static org.mockito.Mockito.*;
-//import static org.junit.Assert.*;
+import static org.junit.Assert.*;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.lang.reflect.Method; 
-import java.util.*;
-import org.junit.Assert;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.nemo.user.tenantmanager.TenantManage;
 import org.opendaylight.nemo.user.vnspacemanager.languagestyle.NEMOConstants;
+import org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent.UpdateFlow;
 import org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent.UpdateOperation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Connection;
@@ -86,6 +88,9 @@ public class UpdateOperationLangTest extends TestCase {
     private List<Node> nodes;
     private List<Connection> connections;
     private User user;
+    private Method method;
+    private Field field;
+    private Class class1;
 
 
     @org.junit.Before
@@ -105,48 +110,21 @@ public class UpdateOperationLangTest extends TestCase {
         user = mock(User.class);
         conditions = new LinkedHashMap<String, LinkedHashMap<String,String>>();
         actions = new LinkedHashMap<String, LinkedHashMap<String,String>>();
+        priority = "100";
+        class1 = UpdateOperationLang.class;
 
     }
 
     @org.junit.Test
     public void testOperationHandling() throws Exception {
-
-        doNothing().when(tenantManage).fetchVNSpace(userId);
-        when(tenantManage.getUser()).thenReturn(user);
-
-        when(user.getOperations()).thenReturn(operation);
-        when(user.getOperations()).thenReturn(operation);
-        when(operation.getOperation()).thenReturn(operationList);
-        when(user.getOperations()).thenReturn(operation);
-        when(operation.getOperation()).thenReturn(operationList);
-
-        when(operationList.get(0).getOperationName()).thenReturn(new OperationName("o1"));
-        when(operationList.get(0).getOperationId()).thenReturn(new OperationId("11111111-1111-1111-1111-111111111111"));
-
-        when(user.getObjects()).thenReturn(object);
-
-        when(user.getObjects()).thenReturn(object);
-        when(object.getNode()).thenReturn(nodes);
-        when(user.getObjects()).thenReturn(object);
-        when(object.getNode()).thenReturn(nodes);
-        when(nodes.get(0).getNodeName()).thenReturn(new NodeName("node1"));
-        when(nodes.get(0).getNodeId()).thenReturn(new NodeId("11111111-1111-1111-1111-111111111111"));
-
-        when(user.getObjects()).thenReturn(object);
-        when(object.getConnection()).thenReturn(connections);
-        when(user.getObjects()).thenReturn(object);
-        when(object.getConnection()).thenReturn(connections);
-        when(connections.get(0).getConnectionName()).thenReturn(new ConnectionName("connection1"));
-        when(connections.get(0).getConnectionId()).thenReturn(new ConnectionId("11111111-1111-1111-1111-111111111111"));
-
-
-        when(user.getObjects()).thenReturn(object);
-        when(object.getFlow()).thenReturn(flows);
-        when(user.getObjects()).thenReturn(object);
-        when(object.getFlow()).thenReturn(flows);
-        when(flows.get(0).getFlowName()).thenReturn(new FlowName("flow1"));
-        when(flows.get(0).getFlowId()).thenReturn(new FlowId("11111111-1111-1111-1111-111111111111"));
-
+        field = class1.getDeclaredField("updateOperation");
+        UpdateOperation updateOperation = mock(UpdateOperation.class);
+        field.setAccessible(true);
+        field.set(updateOperationLangTest,updateOperation);
+        field = class1.getDeclaredField("operation");
+        Operation operation2 = mock(Operation.class);
+        field.setAccessible(true);
+        field.set(updateOperationLangTest,operation2);
 
         condition = new LinkedHashMap<String,String>(){{
             put(new String("group"),NEMOConstants.string);
@@ -164,101 +142,114 @@ public class UpdateOperationLangTest extends TestCase {
             put(new String("100,200"),NEMOConstants.range);
         }};
         conditions.put("or,g,between",condition);
-
+        condition = new LinkedHashMap<String,String>(){{
+            put(new String("200,100"),NEMOConstants.range);
+        }};
+        conditions.put("or,g,between",condition);
         action = new LinkedHashMap<String,String>(){{
             //put(new String("1"),NEMOConstants.range);
-            put(new String("group"),NEMOConstants.string);
-            put(new String("100"),NEMOConstants.integer);
+            //put(new String("group"),NEMOConstants.string);
+            //put(new String("100"),NEMOConstants.integer);
             put(new String("100,200"),NEMOConstants.range);
+            put(new String("200,100"),NEMOConstants.range);
         }};
         actions.put(new String("action1"),action);
 
-        when(user.getObjects()).thenReturn(object);
+        HashMap<OperationId,Operation> operationMap = new HashMap<OperationId,Operation>();
+        OperationId operationId = new OperationId("11111111-1111-1111-1111-111111111111");
+        Operation operation = mock(Operation.class);
+        operationMap.put(operationId,operation);
+        when(tenantManage.getObjectId(userId,operationname)).thenReturn("11111111-1111-1111-1111-111111111111");
+        when(tenantManage.getObjectId(userId,operationname)).thenReturn("11111111-1111-1111-1111-111111111111");
+        when(tenantManage.getOperation(userId)).thenReturn(operationMap);
+        when(tenantManage.getOperation(userId)).thenReturn(operationMap);
 
-        when(user.getObjects()).thenReturn(object);
-
-        when(object.getNode()).thenReturn(nodes);
-        when(user.getObjects()).thenReturn(object);
-        when(object.getNode()).thenReturn(nodes);
-        when(nodes.get(0).getNodeName()).thenReturn(new NodeName("node1"));
-        when(nodes.get(0).getNodeId()).thenReturn(new NodeId("11111111-1111-1111-1111-111111111111"));
-        when(nodes.get(0).getNodeId()).thenReturn(new NodeId("11111111-1111-1111-1111-111111111111"));
-
-        when(object.getConnection()).thenReturn(connections);
-        when(user.getObjects()).thenReturn(object);
-        when(object.getConnection()).thenReturn(connections);
-        when(connections.get(0).getConnectionName()).thenReturn(new ConnectionName("connection1"));
-        when(connections.get(0).getConnectionId()).thenReturn(new ConnectionId("11111111-1111-1111-1111-111111111111"));
-        when(connections.get(0).getConnectionId()).thenReturn(new ConnectionId("11111111-1111-1111-1111-111111111111"));
-
-
-        when(user.getObjects()).thenReturn(object);
-        when(object.getFlow()).thenReturn(flows);
-        when(user.getObjects()).thenReturn(object);
-        when(object.getFlow()).thenReturn(flows);
-        when(flows.get(0).getFlowName()).thenReturn(new FlowName("flow1"));
-        when(flows.get(0).getFlowId()).thenReturn(new FlowId("11111111-1111-1111-1111-111111111111"));
-        when(flows.get(0).getFlowId()).thenReturn(new FlowId("11111111-1111-1111-1111-111111111111"));
+        //if (tenantManage.getObjectId(userId,target)!=null)
+        when(tenantManage.getObjectId(userId,target)).thenReturn("11111111-1111-1111-1111-111111111111");
+        when(tenantManage.getObjectId(userId, target)).thenReturn("11111111-1111-1111-1111-111111111111");
+        //test createCondition
+        //test createAction
+        when(updateOperation.OperationHandling(userId,operation)).thenReturn("OperationHandling");
+        System.out.println("****************************************** Result1: "+updateOperationLangTest.OperationHandling(userId, operationname, target, priority, conditions,actions));
 
 
+        when(tenantManage.getObjectId(userId,operationname)).thenReturn(null);
+        when(tenantManage.getObjectId(userId,target)).thenReturn(null);
+        System.out.println("****************************************** Result2: "+updateOperationLangTest.OperationHandling(userId, operationname, target, priority, conditions,actions));
 
-        updateOperationLangTest.OperationHandling(userId,operationname,target,priority,conditions,actions);
+        when(tenantManage.getObjectId(userId, operationname)).thenReturn("11111111-1111-1111-1111-111111111111");
+        when(tenantManage.getObjectId(userId,operationname)).thenReturn("11111111-1111-1111-1111-111111111111");
+        operationMap.clear();
+        when(tenantManage.getOperation(userId)).thenReturn(operationMap);
+        operationMap.put(operationId,operation);
+        when(tenantManage.getOperationDataStore(userId)).thenReturn(operationMap);
+        when(tenantManage.getOperationDataStore(userId)).thenReturn(operationMap);
+        when(tenantManage.getObjectId(userId,target)).thenReturn(null);
+        System.out.println("****************************************** Result3: "+updateOperationLangTest.OperationHandling(userId, operationname, target, priority, conditions,actions));
 
+        conditions.clear();
+        actions.clear();
+        when(tenantManage.getObjectId(userId, operationname)).thenReturn(null);
+        when(tenantManage.getObjectId(userId,target)).thenReturn("11111111-1111-1111-1111-111111111111");
+        when(updateOperation.OperationHandling(userId,operation)).thenReturn("OperationHandling");
+        System.out.println("****************************************** Result4: "+updateOperationLangTest.OperationHandling(userId, operationname, target, priority, conditions,actions));
     }
-	@org.junit.Test
-	public void createOperationTest() throws Exception{
-	UserId userId1=mock(UserId.class);
-	String operationname1="o1";
-	String target1="opendaylight";
-	String priority1="node";
-	LinkedHashMap<String,LinkedHashMap<String,String>> conditions1=null;
-	LinkedHashMap<String,LinkedHashMap<String,String>> actions1=null;
-	Class<?>[] args=new Class<?>[6];
-	args[0]=userId1.getClass();
-	args[1]=operationname1.getClass();
-	args[2]=target1.getClass();
-	args[3]=priority1.getClass();
-	args[4]=conditions1.getClass();
-	args[5]=actions1.getClass();
-	Object[] args1 = new Object[6]; 
-	args1[0]=userId1;
-	args1[1]=operationname1;
-	args1[2]=target1;
-	args1[3]=priority1;
-	args1[4]=conditions1;
-	args1[5]=actions1;
-	Method methon=updateOperationLangTest.getClass().getDeclaredMethod("createOperation",args);
-	methon.setAccessible(true);
-    //branch1
-    when(tenantManage.getObjectId(userId1,operationname1)).thenReturn(null);
-	when(tenantManage.getObjectId(userId1,target1)).thenReturn(null);
-	Assert.assertNotNull(methon.invoke(updateOperationLangTest,args));
-	//branch2
-	OperationId operationid=new OperationId("11111111-1111-1111-1111-111111111111");
-	when(tenantManage.getObjectId(userId,operationname1)).thenReturn("11111111-1111-1111-1111-111111111111");
-	when(tenantManage.getObjectId(userId,operationname1)).thenReturn("11111111-1111-1111-1111-111111111111");
-	Map<OperationId, Operation> operations=new HashMap<OperationId,Operation>();
-	Operation operation=mock(Operation.class);
-	operations.put(operationid,operation);
-	when((tenantManage.getOperation(any(UserId.class)))).thenReturn(operations);
-	when(tenantManage.getOperationDataStore(any(UserId.class))).thenReturn(operations);
-	when(tenantManage.getObjectId(userId1,target1)).thenReturn(null);
-	Assert.assertNotNull(methon.invoke(updateOperationLangTest,args));
-	//branch3
-	actions1=new LinkedHashMap<String,LinkedHashMap<String,String>>();
-	LinkedHashMap<String,String> action1 = new LinkedHashMap<String,String>(){{
+    @org.junit.Test
+    public void testcreateAction() throws Exception {
+        method = class1.getDeclaredMethod("createAction",new Class[]{
+                UserId.class,
+                LinkedHashMap.class,
+        });
+        method.setAccessible(true);
+
+        actions.clear();
+        action = new LinkedHashMap<String,String>(){{
+            put(new String("100"),NEMOConstants.integer);
+            put(new String("group"),NEMOConstants.string);
+        }};
+        actions.put(new String("action1"),action);
+        System.out.println("****************************************** Result5: "+method.invoke(updateOperationLangTest,userId,actions));
+
+        actions.clear();
+        action = new LinkedHashMap<String,String>(){{
             put(new String("group"),NEMOConstants.string);
             put(new String("100"),NEMOConstants.integer);
-            put(new String("100,200"),NEMOConstants.range);
         }};
-    actions1.put(new String("action1"),action1);
-	args1[5]=actions1;
-	when(tenantManage.getOperation(any(UserId.class))).thenReturn(operations);
-	when(tenantManage.getOperationDataStore(any(UserId.class))).thenReturn(operations);
-	when(tenantManage.getObjectId(userId1,target1)).thenReturn(null);
-	when(tenantManage.getObjectId(userId,operationname1)).thenReturn("11111111-1111-1111-1111-111111111111");
-	when(tenantManage.getObjectId(userId,operationname1)).thenReturn("11111111-1111-1111-1111-111111111111");
-	Assert.assertNull(methon.invoke(updateOperationLangTest,args));
-	}
+        actions.put(new String("action1"),action);
+        System.out.println("****************************************** Result6: "+method.invoke(updateOperationLangTest,userId,actions));
+
+        actions.clear();
+        action = new LinkedHashMap<String,String>(){{
+            put(new String("100"),NEMOConstants.integer);
+            put(new String("100,200"),NEMOConstants.range);
+
+        }};
+        actions.put(new String("action1"),action);
+        System.out.println("****************************************** Result7: "+method.invoke(updateOperationLangTest,userId,actions));
+
+        actions.clear();
+        action = new LinkedHashMap<String,String>(){{
+            put(new String("group"),NEMOConstants.string);
+            put(new String("200,100"),NEMOConstants.range);
+        }};
+        actions.put(new String("action1"),action);
+        System.out.println("****************************************** Result8: "+method.invoke(updateOperationLangTest,userId,actions));
+
+        actions.clear();
+        action = new LinkedHashMap<String,String>(){{
+            put(new String("100,200"),NEMOConstants.range);
+            put(new String("100"),NEMOConstants.integer);
+        }};
+        actions.put(new String("action1"),action);
+        System.out.println("****************************************** Result9: "+method.invoke(updateOperationLangTest,userId,actions));
+
+        actions.clear();
+        action = new LinkedHashMap<String,String>(){{
+            put(new String("100,200"),NEMOConstants.range);
+            put(new String("group"),NEMOConstants.string);
+        }};
+        actions.put(new String("action1"),action);
+        System.out.println("****************************************** Result10: "+method.invoke(updateOperationLangTest,userId,actions));
+    }
 }
 
