@@ -154,10 +154,12 @@ public class VNMappingUnitTest extends TestCase {
         when(virtualLink.getDestNodeId()).thenReturn(virtualNodeId);
         when(virtualLink.getBandwidth()).thenReturn(1L);
         //return to main
+        doNothing().when(pnResourcesTracker).addPhysicalPath(any(UserId.class),any(PhysicalPath.class));
         when(virtualLink.getLinkId()).thenReturn(virtualLinkId);
         when(virtualLinkId.getValue()).thenReturn(new String("00001111-0000-0000-0000-000011112222"));
 
         vnMappingUnit.virtualNetworkMapping(virtualNetwork, userVnPnMapping, physicalPaths);
+        verify(pnResourcesTracker).addPhysicalPath(any(UserId.class), any(PhysicalPath.class));
         verify(userVnPnMapping,times(2)).getVnPnMappingResult();
         verify(virtualLink,times(2)).getSrcNodeId();
         verify(virtualLink,times(2)).getDestNodeId();
@@ -202,10 +204,12 @@ public class VNMappingUnitTest extends TestCase {
         when(virtualLink.getDestNodeId()).thenReturn(virtualNodeId);
         when(virtualLink.getBandwidth()).thenReturn(1L);
         //return to main
+        doNothing().when(pnResourcesTracker).addPhysicalPath(any(UserId.class),any(PhysicalPath.class));
         when(virtualLink.getLinkId()).thenReturn(virtualLinkId);
         when(virtualLinkId.getValue()).thenReturn(new String("00001111-0000-0000-0000-000011112222"));
 
         vnMappingUnit.virtualNetworkMapping(virtualNetwork, unmappedVirtualLinks, userVnPnMapping, physicalPaths);
+        verify(pnResourcesTracker).addPhysicalPath(any(UserId.class), any(PhysicalPath.class));
         verify(userVnPnMapping,times(2)).getVnPnMappingResult();
         verify(virtualLink,times(2)).getSrcNodeId();
         verify(virtualLink,times(2)).getDestNodeId();
