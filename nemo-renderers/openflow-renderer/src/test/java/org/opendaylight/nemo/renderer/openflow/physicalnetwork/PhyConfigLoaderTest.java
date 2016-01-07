@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.nemo.renderer.openflow.phtysicalnetwork;
+package org.opendaylight.nemo.renderer.openflow.physicalnetwork;
 
 import junit.framework.TestCase;
 import org.junit.Assert;
@@ -57,6 +57,7 @@ import static org.mockito.Mockito.*;
 public class PhyConfigLoaderTest extends TestCase {
     private PhyConfigLoader phyConfigLoader;
     private DataBroker dataBroker;
+    @Override
     @Before
     public void setUp() throws Exception {
         dataBroker = mock(DataBroker.class);

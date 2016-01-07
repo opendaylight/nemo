@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package user.tenantmanager;
+package org.opendaylight.nemo.user.tenantmanager;
 
 import junit.framework.TestCase;
 import org.junit.Assert;
@@ -26,6 +26,7 @@ import static org.mockito.Mockito.*;
 public class AAATest extends TestCase {
     private TenantManage tenantManage;
     private AAA aaa;
+    @Override
     @Before
     public void setUp() throws Exception {
         tenantManage = mock(TenantManage.class);

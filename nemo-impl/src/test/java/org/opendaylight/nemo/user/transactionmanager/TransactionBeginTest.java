@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package user.transactionmanager;
+package org.opendaylight.nemo.user.transactionmanager;
 
 import junit.framework.TestCase;
 import org.junit.Assert;
@@ -24,6 +24,7 @@ public class TransactionBeginTest extends TestCase {
     private AAA aaa;
     private BeginTransactionInput input;
     private TransactionBegin transactionBegin;
+    @Override
     @Before
     public void setUp() throws Exception {
         aaa = mock(AAA.class);

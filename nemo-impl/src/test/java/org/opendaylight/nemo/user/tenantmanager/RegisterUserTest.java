@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package user.tenantmanager;
+package org.opendaylight.nemo.user.tenantmanager;
 
 import junit.framework.TestCase;
 import org.junit.Assert;
@@ -30,6 +30,7 @@ import static org.mockito.Mockito.*;
 public class RegisterUserTest extends TestCase {
     private TenantManage tenantManage;
     private RegisterUser registerUser;
+    @Override
     @Before
     public void setUp() throws Exception {
         tenantManage = mock(TenantManage.class);
@@ -62,7 +63,7 @@ public class RegisterUserTest extends TestCase {
         Assert.assertTrue(registerUser.registerUser(input).equals("The role is not defined in the data store."));
         verify(input).getUserRole();
         Assert.assertTrue(!userRoles.containsKey(new UserRoleName("admin")));
-        
+
         users.put(userId,user);
         when(input.getUserId())
                 .thenReturn(userId)
