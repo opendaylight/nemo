@@ -1,5 +1,8 @@
 #!/usr/bin/python
-#Filename:servicechain.py
+
+# This script sets up the physical network and NEMO Nodes for the NIC BoD flow.
+# Use nemo-odl.py to set up the predefined NEMO definitions first.
+
 import requests,json
 import argparse, sys
 from requests.auth import HTTPBasicAuth
@@ -12,8 +15,6 @@ TRANSACTION_END="http://%s:8181/restconf/operations/nemo-intent:end-transaction"
 REGISTER_USER="http://%s:8181/restconf/operations/nemo-intent:register-user"
 STRUCTURE_UPDATE_USERS="http://%s:8181/restconf/operations/nemo-intent:structure-style-nemo-update"
 PHYSICAL_NETWORK="http://%s:8181/restconf/config/generic-physical-network:physical-network"
-NIC_INTENTS="http://%s:8181/restconf/config/intent:intents"
-NIC_INTENT="http://%s:8181/restconf/config/intent:intents/intent/14ce424a-3e50-4a2a-ad5c-b29845158c8b"
 
 def create_physical_network(contHost):
         data={
@@ -387,7 +388,7 @@ def register_user(contHost):
 def transaction_begin(contHost):
 	data={
 			"input":{
-					"user-id":"14ce424a-3e50-4a2a-ad5c-b29845158c8b"					
+					"user-id":"14ce424a-3e50-4a2a-ad5c-b29845158c8b"
 					}
 		}
 	post(TRANSACTION_BEGIN % contHost, data)
@@ -395,14 +396,14 @@ def transaction_begin(contHost):
 def transaction_end(contHost):
 	data={
 			"input":{
-					"user-id":"14ce424a-3e50-4a2a-ad5c-b29845158c8b"				
+					"user-id":"14ce424a-3e50-4a2a-ad5c-b29845158c8b"
 					}
 		}
 	post(TRANSACTION_END % contHost, data)
 
 def add_server1_host(contHost):
 	data={
-			"input":{				
+			"input":{
 				  "user-id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b",
 				  "objects":{
 						"node":[
@@ -853,45 +854,6 @@ def update_enterprise_interior_connection(contHost):
 	}
 	post(STRUCTURE_UPDATE_USERS % contHost, data)
 
-def delete_nic_intents(contHost):
-        delete(NIC_INTENTS % contHost)
-
-def create_nic_intent(contHost):
-        data = {
-                "intent": { 
-                        "id": "14ce424a-3e50-4a2a-ad5c-b29845158c8b", 
-                        "actions": [ 
-                                { 
-         "order": 1, 
-                                        "allow": {} 
-                                } 
-     ], 
-     "subjects": [ 
-             { 
-         "order": 1 , 
-                     "end-point-group": { "name": "dmz" } 
-             }, { 
-          "order": 2 , 
-                     "end-point-group": { "name": "interior" }
-             } 
-     ],
-     "constraints": [
-             {
-          "order": 1,
-                     "bandwidth-constraint": { "bandwidth": "10G" }
-             }
-     ],
-     "conditions": [
-             {
-          "order": 1,
-                     "daily": { "start-time": "08:00:00Z", "duration": "10h" }
-             }
-     ]
-}
-                }
-        put(NIC_INTENT % contHost, data)
-
-
 def post(url, data):
     headers = {'Content-type': 'application/yang.data+json',
                'Accept': 'application/yang.data+json'}
@@ -931,67 +893,32 @@ if __name__ == '__main__':
 	# CREATE User;
 	register_user(args.controller)
 
-	# IMPORT Node server1 Type host;
+
 	transaction_begin(args.controller)
+
+	# IMPORT Node server1 Type host;
 	add_server1_host(args.controller)
-	#transaction_end(args.controller)
 
 	# IMPORT Node server2 Type host;
-	#transaction_begin(args.controller)
 	add_server2_host(args.controller)
-	#transaction_end(args.controller)
 
 	# IMPORT Node vm1 Type host;
-	#transaction_begin(args.controller)
 	add_vm1_host(args.controller)
-	#transaction_end(args.controller)
 
 	# IMPORT Node vm2 Type host;
-	#transaction_begin(args.controller)
 	add_vm2_host(args.controller)
-	#transaction_end(args.controller)
 
 	# IMPORT Node enterprise Type ext-group Property location:openflow:4:2, ip-prefix:192.18.13.0/24;
-	#transaction_begin(args.controller)
 	add_enterpise_node(args.controller)
-	#transaction_end(args.controller)
 
 	# CREATE Node interior Type l2-group Contain server1,vm1,vm2;
-	#transaction_begin(args.controller)
 	add_interior_node(args.controller)
-	#transaction_end(args.controller)
 
 	# CREATE Node dmz Type l2-group Contain server2;
-	#transaction_begin(args.controller)
 	add_dmz_node(args.controller)
-	#transaction_end(args.controller)
 
 	# IMPORT Node internet Type ext-group Property location:openflow:3:4, ip-prefix:172.168.1.0/24;
-	#transaction_begin(args.controller)
 	add_internet_node(args.controller)
-	#transaction_end(args.controller)
-
-	# CREATE Connection c1 Endnodes enterprise,interior Property bandwidth:128(kbps);
-	#transaction_begin(args.controller)
-	#add_enterprise_interior_connection(args.controller)
-	#transaction_end(args.controller)
-
-	# CREATE Connection c2 Endnodes interior,dmz;
-	#transaction_begin(args.controller)
-	#add_interior_dmz_connection(args.controller)
-	#transaction_end(args.controller)
-
-	# CREATE Connection c3 Endnodes dmz,internet;
-	#transaction_begin(args.controller)
-	#add_dmz_internet_connection(args.controller)
-	#transaction_end(args.controller)
-
-	# UPDATE Connection c1 Endnodes enterprise,interior Property bandwidth:512(kbps);
-	#transaction_begin(args.controller)
-	#update_enterprise_interior_connection(args.controller)
-	#transaction_end(args.controller)
 
 	transaction_end(args.controller)
 
-        delete_nic_intents(args.controller)
-        create_nic_intent(args.controller)
