@@ -51,8 +51,7 @@ import static org.mockito.Mockito.*;
 /**
  * Created by zhangmeng on 2015/12/25.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ActionResolverUtils.class,IntentResolverUtils.class})
+
 public class ActionResolverUtilsTest extends TestCase {
     private ActionResolverUtils actionResolverUtils;
     @Before
@@ -161,6 +160,8 @@ public class ActionResolverUtilsTest extends TestCase {
         virtualNodes.add(virtualNode);
         propertyValues.add(stringValue);
         virtualResourceList.add(virtualResource);
+        propertyList.add(property);
+
 
         //get into method "getMatchItem" args(matchItems ,new MatchItemName("src-ip"))
         when(flow.getMatchItem()).thenReturn(matchItems);
@@ -175,21 +176,27 @@ public class ActionResolverUtilsTest extends TestCase {
         //get into method "getVirtualRouterWithIpPrefix" args(virtualNodes,matchItemValue,nodes, intentVnMappingResults)
         when(node.getNodeType()).thenReturn(new NodeType("l2-group"));
         when(node.getProperty()).thenReturn(propertyList);
-        PowerMockito.mockStatic(IntentResolverUtils.class);
-        PowerMockito.when(IntentResolverUtils.getNodeProperty(any(List.class), any(PropertyName.class))).thenReturn(property);
+//        PowerMockito.mockStatic(IntentResolverUtils.class);
+//        PowerMockito.when(IntentResolverUtils.getNodeProperty(any(List.class), any(PropertyName.class))).thenReturn(property);
+        ////get into method "getNodeProperty" arg(propertyList,new PropertyName("ip-prefix"))
+        when(property.getPropertyName()).thenReturn(new PropertyName("ip-prefix"));
         when(property.getPropertyValues()).thenReturn(propertyValues_temp);
         when(propertyValues_temp.getStringValue()).thenReturn(propertyValues);
         when(stringValue.getValue()).thenReturn(new String("test"));
         when(node.getNodeId()).thenReturn(nodeId);
         when(nodeId.getValue()).thenReturn(new String("00001111-0000-0000-0000-000011112222"));
-        PowerMockito.when(IntentResolverUtils.getIntentVnMappingResult(intentVnMappingResults, new IntentId(node.getNodeId().getValue())))
-                .thenReturn(intentVnMappingResult);
+//        PowerMockito.when(IntentResolverUtils.getIntentVnMappingResult(intentVnMappingResults, new IntentId(node.getNodeId().getValue())))
+//                .thenReturn(intentVnMappingResult);
+        ////get into method "getIntentVnMappingResult" args(intentVnMappingResults,new IntentId(new String("00001111-0000-0000-0000-000011112222")))
+        when(intentVnMappingResult.getIntentId()).thenReturn(new IntentId(new String("00001111-0000-0000-0000-000011112222")));
         when(intentVnMappingResult.getVirtualResource()).thenReturn(virtualResourceList);
         when(virtualResource.getVirtualResourceType()).thenReturn(VirtualResource.VirtualResourceType.Vport);
         when(virtualResource.getParentVirtualResourceEntityId()).thenReturn(virtualResourceEntityId);
         when(virtualResourceEntityId.getValue()).thenReturn(new String("00001111-1111-0000-0000-000011112222"));
-        PowerMockito.when(IntentResolverUtils.getVirtualNode(any(List.class), any(VirtualNodeId.class)))
-                .thenReturn(virtualNode);
+//        PowerMockito.when(IntentResolverUtils.getVirtualNode(any(List.class), any(VirtualNodeId.class)))
+//                .thenReturn(virtualNode);
+        ////get into method "getVirtualNode" arg(virtualNodes,new VirtualNodeId(new String("00001111-1111-0000-0000-000011112222")))
+        when(virtualNode.getNodeId()).thenReturn(new VirtualNodeId(new String("00001111-1111-0000-0000-000011112222")));
         when(virtualNode.getNodeType()).thenReturn(VirtualNode.NodeType.Vrouter);
         Assert.assertTrue(ActionResolverUtils.getSourceVirtualRouterOfFlow(virtualNodes, flow, nodes, intentVnMappingResults) != null);
 

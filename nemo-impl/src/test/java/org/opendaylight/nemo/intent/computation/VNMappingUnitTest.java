@@ -62,11 +62,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.eng
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.api.support.membermodification.MemberMatcher;
-import org.powermock.api.support.membermodification.MemberModifier;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -77,8 +72,6 @@ import static org.mockito.Mockito.*;
 /**
  * Created by zhangmeng on 2015/12/21.
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({VNMappingUnit.class,VNMappingUnitUtils.class})
 public class VNMappingUnitTest extends TestCase {
     private Class<VNMappingUnit> class1;
     private Method method;
@@ -124,6 +117,7 @@ public class VNMappingUnitTest extends TestCase {
         List<VnPnMappingResult> vnPnMappingResults_virtualLinkMapping = new ArrayList<VnPnMappingResult>();
 
         virtualLinks.add(virtualLink);
+        vnPnMappingResults_virtualLinkMapping.add(vnPnMappingResult_virtualLinkMapping);
 
         Assert.assertTrue(result.isPresent());
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
@@ -144,14 +138,15 @@ public class VNMappingUnitTest extends TestCase {
         when(virtualNetwork.getNetworkId()).thenReturn(virtualNetworkId);
         //get into method "virtualLinkMapping" args(virtualNetworkId,virtualLink,userVnPnMapping)
         when(virtualLink.getSrcNodeId()).thenReturn(virtualNodeId);
+        when(virtualLink.getDestNodeId()).thenReturn(virtualNodeId);
         when(virtualNodeId.getValue()).thenReturn(new String("00001111-0000-0000-0000-000011112222"));
         //powermock
-        PowerMockito.mockStatic(VNMappingUnitUtils.class);
-        PowerMockito.when(VNMappingUnitUtils.getVnPnMappingResult(vnPnMappingResults_virtualLinkMapping, new VirtualResourceEntityId(new String("00001111-0000-0000-0000-000011112222"))))
-                .thenReturn(vnPnMappingResult_virtualLinkMapping);
+//        PowerMockito.mockStatic(VNMappingUnitUtils.class);
+//        PowerMockito.when(VNMappingUnitUtils.getVnPnMappingResult(vnPnMappingResults_virtualLinkMapping, new VirtualResourceEntityId(new String("00001111-0000-0000-0000-000011112222"))))
+//                .thenReturn(vnPnMappingResult_virtualLinkMapping);
+        when(vnPnMappingResult_virtualLinkMapping.getVirtualResourceEntityId()).thenReturn(new VirtualResourceEntityId(new String("00001111-0000-0000-0000-000011112222")));
         when(vnPnMappingResult_virtualLinkMapping.getPhysicalResourceEntityId()).thenReturn(physicalResourceEntityId_virtualLinkMapping);
         when(physicalResourceEntityId_virtualLinkMapping.getValue()).thenReturn(new String("test"));
-        when(virtualLink.getDestNodeId()).thenReturn(virtualNodeId);
         when(virtualLink.getBandwidth()).thenReturn(1L);
         //return to main
         doNothing().when(pnResourcesTracker).addPhysicalPath(any(UserId.class),any(PhysicalPath.class));
@@ -185,6 +180,7 @@ public class VNMappingUnitTest extends TestCase {
 
         unmappedVirtualLinks.add(virtualLink);
         virtualLinks.add(virtualLink);
+        vnPnMappingResults_virtualLinkMapping.add(vnPnMappingResult_virtualLinkMapping);
 
         when(virtualNetwork.getVirtualLinks()).thenReturn(virtualLinks_temp);
         when(virtualLinks_temp.getVirtualLink()).thenReturn(virtualLinks);
@@ -194,21 +190,23 @@ public class VNMappingUnitTest extends TestCase {
         when(virtualNetwork.getNetworkId()).thenReturn(virtualNetworkId);
         //get into method "virtualLinkMapping" args(virtualNetworkId,virtualLink,userVnPnMapping)
         when(virtualLink.getSrcNodeId()).thenReturn(virtualNodeId);
+        when(virtualLink.getDestNodeId()).thenReturn(virtualNodeId);
         when(virtualNodeId.getValue()).thenReturn(new String("00001111-0000-0000-0000-000011112222"));
         //powermock
-        PowerMockito.mockStatic(VNMappingUnitUtils.class);
-        PowerMockito.when(VNMappingUnitUtils.getVnPnMappingResult(vnPnMappingResults_virtualLinkMapping, new VirtualResourceEntityId(new String("00001111-0000-0000-0000-000011112222"))))
-                .thenReturn(vnPnMappingResult_virtualLinkMapping);
+//        PowerMockito.mockStatic(VNMappingUnitUtils.class);
+//        PowerMockito.when(VNMappingUnitUtils.getVnPnMappingResult(vnPnMappingResults_virtualLinkMapping, new VirtualResourceEntityId(new String("00001111-0000-0000-0000-000011112222"))))
+//                .thenReturn(vnPnMappingResult_virtualLinkMapping);
+        when(vnPnMappingResult_virtualLinkMapping.getVirtualResourceEntityId()).thenReturn(new VirtualResourceEntityId(new String("00001111-0000-0000-0000-000011112222")));
         when(vnPnMappingResult_virtualLinkMapping.getPhysicalResourceEntityId()).thenReturn(physicalResourceEntityId_virtualLinkMapping);
         when(physicalResourceEntityId_virtualLinkMapping.getValue()).thenReturn(new String("test"));
-        when(virtualLink.getDestNodeId()).thenReturn(virtualNodeId);
         when(virtualLink.getBandwidth()).thenReturn(1L);
         //return to main
-        doNothing().when(pnResourcesTracker).addPhysicalPath(any(UserId.class),any(PhysicalPath.class));
+        doNothing().when(pnResourcesTracker).addPhysicalPath(any(UserId.class), any(PhysicalPath.class));
         when(virtualLink.getLinkId()).thenReturn(virtualLinkId);
         when(virtualLinkId.getValue()).thenReturn(new String("00001111-0000-0000-0000-000011112222"));
 
         vnMappingUnit.virtualNetworkMapping(virtualNetwork, unmappedVirtualLinks, userVnPnMapping, physicalPaths);
+        verify(vnPnMappingResult_virtualLinkMapping,times(2)).getVirtualResourceEntityId();
         verify(pnResourcesTracker).addPhysicalPath(any(UserId.class), any(PhysicalPath.class));
         verify(userVnPnMapping,times(2)).getVnPnMappingResult();
         verify(virtualLink,times(2)).getSrcNodeId();
@@ -615,14 +613,20 @@ public class VNMappingUnitTest extends TestCase {
         PhysicalResourceEntityId physicalResourceEntityId = mock(PhysicalResourceEntityId.class);
         List<VnPnMappingResult> vnPnMappingResults = new ArrayList<VnPnMappingResult>();
 
+        vnPnMappingResults.add(vnPnMappingResult);
+
         when(userVnPnMapping.getVnPnMappingResult()).thenReturn(vnPnMappingResults);
         when(virtualLink.getSrcNodeId()).thenReturn(virtualNodeId);
+        when(virtualLink.getDestNodeId()).thenReturn(virtualNodeId);
         when(virtualNodeId.getValue()).thenReturn(new String("00001111-0000-0000-0000-000011112222"));
         //powermock
-        PowerMockito.mockStatic(VNMappingUnitUtils.class);
-        PowerMockito.when(VNMappingUnitUtils.getVnPnMappingResult(vnPnMappingResults, new VirtualResourceEntityId(new String("00001111-0000-0000-0000-000011112222"))))
-                .thenReturn(vnPnMappingResult);
-        when(virtualLink.getDestNodeId()).thenReturn(virtualNodeId);
+//        PowerMockito.mockStatic(VNMappingUnitUtils.class);
+//        PowerMockito.when(VNMappingUnitUtils.getVnPnMappingResult(vnPnMappingResults, new VirtualResourceEntityId(new String("00001111-0000-0000-0000-000011112222"))))
+//                .thenReturn(vnPnMappingResult);
+        // replace powermock
+        //get into method "getVnPnMappingResult" args(vnPnMappingResults,new VirtualResourceEntityId(new String("00001111-0000-0000-0000-000011112222")))
+        when(vnPnMappingResult.getVirtualResourceEntityId()).thenReturn(new VirtualResourceEntityId(new String("00001111-0000-0000-0000-000011112222")));
+        // end
         when(vnPnMappingResult.getPhysicalResourceEntityId()).thenReturn(physicalResourceEntityId);
         when(physicalResourceEntityId.getValue())
                 .thenReturn(new String("test"))//source

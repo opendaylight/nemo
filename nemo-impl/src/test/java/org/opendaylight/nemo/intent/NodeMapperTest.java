@@ -87,7 +87,7 @@ import static org.mockito.Mockito.*;
  * Created by zhangmeng on 2015/12/22.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({NodeMapper.class,IntentResolverUtils.class})
+@PrepareForTest(IntentResolverUtils.class)
 public class NodeMapperTest extends TestCase {
     private DataBroker dataBroker ;
     private NodeMapper nodeMapper ;

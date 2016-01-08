@@ -133,7 +133,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.com
  */
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({IntentResolver.class,IntentResolverUtils.class})
+@PrepareForTest(IntentResolverUtils.class)
 public class IntentResolverTest {
     private IntentResolver intentResolver;
     private  DataBroker dataBroker;
