@@ -41,7 +41,8 @@ if(!physicalData) return;
 					alert("No Physical Data");
 			},
 			error:function(data){
-			 alert("Get Physical Data Error!");
+			 console.log("Get Physical Data Error!");
+			 // alert("Get Physical Data Error!");
 			}
 		}); 
  	return PhyData;

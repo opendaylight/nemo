@@ -167,7 +167,7 @@ div#pageContent {
 }
   
 body {
-    width: 1330px;
+    /*width: 1330px;*/
     overflow: scroll;
     margin-right: 0px;
 }
