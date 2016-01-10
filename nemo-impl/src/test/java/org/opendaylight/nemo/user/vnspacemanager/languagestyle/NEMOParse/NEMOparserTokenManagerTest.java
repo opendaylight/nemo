@@ -36,7 +36,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * Created by zhangmeng on 2015/12/17.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({NEMOparserTokenManager.class,SimpleCharStream.class})
+@PrepareForTest(SimpleCharStream.class)
 public class NEMOparserTokenManagerTest extends TestCase {
     private SimpleCharStream simpleCharStream;
     private int lexState;
