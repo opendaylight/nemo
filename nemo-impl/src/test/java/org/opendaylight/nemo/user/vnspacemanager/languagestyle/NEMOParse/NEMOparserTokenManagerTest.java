@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
+ * Copyright (c) 2016 Huawei, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -36,7 +36,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * Created by zhangmeng on 2015/12/17.
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({NEMOparserTokenManager.class,SimpleCharStream.class})
+@PrepareForTest(SimpleCharStream.class)
 public class NEMOparserTokenManagerTest extends TestCase {
     private SimpleCharStream simpleCharStream;
     private int lexState;
