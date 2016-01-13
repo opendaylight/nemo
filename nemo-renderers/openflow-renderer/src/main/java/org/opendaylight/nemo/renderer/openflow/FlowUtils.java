@@ -98,6 +98,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.paths.PhysicalPathBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.node.instance.PhysicalPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.VirtualNetwork;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.VirtualLinks;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.arps.VirtualArp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.arps.VirtualArpBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.networks.virtual.network.virtual.links.VirtualLink;
@@ -138,6 +139,10 @@ public class FlowUtils implements AutoCloseable {
     private static final int ETH_TYPE_IP = 0x0800;
     private static final int ETH_TYPE_MPLS = 0x8847;
     private static final int ETH_TYPE_ARP = 0x0806;
+
+    private static final short IP_PROTO_ICMP = 1;
+    private static final short IP_PROTO_TCP = 6;
+    private static final short IP_PROTO_UDP = 17;
 
     private final DataBroker dataBroker;
     private final PacketProcessingService packetProcessingService;
@@ -651,7 +656,52 @@ public class FlowUtils implements AutoCloseable {
     /**
      * TODO
      *
-     * @author Shixing Liu
+     * @author Zhigang Ji
+     * @param userId TODO
+     * @param physicalNodeId TODO
+     * @param physicalPortId TODO
+     */
+    private void configExternalInPortFlowTableForArp(UserId userId,
+                                                     PhysicalNodeId physicalNodeId,
+                                                     PhysicalPortId physicalPortId) {
+        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
+        List<Instruction> instructionList = new LinkedList<Instruction>();
+        List<Action> actionList = new LinkedList<Action>();
+
+        EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder().setEthernetType(new EthernetTypeBuilder().setType(new EtherType((long)ETH_TYPE_ARP)).build());
+        EthernetMatch ethernetMatch = ethernetMatchBuilder.build();
+
+        Match match = new MatchBuilder().setInPort(createNodeConnectorId(physicalPortId)).setEthernetMatch(ethernetMatch).build();
+
+        OutputAction outputAction = new OutputActionBuilder().setMaxLength(0xffff).setOutputNodeConnector(new Uri(OutputPortValues.CONTROLLER.toString())).build();
+        OutputActionCase outputActionCase = new OutputActionCaseBuilder().setOutputAction(outputAction).build();
+        Action actionOutput = new ActionBuilder().setOrder(actionList.size()).setAction(outputActionCase).build();
+        actionList.add(actionOutput);
+
+        ApplyActions applyActions = new ApplyActionsBuilder().setAction(actionList).build();
+        ApplyActionsCase applyActionsCase = new ApplyActionsCaseBuilder().setApplyActions(applyActions).build();
+        Instruction instructionApply = new InstructionBuilder().setOrder(instructionList.size()).setInstruction(applyActionsCase).build();
+        instructionList.add(instructionApply);
+
+        Instructions instructions = new InstructionsBuilder().setInstruction(instructionList).build();
+
+        FlowId flowId = new FlowId(UUID.randomUUID().toString());
+        FlowBuilder flowBuilder = baseFlowBuilder().setId(flowId).setTableId(IN_PORT_TABLE_ID).setPriority(DEFAULT_FLOW_PRIORITY + 1);
+        Flow flow = flowBuilder.setMatch(match).setInstructions(instructions).build();
+
+        NodeId nodeId = createNodeId(physicalNodeId);
+        InstanceIdentifier<Flow> flowInsId = generateFlowInsId(userId, nodeId, IN_PORT_TABLE_ID, flowId);
+
+        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, flowInsId, flow, true);
+        writeTransaction.submit();
+
+        return;
+    }
+
+    /**
+     * TODO
+     *
+     * @author Shixing Liu, Zhigang Ji
      * @param user TODO
      * @param virtualNetwork TODO
      * @param userIntentVnMapping TODO
@@ -663,6 +713,7 @@ public class FlowUtils implements AutoCloseable {
                                    UserIntentVnMapping userIntentVnMapping,
                                    UserVnPnMapping userVnPnMapping,
                                    PhysicalNetwork physicalNetwork) {
+        VirtualNetworkHelper virtualNetworkHelper = virtualNetworkHelpers.get(virtualNetwork.getNetworkId());
         List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
 
         for(VnPnMappingResult vnPnMappingResult:vnPnMappingResults){
@@ -671,6 +722,8 @@ public class FlowUtils implements AutoCloseable {
                 VirtualPortId virtualPortid = new VirtualPortId(vnPnMappingResult.getVirtualResourceEntityId().getValue());
                 VirtualNodeId virtualNodeId = new VirtualNodeId(vnPnMappingResult.getParentVirtualResourceEntityId().getValue());
 
+                VirtualPort virtualPort = null;
+
                 VirtualPort.PortType virtualPortType = VirtualPort.PortType.Internal;
                 VirtualNode.NodeType virtualNodeType = VirtualNode.NodeType.Vswitch;
 
@@ -678,9 +731,10 @@ public class FlowUtils implements AutoCloseable {
                 for (VirtualNode virtualNode : virtualNodes) {
                     if (virtualNode.getNodeId().equals(virtualNodeId)){
                         virtualNodeType = virtualNode.getNodeType();
-                        for (VirtualPort virtualPort : virtualNode.getVirtualPort()) {
-                            if (virtualPort.getPortId().equals(virtualPortid)){
-                                virtualPortType = virtualPort.getPortType();
+                        for (VirtualPort virtualPort1 : virtualNode.getVirtualPort()) {
+                            if (virtualPort1.getPortId().equals(virtualPortid)){
+                                virtualPort = virtualPort1;
+                                virtualPortType = virtualPort1.getPortType();
                                 break;
                             }
                         }
@@ -688,16 +742,28 @@ public class FlowUtils implements AutoCloseable {
                     }
                 }
 
+                // Added by Zhigang Ji to avoid NullPointerException.
+                if ( null == virtualPort ) {
+                    continue;
+                }
+
                 PhysicalNodeId physicalDestNodeId =
                         new PhysicalNodeId(vnPnMappingResult.getParentPhysicalResourceEntityId().getValue());
-
                 PhysicalPortId physicalDestPortId =
                         new PhysicalPortId(vnPnMappingResult.getPhysicalResourceEntityId().getValue());
 
                 if (virtualPortType == VirtualPort.PortType.External) {
                     configExternalInPortFlowTable(userVnPnMapping.getUserId(), physicalDestNodeId, physicalDestPortId, virtualNodeType);
+
+                    // Added by Zhigang Ji to configurate flow entries to
+                    // capture and send arp packets to controller.
+                    if ( virtualNetworkHelper.isLayer2ExternalVirtualPort(virtualPort) ) {
+                        configExternalInPortFlowTableForArp(user.getUserId(), physicalDestNodeId, physicalDestPortId);
+                    }
                 } else {
-                    configInternalInPortFlowTable(userVnPnMapping.getUserId(), physicalDestNodeId, physicalDestPortId);
+                    // Deleted by Zhigang Ji, because of repetitive
+                    // configurating for internal physical ports.
+//                    configInternalInPortFlowTable(userVnPnMapping.getUserId(), physicalDestNodeId, physicalDestPortId);
                 }
             }
         }
@@ -714,12 +780,14 @@ public class FlowUtils implements AutoCloseable {
                 }
             }
         }
+
+        return;
 	}
 
     /**
      * TODO
      *
-     * @author Shixing Liu
+     * @author Shixing Liu, Zhigang Ji
      * @param user TODO
      * @param virtualNetwork TODO
      * @param userIntentVnMapping TODO
@@ -731,122 +799,214 @@ public class FlowUtils implements AutoCloseable {
                                   UserIntentVnMapping userIntentVnMapping,
                                   UserVnPnMapping userVnPnMapping,
                                   PhysicalNetwork physicalNetwork) {
-
         LOG.debug("nemo:meter updateMeterTable()");
-        PhysicalPaths physicalPaths = physicalNetwork.getPhysicalPaths();
-        if(null == physicalPaths.getPhysicalPath()){
-            LOG.debug("PhysicalPath are null");
+
+        // Added by Zhigang Ji for only handling physical paths
+        // corresponding to virtual links in this user's virtual network.
+        VirtualLinks virtualLinks = virtualNetwork.getVirtualLinks();
+        if ( null == virtualLinks ) {
+            LOG.debug("VirtualLinks is null");
+            return;
+        }
+        if ( null == virtualLinks.getVirtualLink() ) {
+            LOG.debug("VirtualLink list is null");
+            return;
+        }
+        List<VirtualLink> virtualLinkList = virtualLinks.getVirtualLink();
+        if ( virtualLinkList.isEmpty() ) {
+            LOG.debug("VirtualLink list is empty.");
             return;
         }
 
+        PhysicalPaths physicalPaths = physicalNetwork.getPhysicalPaths();
+        // Added by Zhigang Ji to avoid NullPointerException.
+        if ( null == physicalPaths ) {
+            LOG.debug("PhysicalPaths is null");
+            return;
+        }
+        if(null == physicalPaths.getPhysicalPath()){
+            LOG.debug("PhysicalPath list is null.");
+            return;
+        }
         List<PhysicalPath> physicalPathList = physicalPaths.getPhysicalPath();
+        // Added by Zhigang Ji to avoid handling empty list.
+        if ( physicalPathList.isEmpty() ) {
+            LOG.debug("PhysicalPath list is empty.");
+            return;
+        }
 
         PhysicalLinks physicalLinks = physicalNetwork.getPhysicalLinks();
+        // Added by Zhigang Ji to avoid NullPointerException.
+        if ( null == physicalLinks ) {
+            LOG.debug("PhysicalLinks is null");
+            return;
+        }
+        if ( null == physicalLinks.getPhysicalLink() ) {
+            LOG.debug("PhysicalLink list is null.");
+            return;
+        }
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.links.PhysicalLink>
                 physicalLinksList = physicalLinks.getPhysicalLink();
+        // Added by Zhigang Ji to avoid handling empty list.
+        if ( physicalLinksList.isEmpty() ) {
+            LOG.debug("PhysicalLink list is empty.");
+            return;
+        }
 
-        for(PhysicalPath physicalPath:physicalPathList) {
-            if(physicalPath.getBandwidth() > 0 ) {
-                LOG.debug("nemo: meter physicalPath.getBandwidth() = {}", physicalPath.getBandwidth());
-                if(meterIdsOfPhysicalPaths.containsKey(physicalPath.getPathId())== false){
-                    LOG.debug("nemo:meter meterIdsOfPhysicalPaths.containsKey(physicalPath.getPathId())== false");
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink
-                            physicalLinkInPath = physicalPath.getPhysicalLink().get(0);
+        // Added by Zhigang Ji for getting physical path that virtual link is mapped to.
+        List<VnPnMappingResult> vnPnMappingResults = userVnPnMapping.getVnPnMappingResult();
+        if ( null == vnPnMappingResults ) {
+            LOG.debug("VnPnMappingResult list is null.");
+            return;
+        }
+        if ( vnPnMappingResults.isEmpty() ) {
+            LOG.debug("VnPnMappingResult list is empty.");
+            return;
+        }
 
-                    LOG.debug("nemo:meter physicalLinkInPath" + physicalLinkInPath.getLinkId().getValue());
-                    for (org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.links.PhysicalLink physicalLink : physicalLinksList) {
-                        LOG.debug("nemo:meter physicalLink " + physicalLink.getLinkId().getValue());
-                        if (physicalLinkInPath.getLinkId().getValue().equals(physicalLink.getLinkId().getValue())) {
+        // Added by Zhigang Ji to optimize data store writing.
+        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
 
-                            LOG.debug("nemo:meter find plink for ppath.");
-                            PhysicalNodeId physicalSrcNodeId = physicalLink.getSrcNodeId();
-                            PhysicalPortId physicalSrcPortId = physicalLink.getSrcPortId();
+        VnPnMappingResult vnPnMappingResult;
+        PhysicalPathId physicalPathId;
+        PhysicalPath physicalPath;
 
-                            LOG.debug("nemo:meter meterIdGenerators.size() = " + meterIdGenerators.size());
-                            LOG.debug("nemo:meter physicalSrcNodeId =" + physicalSrcNodeId.getValue());
+        // Modified by Zhigang Ji to only handle physical paths that
+        // virtual links in this user's virtual network are mapped to.
+        for ( VirtualLink virtualLink : virtualLinkList ) {
+            if ( 0 >= virtualLink.getBandwidth() ) {
+                continue;
+            }
 
-                            LOG.debug("nemo:meter Assign meter id");
-                            Long meterId = (long)0;
-                            if(meterIdGenerators.containsKey(physicalSrcNodeId) == false){
-                                LOG.debug("meterIdGenerators.containsKey(physicalSrcNodeId) == false");
-                                MeterIdGenerator meterIdGenerator = new MeterIdGenerator();
-                                meterIdGenerators.put(physicalSrcNodeId, meterIdGenerator);
-                                meterId = meterIdGenerators.get(physicalSrcNodeId).generateMeterId();
-                                meterIdsOfPhysicalPaths.put(physicalPath.getPathId(),meterId);
-                            }
-                            else{
-                                LOG.debug("meterIdGenerators.containsKey(physicalSrcNodeId) == true");
-                                meterId = meterIdGenerators.get(physicalSrcNodeId).generateMeterId();
-                                meterIdsOfPhysicalPaths.put(physicalPath.getPathId(),meterId);
-                            }
+            vnPnMappingResult = getVnPnMappingResult(vnPnMappingResults,
+                    new VirtualResourceEntityId(virtualLink.getLinkId().getValue()));
+            if ( null == vnPnMappingResult ) {
+                LOG.error("Can't get vn-pn mapping result for virtual link {}.",
+                        virtualLink.getLinkId().getValue());
+                continue;
+            }
 
-                            //Generate meter flow entries
-                            LOG.debug("nemo:meter Generate meter flow entries");
-                            NodeKey nodeKey = new NodeKey(new NodeId(physicalSrcNodeId.getValue()));
-                            MeterKey meterKey = new MeterKey(new MeterId(meterId));
+            physicalPathId = new PhysicalPathId(vnPnMappingResult.getPhysicalResourceEntityId().getValue());
+            physicalPath = physicalNetworkHelper.getPhysicalPath(physicalPathId);
+            if ( null == physicalPath ) {
+                LOG.error("Can't get physical path {} that virtual link {} is mapped to.",
+                        physicalPathId.getValue(), virtualLink.getLinkId().getValue());
+                continue;
+            }
+            if ( physicalPath.getPhysicalLink().isEmpty() ) {
+                LOG.warn("Physical path {} corresponding to virtual link {} " +
+                        "whose bandwidth is greater than zero is an null path.",
+                        physicalPathId.getValue(), virtualLink.getLinkId().getValue());
+                continue;
+            }
 
-                            InstanceIdentifier<Meter> meterInsId = generateMeterInsId(userVnPnMapping.getUserId(), nodeKey, meterKey);
+            LOG.debug("nemo: meter virtualLink.getBandwidth() = {}", virtualLink.getBandwidth());
+            LOG.debug("nemo: meter physicalPath.getBandwidth() = {}", physicalPath.getBandwidth());
+            // Modified by Zhigang Ji to optimize boolean expression.
+            if ( !meterIdsOfPhysicalPaths.containsKey(physicalPath.getPathId()) ) {
+                LOG.debug("nemo:meter meterIdsOfPhysicalPaths.containsKey(physicalPath.getPathId())== false");
+                org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink
+                        physicalLinkInPath = physicalPath.getPhysicalLink().get(0);
 
-                            /*
-                            MeterBandHeaderBuilder meterBandHeaderBuilder = new MeterBandHeaderBuilder();
-                            MeterBandTypesBuilder meterBandTypesB = new MeterBandTypesBuilder();
-                            MeterBandType bandFlag = new MeterBandType(true, false, false);
-                            meterBandTypesB.setFlags(bandFlag);// _ofpmbtDrop
-                            DropBuilder drop = new DropBuilder();
-                            drop.setDropBurstSize(physicalPath.getBandwidth() / 2);
-                            drop.setDropRate(physicalPath.getBandwidth());
-                            Drop drp = drop.build();
-                            meterBandHeaderBuilder.setBandType(drp);
-                            meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesB.build());
-                            MeterBandHeader meterBH = meterBandHeaderBuilder.build();
-                            MeterBuilder meterBuilder = new MeterBuilder();
-                            meterBuilder.setMeterBandHeaders(meterBandHeadersBuilder.setMeterBandHeader(meterBandHeaders).build());
-                            */
+                LOG.debug("nemo:meter physicalLinkInPath " + physicalLinkInPath.getLinkId().getValue());
+                for (org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.network.physical.links.PhysicalLink physicalLink : physicalLinksList) {
+                    LOG.debug("nemo:meter physicalLink " + physicalLink.getLinkId().getValue());
+                    if (physicalLinkInPath.getLinkId().getValue().equals(physicalLink.getLinkId().getValue())) {
+                        LOG.debug("nemo:meter find plink for ppath.");
+                        PhysicalNodeId physicalSrcNodeId = physicalLink.getSrcNodeId();
 
-                            MeterBuilder meterBuilder = new MeterBuilder();
-                            MeterBandHeaderBuilder meterBandHeaderBuilder = new MeterBandHeaderBuilder();
-                            MeterBandHeadersBuilder meterBandHeadersBuilder = new MeterBandHeadersBuilder();
-                            MeterBandTypesBuilder meterBandTypesB = new MeterBandTypesBuilder();
+                        LOG.debug("nemo:meter meterIdGenerators.size() = " + meterIdGenerators.size());
+                        LOG.debug("nemo:meter physicalSrcNodeId = " + physicalSrcNodeId.getValue());
 
-                            meterBandHeaderBuilder.setKey(new MeterBandHeaderKey(new BandId(physicalPath.getBandwidth())));
-                            meterBandHeaderBuilder.setBandBurstSize((long)0);
-                            meterBandHeaderBuilder.setBandRate(physicalPath.getBandwidth());
-
-                            MeterBandType bandFlag = new MeterBandType(true, false, false);
-                            meterBandTypesB.setFlags(bandFlag);// _ofpmbtDrop
-                            DropBuilder drop = new DropBuilder();
-                            drop.setDropBurstSize((long)0);
-                            drop.setDropRate(physicalPath.getBandwidth());
-                            Drop drp = drop.build();
-                            meterBandHeaderBuilder.setBandType(drp);
-                            meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesB.build());
-
-                            MeterBandHeader meterBH = meterBandHeaderBuilder.build();
-                            List<MeterBandHeader> meterBandHeaders = new ArrayList<MeterBandHeader>();
-                            meterBandHeaders.add(0, meterBH);
-
-                            meterBuilder.setKey(new MeterKey(new MeterId(meterId)));
-                            meterBuilder.setBarrier(false);
-
-                            meterBuilder.setFlags(new MeterFlags(false, true, false, true));
-
-                            meterBuilder.setContainerName("container." + physicalPath.getPathId());
-                            meterBuilder.setMeterName("meter." + physicalPath.getPathId());
-                            meterBandHeadersBuilder.setMeterBandHeader(meterBandHeaders);
-                            meterBuilder.setMeterBandHeaders(meterBandHeadersBuilder.build());
-
-                            Meter meter = meterBuilder.build();
-
-                            WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
-                            writeTransaction.put(LogicalDatastoreType.CONFIGURATION, meterInsId, meter);
-                            writeTransaction.submit();
-                            LOG.debug("nemo:meter writeTransaction.submit();");
-                            break;
+                        LOG.debug("nemo:meter Assign meter id");
+                        Long meterId = (long)0;
+                        // Modified by Zhigang Ji to optimize boolean expression.
+                        if(!meterIdGenerators.containsKey(physicalSrcNodeId)){
+                            LOG.debug("nemo:meterIdGenerators.containsKey(physicalSrcNodeId) == false");
+                            MeterIdGenerator meterIdGenerator = new MeterIdGenerator();
+                            meterIdGenerators.put(physicalSrcNodeId, meterIdGenerator);
+                            // Modified by Zhigang Ji to optimize meter id generation.
+                            meterId = meterIdGenerator.generateMeterId();
+                            meterIdsOfPhysicalPaths.put(physicalPath.getPathId(),meterId);
                         }
+                        else{
+                            LOG.debug("nemo:meterIdGenerators.containsKey(physicalSrcNodeId) == true");
+                            meterId = meterIdGenerators.get(physicalSrcNodeId).generateMeterId();
+                            meterIdsOfPhysicalPaths.put(physicalPath.getPathId(),meterId);
+                        }
+
+                        // Generate meter flow entries.
+                        LOG.debug("nemo:meter Generate meter flow entries");
+                        NodeKey nodeKey = new NodeKey(new NodeId(physicalSrcNodeId.getValue()));
+                        MeterKey meterKey = new MeterKey(new MeterId(meterId));
+
+                        InstanceIdentifier<Meter> meterInsId = generateMeterInsId(userVnPnMapping.getUserId(), nodeKey, meterKey);
+
+                        /*
+                        MeterBandHeaderBuilder meterBandHeaderBuilder = new MeterBandHeaderBuilder();
+                        MeterBandTypesBuilder meterBandTypesB = new MeterBandTypesBuilder();
+                        MeterBandType bandFlag = new MeterBandType(true, false, false);
+                        meterBandTypesB.setFlags(bandFlag);// _ofpmbtDrop
+                        DropBuilder drop = new DropBuilder();
+                        drop.setDropBurstSize(physicalPath.getBandwidth() / 2);
+                        drop.setDropRate(physicalPath.getBandwidth());
+                        Drop drp = drop.build();
+                        meterBandHeaderBuilder.setBandType(drp);
+                        meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesB.build());
+                        MeterBandHeader meterBH = meterBandHeaderBuilder.build();
+                        MeterBuilder meterBuilder = new MeterBuilder();
+                        meterBuilder.setMeterBandHeaders(meterBandHeadersBuilder.setMeterBandHeader(meterBandHeaders).build());
+                        */
+
+                        MeterBuilder meterBuilder = new MeterBuilder();
+                        MeterBandHeaderBuilder meterBandHeaderBuilder = new MeterBandHeaderBuilder();
+                        MeterBandHeadersBuilder meterBandHeadersBuilder = new MeterBandHeadersBuilder();
+                        MeterBandTypesBuilder meterBandTypesB = new MeterBandTypesBuilder();
+
+                        meterBandHeaderBuilder.setKey(new MeterBandHeaderKey(new BandId(physicalPath.getBandwidth())));
+                        meterBandHeaderBuilder.setBandBurstSize((long)0);
+                        meterBandHeaderBuilder.setBandRate(physicalPath.getBandwidth());
+
+                        MeterBandType bandFlag = new MeterBandType(true, false, false);
+                        meterBandTypesB.setFlags(bandFlag);// _ofpmbtDrop
+                        DropBuilder drop = new DropBuilder();
+                        drop.setDropBurstSize((long)0);
+                        drop.setDropRate(physicalPath.getBandwidth());
+                        Drop drp = drop.build();
+                        meterBandHeaderBuilder.setBandType(drp);
+                        meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesB.build());
+
+                        MeterBandHeader meterBH = meterBandHeaderBuilder.build();
+                        List<MeterBandHeader> meterBandHeaders = new ArrayList<MeterBandHeader>();
+                        meterBandHeaders.add(0, meterBH);
+
+                        meterBuilder.setKey(new MeterKey(new MeterId(meterId)));
+                        meterBuilder.setBarrier(false);
+
+                        meterBuilder.setFlags(new MeterFlags(false, true, false, true));
+
+                        meterBuilder.setContainerName("container." + physicalPath.getPathId());
+                        meterBuilder.setMeterName("meter." + physicalPath.getPathId());
+                        meterBandHeadersBuilder.setMeterBandHeader(meterBandHeaders);
+                        meterBuilder.setMeterBandHeaders(meterBandHeadersBuilder.build());
+
+                        Meter meter = meterBuilder.build();
+
+                        // Delete newWriteOnlyTransaction and submit below
+                        // to optimize data store writing - Zhigang Ji.
+                        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, meterInsId, meter);
+                        LOG.debug("nemo:meter writeTransaction.put(...);");
+                        // Deleted by Zhigang Ji.
+//                        break;
                     }
                 }
             }
         }
+
+        // Added by Zhigang Ji to optimize data store writing.
+        writeTransaction.submit();
+
+        return;
     }
 
     /**
@@ -3033,20 +3193,42 @@ public class FlowUtils implements AutoCloseable {
                               org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.user.intent.objects.Flow nemoFlow,
                               PhysicalPort physicalPort) {
         List<MatchItem> matchItems = nemoFlow.getMatchItem();
+        MatchItem ethTypeMatchItem = getMatchItem(matchItems, new MatchItemName("eth-type"));
         MatchItem srcIpMatchItem = getMatchItem(matchItems, new MatchItemName("src-ip"));
         MatchItem dstIpMatchItem = getMatchItem(matchItems, new MatchItemName("dst-ip"));
+        MatchItem protoMatchItem = getMatchItem(matchItems, new MatchItemName("proto"));
+        MatchItem srcPortMatchItem = getMatchItem(matchItems, new MatchItemName("src-port"));
+        MatchItem dstPortMatchItem = getMatchItem(matchItems, new MatchItemName("dst-port"));
 
         EthernetMatchBuilder ethernetMatchBuilder = new EthernetMatchBuilder();
         Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
+        IpMatchBuilder ipMatchBuilder = new IpMatchBuilder();
+        TcpMatchBuilder tcpMatchBuilder = new TcpMatchBuilder();
+        UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder();
         MetadataBuilder metadataBuilder = null;
         boolean containEthernetMatch = false;
         boolean containIpv4Match = false;
+        boolean containIpMatch = false;
+        boolean containTcpMatch = false;
+        boolean containUdpMatch = false;
 
         if ( null != userId ) {
             metadataBuilder = new MetadataBuilder().setMetadata(BigInteger.valueOf(metadatas.get(userId)));
         }
 
-        if ( null != srcIpMatchItem || null != dstIpMatchItem ) {
+        if ( null != ethTypeMatchItem ) {
+            String ethTypeMatchItemValue = ethTypeMatchItem.getMatchItemValue().getStringValue();
+
+            if ( ethTypeMatchItemValue.equals("ip") ) {
+                ethernetMatchBuilder = ethernetMatchBuilder.setEthernetType(new EthernetTypeBuilder().setType(new EtherType((long)ETH_TYPE_IP)).build());
+                containEthernetMatch = true;
+            }
+
+            if ( ethTypeMatchItemValue.equals("arp") ) {
+                ethernetMatchBuilder = ethernetMatchBuilder.setEthernetType(new EthernetTypeBuilder().setType(new EtherType((long)ETH_TYPE_ARP)).build());
+                containEthernetMatch = true;
+            }
+        } else if ( null != srcIpMatchItem || null != dstIpMatchItem ) {
             ethernetMatchBuilder = ethernetMatchBuilder.setEthernetType(new EthernetTypeBuilder().setType(new EtherType((long)ETH_TYPE_IP)).build());
             containEthernetMatch = true;
         }
@@ -3061,6 +3243,55 @@ public class FlowUtils implements AutoCloseable {
             String matchItemValue = dstIpMatchItem.getMatchItemValue().getStringValue();
             ipv4MatchBuilder = ipv4MatchBuilder.setIpv4Destination(new Ipv4Prefix(matchItemValue));
             containIpv4Match = true;
+        }
+
+        if ( null != protoMatchItem ) {
+            String protoMatchItemValue = protoMatchItem.getMatchItemValue().getStringValue();
+
+            if ( protoMatchItemValue.equals("icmp") ) {
+                ipMatchBuilder = ipMatchBuilder.setIpProtocol(IP_PROTO_ICMP);
+                containIpMatch = true;
+            }
+
+            if ( protoMatchItemValue.equals("tcp") ) {
+                ipMatchBuilder = ipMatchBuilder.setIpProtocol(IP_PROTO_TCP);
+                containIpMatch = true;
+
+                if ( null != srcPortMatchItem ) {
+                    Long srcPortMatchItemValue = srcPortMatchItem.getMatchItemValue().getIntValue();
+                    tcpMatchBuilder = tcpMatchBuilder.setTcpSourcePort(new PortNumber(srcPortMatchItemValue.intValue()));
+                    containTcpMatch = true;
+                }
+
+                if ( null != dstPortMatchItem ) {
+                    Long dstPortMatchItemValue = dstPortMatchItem.getMatchItemValue().getIntValue();
+                    tcpMatchBuilder = tcpMatchBuilder.setTcpDestinationPort(new PortNumber(dstPortMatchItemValue.intValue()));
+                    containTcpMatch = true;
+                }
+            }
+
+            if ( protoMatchItemValue.equals("udp") ) {
+                ipMatchBuilder = ipMatchBuilder.setIpProtocol(IP_PROTO_UDP);
+                containIpMatch = true;
+
+                if ( null != srcPortMatchItem ) {
+                    Long srcPortMatchItemValue = srcPortMatchItem.getMatchItemValue().getIntValue();
+                    udpMatchBuilder = udpMatchBuilder.setUdpSourcePort(new PortNumber(srcPortMatchItemValue.intValue()));
+                    containUdpMatch = true;
+                }
+
+                if ( null != dstPortMatchItem ) {
+                    Long dstPortMatchItemValue = dstPortMatchItem.getMatchItemValue().getIntValue();
+                    udpMatchBuilder = udpMatchBuilder.setUdpDestinationPort(new PortNumber(dstPortMatchItemValue.intValue()));
+                    containUdpMatch = true;
+                }
+            }
+        } else {
+            if ( null != srcPortMatchItem || null != dstPortMatchItem ) {
+                LOG.error("If the match item src-port or dst-port is specified, " +
+                        "the match item proto must be specified to be tcp or udp " +
+                        "in NEMO flow {}.", nemoFlow.getFlowId().getValue());
+            }
         }
 
         MatchBuilder matchBuilder = new MatchBuilder();
@@ -3079,6 +3310,18 @@ public class FlowUtils implements AutoCloseable {
 
         if ( containIpv4Match ) {
             matchBuilder = matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
+        }
+
+        if ( containIpMatch ) {
+            matchBuilder = matchBuilder.setIpMatch(ipMatchBuilder.build());
+        }
+
+        if ( containTcpMatch ) {
+            matchBuilder = matchBuilder.setLayer4Match(tcpMatchBuilder.build());
+        }
+
+        if ( containUdpMatch ) {
+            matchBuilder = matchBuilder.setLayer4Match(udpMatchBuilder.build());
         }
 
         return matchBuilder.build();
