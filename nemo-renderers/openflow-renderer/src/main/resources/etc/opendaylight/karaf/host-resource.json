@@ -1,20 +1,40 @@
 {
     "host":[
         {
+          "name":"video-server1",
+          "id":"7b796915-adf4-4356-b5ca-de005ac410c1",
+          "ip-addresses":[
+            {"ip-address":"192.168.11.2"}
+          ],
+          "mac-address":"00:00:00:00:00:01",
+          "node-id":"openflow:1",
+          "connector-id":"openflow:1:1"
+        },
+        {
+          "name":"vm1",
+          "id":"1eaf9a67-a171-42a8-9282-71cf702f61dd",
+          "ip-addresses":[
+            {"ip-address":"192.168.12.2"}
+          ],
+          "mac-address":"00:00:00:00:00:02",
+          "node-id":"openflow:1",
+          "connector-id":"openflow:1:2"
+        },
+        {
           "name":"vm2",
           "id":"6c787caa-156a-49ed-8546-547bdccf283c",
           "ip-addresses":[
             {"ip-address":"192.168.12.3"}
           ],
-          "mac-address":"00:00:00:00:00:05",
+          "mac-address":"00:00:00:00:00:03",
           "node-id":"openflow:2",
           "connector-id":"openflow:2:1"
         },
         {
-          "name":"server1",
+          "name":"video-server2",
           "id":"22282cca-9a13-4d0c-a67e-a933ebb0b0ae",
           "ip-addresses":[
-            {"ip-address":"192.168.12.2"}
+            {"ip-address":"192.168.12.4"}
           ],
           "mac-address":"00:00:00:00:00:04",
           "node-id":"openflow:2",
