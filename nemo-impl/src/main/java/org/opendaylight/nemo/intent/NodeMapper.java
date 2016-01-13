@@ -281,41 +281,43 @@ public class NodeMapper {
         IntentVnMappingResult intentVnMappingResult;
         VirtualNode virtualNode;
 
-        for ( SubNode subNode : subNodes ) {
-            node1 = IntentResolverUtils.getNode(nodes, subNode.getNodeId());
+        if ( null != subNodes ) {
+            for ( SubNode subNode : subNodes ) {
+                node1 = IntentResolverUtils.getNode(nodes, subNode.getNodeId());
 
-            if ( null == node1 ) {
-                throw new IntentResolutionException("The sub-node " + subNode.getNodeId().getValue() +
-                        " of the node " + node.getNodeId().getValue() + " does not exist.");
-            }
-
-            if ( node1.getNodeType().equals(nodeType) ) {
-                if ( IntentResolverUtils.checkExternalLayer3Group(node1) ) {
+                if ( null == node1 ) {
                     throw new IntentResolutionException("The sub-node " + subNode.getNodeId().getValue() +
-                            " of the node " + node.getNodeId().getValue() + " can't be layer3 group.");
+                            " of the node " + node.getNodeId().getValue() + " does not exist.");
                 }
 
-                resolveExternalLayer2Group(user, node1, virtualNetwork, userIntentVnMapping, false);
+                if ( node1.getNodeType().equals(nodeType) ) {
+                    if ( IntentResolverUtils.checkExternalLayer3Group(node1) ) {
+                        throw new IntentResolutionException("The sub-node " + subNode.getNodeId().getValue() +
+                                " of the node " + node.getNodeId().getValue() + " can't be layer3 group.");
+                    }
+
+                    resolveExternalLayer2Group(user, node1, virtualNetwork, userIntentVnMapping, false);
+                }
+
+                intentVnMappingResult = IntentResolverUtils.getIntentVnMappingResult(intentVnMappingResults,
+                        new IntentId(node1.getNodeId().getValue()));
+
+                if ( null == intentVnMappingResult ) {
+                    throw new IntentResolutionException("Can not get the intent-vn mapping result for " +
+                            "the node " + node1.getNodeId().getValue() + ".");
+                }
+
+                virtualNode = IntentResolverUtils.getVirtualNode(virtualNodes,
+                        new VirtualNodeId(intentVnMappingResult.getVirtualResource().get(0)
+                                .getParentVirtualResourceEntityId().getValue()));
+
+                if ( null == virtualNode ) {
+                    throw new IntentResolutionException("Can not get the virtual node created for " +
+                            "the node " + node1.getNodeId().getValue() + ".");
+                }
+
+                virtualSwitches.add(virtualNode);
             }
-
-            intentVnMappingResult = IntentResolverUtils.getIntentVnMappingResult(intentVnMappingResults,
-                    new IntentId(node1.getNodeId().getValue()));
-
-            if ( null == intentVnMappingResult ) {
-                throw new IntentResolutionException("Can not get the intent-vn mapping result for " +
-                        "the node " + node1.getNodeId().getValue() + ".");
-            }
-
-            virtualNode = IntentResolverUtils.getVirtualNode(virtualNodes,
-                    new VirtualNodeId(intentVnMappingResult.getVirtualResource().get(0)
-                            .getParentVirtualResourceEntityId().getValue()));
-
-            if ( null == virtualNode ) {
-                throw new IntentResolutionException("Can not get the virtual node created for " +
-                        "the node " + node1.getNodeId().getValue() + ".");
-            }
-
-            virtualSwitches.add(virtualNode);
         }
 
         Property locationProperty = IntentResolverUtils

@@ -395,6 +395,8 @@ public class IntentResolver implements AutoCloseable {
                 }
             }
 
+            IntentResolverUtils.copyPhysicalNetworkConfigToOperational(dataBroker);
+
             vnMappingUnit.virtualNetworkMapping(virtualNetwork, userVnPnMapping, physicalPaths);
             vnComputationUnit = new VNComputationUnit(dataBroker, virtualNetwork);
             vnComputationUnits.put(userId, vnComputationUnit);
