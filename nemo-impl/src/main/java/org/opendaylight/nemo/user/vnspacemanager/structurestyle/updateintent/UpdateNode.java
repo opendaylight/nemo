@@ -18,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.int
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.node.definitions.NodeDefinition;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.node.instance.Property;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.node.instance.SubNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.property.definitions.PropertyDefinition;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.property.instance.PropertyValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.object.rev151010.property.instance.property.values.StringValue;
@@ -171,6 +172,28 @@ public class UpdateNode {
                 }
                 if (!nodeExist.getNodeType().equals(node.getNodeType())){
                     return "The node type should not be changed.";
+                }
+            }
+        }
+
+        if (node.getSubNode()!=null){
+            List<SubNode> subNodeList = node.getSubNode();
+            Boolean subNodeExist = false;
+            for (SubNode subNode : subNodeList){
+                if (tenantManage.getNode(userId)!=null){
+                    if (tenantManage.getNode(userId).containsKey(subNode.getNodeId())){
+                        subNodeExist = true;
+                    }
+                }
+                if (tenantManage.getNodeDataStore(userId)!=null){
+                    if (tenantManage.getNodeDataStore(userId)!=null){
+                        if (tenantManage.getNodeDataStore(userId).containsKey(subNode.getNodeId())){
+                            subNodeExist = true;
+                        }
+                    }
+                }
+                if (!subNodeExist){
+                    return "The sub-node " + subNode.getNodeId().getValue() + " is not exist.";
                 }
             }
         }

@@ -82,21 +82,23 @@ public class UpdateConnection {
             }
         }
 
-        List<EndNode> endNodeList = connection.getEndNode();
-        for (EndNode endNode : endNodeList){
-            Boolean endNodeExist = false;
-            if (tenantManage.getNode(userId)!=null){
-                if (tenantManage.getNode(userId).containsKey(endNode.getNodeId())){
-                    endNodeExist = true;
+        if (connection.getEndNode()!=null){
+            List<EndNode> endNodeList = connection.getEndNode();
+            for (EndNode endNode : endNodeList){
+                Boolean endNodeExist = false;
+                if (tenantManage.getNode(userId)!=null){
+                    if (tenantManage.getNode(userId).containsKey(endNode.getNodeId())){
+                        endNodeExist = true;
+                    }
                 }
-            }
-            if (tenantManage.getNodeDataStore(userId)!=null){
-                if (tenantManage.getNodeDataStore(userId).containsKey(endNode.getNodeId())){
-                    endNodeExist = true;
+                if (tenantManage.getNodeDataStore(userId)!=null){
+                    if (tenantManage.getNodeDataStore(userId).containsKey(endNode.getNodeId())){
+                        endNodeExist = true;
+                    }
                 }
-            }
-            if (!endNodeExist){
-                return "The endnode "+ endNode.getNodeId().getValue() +" is not exist;";
+                if (!endNodeExist){
+                    return "The endnode "+ endNode.getNodeId().getValue() +" is not exist;";
+                }
             }
         }
         return null;
