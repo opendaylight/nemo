@@ -115,6 +115,11 @@ public class VNMappingUnit implements AutoCloseable {
             throw new VNMappingException("Can not read the physical nodes.");
         }
 
+        if ( !result.isPresent() ) {
+            throw new VNMappingException("Failed virtual network mapping caused by " +
+                    "absent underlying network topology.");
+        }
+
         PhysicalNodes physicalNodes = result.get();
         List<PhysicalNode> physicalNodeList = physicalNodes.getPhysicalNode();
 
