@@ -17,7 +17,8 @@ function getMappingResults() {
 				alert("No intent-vn Mapping Data");
 		},
 		error: function(data) {
-			alert("Get intent-vn Mapping Data Error!");
+			console.log("Get intent-vn Mapping Data Error!");
+			// alert("Get intent-vn Mapping Data Error!");
 		}
 	});
 	return MappingData;
@@ -70,7 +71,8 @@ function getPnMappingResults() {
 				alert("No vn-pn Mapping Data");
 		},
 		error: function(data) {
-			alert("Get vn-pn Mapping Data Error!");
+			console.log("Get vn-pn Mapping Data Error!");
+			// alert("Get vn-pn Mapping Data Error!");
 		}
 	});
 	return MappingData;
@@ -231,8 +233,3 @@ var createMappingTables = {
 			return null;
 		}
 	}
-	// var userid='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
-	//var virtualData = getVirtualInfoById(userId,virtualJson);
-	//var linkArray=CreateVirtualNodeTable('virNodeTab',virtualData);
-
-//getPaths(linkArray,getPnMappingResultById(userid,PnMappingJson),userinfo);

@@ -14,7 +14,8 @@ function getIntentInfos(){
 			},
 			error: function(data) {
 				console.log(data);
-				alert('Get IntentInfo Error!');
+				console.log('Get IntentInfo Error!');
+				// alert('Get IntentInfo Error!');
 			}
 		});
        return userData;
@@ -1217,21 +1218,3 @@ getIntentInfos();
 			console.log(opNemo);
 		}
 	}
-
-	jQuery(function($){
-		// var user_data = userinfo['users']['user'][0];
-		// // console.log(JSON.stringify(user_data));
-		// analyjson_topo(user_data);
-		// parseNemoLan(user_data);
-  //       //set keyWords style
-		// $("#nemo_str_show p").each(function(){
-		// 	var $res=$(this);
-		// 	keyWords.forEach(function(item,index,array){
-		// 		// console.log(item);
-		// 		$res.html($res.html().replace(item,"<span class='keyWords'>"+item+"</span>"));
-		// 	});
-		// 	// console.log($res.html());
-		// });
-
-	});
-	

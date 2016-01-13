@@ -57,6 +57,7 @@
         
 
         $(".tabs ul li[aria-controls='PhyNet']").click(function(){
+            if(!physicalData) return;
              createPhysicalTopo();
              analy_topo(physicalData);
              // create_physical_topo();
@@ -67,7 +68,6 @@
         $(".tabs ul li[aria-controls='PhyNet']").click();
 
         $(".tabs ul li[aria-controls='intent_info']").click(function(){
-            //alert('intent_topo');
             var userId=$("#selectUser option:selected").val();
             console.log(userId);
 
@@ -75,12 +75,11 @@
             // userId='af4fc2be-e3f4-4388-a8ef-3aabae872f2b';
             //Bod
             // var userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
-             // if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
+
             $('#service_svg2').empty();
             $("#nemo_str_show").empty();
-            console.log(userId);
             if(!IntentInfos) return;
-            var user_data = getIntentInfoById(userId,userinfo);
+            var user_data = getIntentInfoById(userId);
             if(!user_data) return;
 
             analyjson_topo(user_data);
@@ -95,7 +94,6 @@
     });
 
         $(".tabs ul li[aria-controls='VirNet']").click(function(){
-           // var virtualData=getVirtualJson();
             var userId=$("#selectUser option:selected").val();
             jQuery('#vir_graph').empty();
             jQuery("#virNodeTab").find('tr').remove();
@@ -105,19 +103,15 @@
             //Bod
             //userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
 
-            // if(userId=='0') userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
-            // virtualData=virtualJson;
-
              if(!IntentInfos||!MappingResults||!VirtualDatas) return;
              if(!getVirtualInfoById(userId)||!getIntentInfoById(userId)||!getMappingResultById(userId)) return;
             create_virtual_topo(getVirtualInfoById(userId),getIntentInfoById(userId),getMappingResultById(userId));
             creataVirtualTables.createVirtualNodeTable('virNodeTab',getVirtualInfoById(userId));
             creataVirtualTables.createVirtualLinkTable('virLinkTab',getVirtualInfoById(userId));
         });
-         // $(".tabs ul li[aria-controls='Mapping']").click();
+
         $(".tabs ul li[aria-controls='Mapping']").click(function(){
             var userId=$("#selectUser option:selected").val();
-            // userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b';
             jQuery("#mapVirNodeTab").find('tr').remove();
             jQuery("#mapVirLinkTab").find('tr').remove();
              if(!physicalData||!PnMappingResults||!VirtualDatas) return;
@@ -133,30 +127,7 @@
         });
 
         $('#selectUser input[type=button]').click(function(){
-            // $(".tabs ul li[aria-controls='intent_info']").trigger('click');
             $('a[href="#intent_info"]').click();
-            var userId=$("#selectUser option:selected").val();
-            
-            // SFC
-            //userId='af4fc2be-e3f4-4388-a8ef-3aabae872f2b';
-            //Bod
-            //userId='14ce424a-3e50-4a2a-ad5c-b29845158c8b'
-
-            if(!IntentInfos) return;
-            var user_data = getIntentInfoById(userId);
-            if(!user_data) return;
-            
-            analyjson_topo(user_data);
-            parseNemoLan(user_data);
-            
-            //set keyWords style
-           $("#nemo_str_show p").each(function(){
-            var $res=$(this);
-            keyWords.forEach(function(item,index,array){
-                // console.log(item);
-                $res.html($res.html().replace(item,"<span class='keyWords'>"+item+"</span>"));
-            });
-        });
 
     });
 
