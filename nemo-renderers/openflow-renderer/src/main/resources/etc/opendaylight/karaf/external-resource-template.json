@@ -1,0 +1,24 @@
+{
+    "external-network-mac": [
+        {
+          "node-id":"openflow:3",
+          "port-id":"openflow:3:4",
+          "mac-address":"00:00:00:00:00:02"
+        },
+        {
+          "node-id":"openflow:4",
+          "port-id":"openflow:4:2",
+          "mac-address":"00:00:00:00:00:03"
+        },
+        {
+          "node-id":"openflow:1",
+          "port-id":"openflow:1:1",
+          "mac-address":"00:00:00:00:00:01"
+        },
+        {
+          "node-id":"openflow:1",
+          "port-id":"openflow:1:2",
+          "mac-address":"00:00:00:01:01:01"
+        }
+    ]
+}

@@ -1,0 +1,24 @@
+{
+    "host":[
+        {
+          "name":"vm2",
+          "id":"6c787caa-156a-49ed-8546-547bdccf283c",
+          "ip-addresses":[
+            {"ip-address":"192.168.12.3"}
+          ],
+          "mac-address":"00:00:00:00:00:05",
+          "node-id":"openflow:2",
+          "connector-id":"openflow:2:1"
+        },
+        {
+          "name":"server1",
+          "id":"22282cca-9a13-4d0c-a67e-a933ebb0b0ae",
+          "ip-addresses":[
+            {"ip-address":"192.168.12.2"}
+          ],
+          "mac-address":"00:00:00:00:00:04",
+          "node-id":"openflow:2",
+          "connector-id":"openflow:2:2"
+        }
+      ]
+}

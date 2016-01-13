@@ -2,7 +2,7 @@
   "node": [
     {
       "node-id": "openflow:1",
-      "node-type": "switch",
+      "node-type": "router",
       "attribute": [
         {
           "name": "location",
