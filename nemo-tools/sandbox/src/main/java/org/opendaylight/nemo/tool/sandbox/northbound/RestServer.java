@@ -21,12 +21,12 @@ public class RestServer {
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined inN this application.
      *
-     * @return Grizzly HTTP server.
+     *@param socket todo 
      */
     public static void start(String socket) {
         // create a resource config that scans for JAX-RS resources and providers
         // in com.example package
-        final ResourceConfig rc = new ResourceConfig().packages("com.huawei.nemo.sandbox.northbound");
+        final ResourceConfig rc = new ResourceConfig().packages("org.opendaylight.nemo.tool.sandbox.northbound");
 
         // create and start a new instance of grizzly http serverssss
         // exposing the Jersey application at BASE_URI
