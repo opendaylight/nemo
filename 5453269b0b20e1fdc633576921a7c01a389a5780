@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_b3fe1037",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2016-01-14T15:59:06Z",
+      "side": 1,
+      "message": "Again, \"Modified three test files\" does not explain to the review what code you are adding. Please explain what is being added by these three test files. what are they testing?\n\nMaking your commit message detailed allows reviewers to use \"git log\" and trace back information in case something goes wrong and someone needs to debug.",
+      "revId": "5453269b0b20e1fdc633576921a7c01a389a5780",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
