@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba3841fe_c353086b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2016-01-14T04:37:04Z",
+      "side": 1,
+      "message": "\"Modified some files\"\n\nWhat does your modifications do and why do you need them added?\n\nPlease use the commit to explain to the Reviewer why these changes are necessary. See this wiki for details on how to write proper commit messages:\n\nhttps://wiki.openstack.org/wiki/GitCommitMessages",
+      "revId": "e81a98d0ecbe6fb09937cecdae5d538bccebd064",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba3841fe_835aa081",
+        "filename": "nemo-impl/src/test/java/org/opendaylight/nemo/intent/IntentResolverTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2016-01-14T04:37:04Z",
+      "side": 1,
+      "message": "It is now 2016",
+      "revId": "e81a98d0ecbe6fb09937cecdae5d538bccebd064",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba3841fe_635f9c73",
+        "filename": "nemo-impl/src/test/java/org/opendaylight/nemo/user/vnspacemanager/languagestyle/NEMOParse/NEMOparserTokenManagerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2016-01-14T04:37:04Z",
+      "side": 1,
+      "message": "It is now 2016",
+      "revId": "e81a98d0ecbe6fb09937cecdae5d538bccebd064",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
