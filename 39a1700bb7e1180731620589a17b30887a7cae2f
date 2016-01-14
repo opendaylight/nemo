@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_bf67f7e9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2016-01-14T06:21:21Z",
+      "side": 1,
+      "message": "You should keep your commit messages to \u003c72 characters word wrapping. The first line of your commit message should be a short summary of what the patch does, followed by a blank line and then detailed description or list of what your code is doing. Please refer to the commit message guide here:\n\nhttps://wiki.openstack.org/wiki/GitCommitMessages\n\n\nPlease do not abandon this patch like you did the others. All you need to do is \"git commit --amend\" to update your commit message and push it back up to this patch. This way the history of your code review stays in tact. See:\n\nhttps://wiki.opendaylight.org/view/Submit_a_Patch#Updating_a_Patch",
+      "revId": "39a1700bb7e1180731620589a17b30887a7cae2f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
