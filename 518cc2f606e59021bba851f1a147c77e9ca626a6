@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_60177ea4",
+        "filename": "nemo-impl/src/test/java/org/opendaylight/nemo/intent/action/ActionResolverTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2016-01-18T16:18:46Z",
+      "side": 1,
+      "message": "How copyright dates work is you only modify the date for the years you edited the file (It\u0027s a list or a range of dates from first creation to last edited). So it still needs to say 2015 since that was the date it was created. You can put:\n\n Copyright (c) 2015, 2016 Huawei ....\n\nIf you want to add this years date to the copyright but the original date of copyright must stay. This page documents how to use copyright headers correctly:\n\n https://eclipse.org/legal/copyrightandlicensenotice.php",
+      "range": {
+        "startLine": 2,
+        "startChar": 21,
+        "endLine": 2,
+        "endChar": 22
+      },
+      "revId": "518cc2f606e59021bba851f1a147c77e9ca626a6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
