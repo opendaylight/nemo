@@ -50,11 +50,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <version>${cli.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.googlecode.cliche</groupId>
-      <artifactId>cliche</artifactId>
-      <version>${cliche.version}</version>
-    </dependency>
-    <dependency>
       <groupId>ch.ethz.ganymed</groupId>
       <artifactId>ganymed-ssh2</artifactId>
       <version>${ssh.version}</version>
@@ -80,13 +75,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <version>${enunciate.version}</version>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>cliche</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </repository>
-  </repositories>
 
   <scm>
     <connection>scm:git:ssh://git.opendaylight.org:29418/nemo.git</connection>
