@@ -27,7 +27,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <jersey.version>2.11</jersey.version>
     <enunciate.version>1.26.2</enunciate.version>
     <cli.version>1.2</cli.version>
-    <cliche.version>1.0-SNAPSHOT</cliche.version>
     <ssh.version>262</ssh.version>
     <json.version>20090211</json.version>
     <powermock.version>1.5.2</powermock.version>
@@ -69,11 +68,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <version>${cli.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.googlecode.cliche</groupId>
-      <artifactId>cliche</artifactId>
-      <version>${cliche.version}</version>
-    </dependency>
-    <dependency>
       <groupId>ch.ethz.ganymed</groupId>
       <artifactId>ganymed-ssh2</artifactId>
       <version>${ssh.version}</version>
@@ -99,13 +93,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <version>${enunciate.version}</version>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>cliche</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </repository>
-  </repositories>
 
   <scm>
     <connection>scm:git:ssh://git.opendaylight.org:29418/nemo.git</connection>
