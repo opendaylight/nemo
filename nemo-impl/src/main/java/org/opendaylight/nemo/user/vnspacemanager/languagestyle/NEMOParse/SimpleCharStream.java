@@ -81,9 +81,9 @@ public class SimpleCharStream
         maxNextCharInd = (bufpos -= tokenBegin);
       }
     }
-    catch (Throwable t)
+    catch (Exception e)
     {
-      throw new Error(t.getMessage());
+      throw new Error(e.getMessage());
     }
 
 

@@ -182,10 +182,10 @@ public class TenantManage {
                 f.get();
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error("Exception:",e);
             } catch (ExecutionException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error("Exception:",e);
             }
         }
     }
@@ -519,10 +519,10 @@ public class TenantManage {
                     f.get();
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOG.error("Exception:",e);
                 } catch (ExecutionException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOG.error("Exception:",e);
                 }
             }
 
@@ -547,10 +547,10 @@ public class TenantManage {
                    f.get();
                } catch (InterruptedException e) {
                    // TODO Auto-generated catch block
-                   e.printStackTrace();
+                   LOG.error("Exception:",e);
                } catch (ExecutionException e) {
                    // TODO Auto-generated catch block
-                   e.printStackTrace();
+                   LOG.error("Exception:",e);
                }
            }
         }
@@ -574,10 +574,10 @@ public class TenantManage {
                    f.get();
                } catch (InterruptedException e) {
                    // TODO Auto-generated catch block
-                   e.printStackTrace();
+                   LOG.error("Exception:",e);
                } catch (ExecutionException e) {
                    // TODO Auto-generated catch block
-                   e.printStackTrace();
+                   LOG.error("Exception:",e);
                }
            }
         }
@@ -603,10 +603,10 @@ public class TenantManage {
                     f.get();
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOG.error("Exception:",e);
                 } catch (ExecutionException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOG.error("Exception:",e);
                 }
             }
         }
@@ -632,10 +632,10 @@ public class TenantManage {
                     f.get();
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOG.error("Exception:",e);
                 } catch (ExecutionException e) {
                     // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    LOG.error("Exception:",e);
                 }
             }
         }
@@ -661,10 +661,10 @@ public class TenantManage {
                   f.get();
               } catch (InterruptedException e) {
                   // TODO Auto-generated catch block
-                  e.printStackTrace();
+                  LOG.error("Exception:",e);
               } catch (ExecutionException e) {
                   // TODO Auto-generated catch block
-                  e.printStackTrace();
+                  LOG.error("Exception:",e);
               }
           }
         }

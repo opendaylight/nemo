@@ -246,7 +246,9 @@ public class TelnetUtils implements AutoCloseable {
 
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-            e.getCause().printStackTrace();
+            // TODO Auto-generated catch block
+            LOG.error("Exception:",e.getCause());
+           // e.getCause().printStackTrace();
             e.getChannel().close();
         }
     }
@@ -334,7 +336,9 @@ public class TelnetUtils implements AutoCloseable {
 
         @Override
         public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-            e.getCause().printStackTrace();
+          //  e.getCause().printStackTrace();
+            // TODO Auto-generated catch block
+            LOG.error("Exception:",e.getCause());
             e.getChannel().close();
         }
     }

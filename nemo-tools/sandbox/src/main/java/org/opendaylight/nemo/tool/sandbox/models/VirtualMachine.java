@@ -17,6 +17,7 @@ import java.util.List;
  * Created by hj on 12/8/15.
  */
 public class VirtualMachine extends Host {
+    private static Logger log = LoggerFactory.getLogger(VirtualMachine.class);
     public VirtualMachine(String name,String uuId) {
         super(NodeType.VM, name,uuId);
     }
@@ -39,7 +40,8 @@ public class VirtualMachine extends Host {
         try {
             CmdExecutor.sshExecute("ip netns del " + getName());
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error(e);
         }
     }
 }

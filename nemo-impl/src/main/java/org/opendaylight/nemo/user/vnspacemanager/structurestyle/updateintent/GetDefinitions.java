@@ -228,10 +228,10 @@ public class GetDefinitions {
             conditionparadefinitionFuture.get();
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Exception:",e);
         } catch (ExecutionException e){
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Exception:",e);
         }
         return ;
     }

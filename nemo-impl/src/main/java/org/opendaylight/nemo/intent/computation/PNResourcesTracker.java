@@ -134,7 +134,8 @@ public class PNResourcesTracker {
 
                     intentResolver.resolveIntent(userId);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    // TODO Auto-generated catch block
+                    log.error("Exception:",e);
                 }
             }
         }

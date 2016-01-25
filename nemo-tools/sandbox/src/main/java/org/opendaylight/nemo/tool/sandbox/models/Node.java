@@ -57,7 +57,8 @@ abstract public class Node {
                 CmdExecutor.sshExecute(command);
             } catch (Exception e) {
                 log.error("Error while execute [{}].", command, name, nodeType);
-                e.printStackTrace();
+                // TODO Auto-generated catch block
+                log.error(e);
             }
         }
     }

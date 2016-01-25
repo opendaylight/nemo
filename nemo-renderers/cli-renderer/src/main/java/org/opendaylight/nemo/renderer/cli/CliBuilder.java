@@ -815,7 +815,8 @@ public class CliBuilder implements AutoCloseable {
                         try {
                             Thread.sleep(3000);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            // TODO Auto-generated catch block
+                            LOG.error("Exception:",e);
                         }
                     }
                 }
