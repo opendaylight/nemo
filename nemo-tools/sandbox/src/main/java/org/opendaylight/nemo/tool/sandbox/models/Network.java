@@ -168,7 +168,8 @@ public class Network {
             root.put("node", nodeArray);
             return root;
         } catch (JSONException e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error(e);
         }
         return null;
     }
@@ -199,7 +200,8 @@ public class Network {
             nodeJson.put("port", ports);
             return nodeJson;
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error(e);
         }
         return null;
     }
@@ -246,7 +248,8 @@ public class Network {
             root.put("external-network-mac", externalMacs);
             return root;
         } catch (JSONException e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error(e);
         }
         return null;
     }
@@ -284,7 +287,8 @@ public class Network {
             root.put("host", hostArray);
             return root;
         } catch (JSONException e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error(e);
         }
         return null;
     }
@@ -325,7 +329,8 @@ public class Network {
             }
             root.put("link", linkArray);
         } catch (JSONException e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error(e);
             return null;
         }
         return root;
@@ -344,7 +349,8 @@ public class Network {
                 linkNode.put("loss-rate", "");
                 return linkNode;
             } catch (JSONException e) {
-                e.printStackTrace();
+                // TODO Auto-generated catch block
+                log.error(e);
             }
         }
         return null;

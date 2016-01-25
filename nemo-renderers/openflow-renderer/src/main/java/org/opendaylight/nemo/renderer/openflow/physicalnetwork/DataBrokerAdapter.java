@@ -88,7 +88,8 @@ public class DataBrokerAdapter {
             });
 
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error("Exception:",e);
         }
 
     }
@@ -114,7 +115,8 @@ public class DataBrokerAdapter {
             });
 
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error("Exception:",e);
         }
         return addResult[0];
     }
@@ -140,7 +142,8 @@ public class DataBrokerAdapter {
             });
 
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error("Exception:",e);
         }
         return removeResult[0];
     }
@@ -166,7 +169,8 @@ public class DataBrokerAdapter {
             });
 
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error("Exception:",e);
         }
     }
     protected void removePhysicalLink(final PhysicalLinkKey physicalLinkKey){
@@ -190,7 +194,8 @@ public class DataBrokerAdapter {
             });
 
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error("Exception:",e);
         }
     }
 

@@ -314,7 +314,8 @@ public class PhysicalNetworkAdapter {
         try {
             downLatch.await();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error("Exception:",e);
         }
 
         return flowCapableNodeConnector[0];

@@ -100,7 +100,8 @@ public class CliTrigger implements AutoCloseable {
         try {
             result = readOnlyTransaction.read(LogicalDatastoreType.CONFIGURATION, userIid).get();
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            LOG.error("Exception:",e);
         }
         if (result.isPresent()){
             LOG.info("getUser  OK");
@@ -133,7 +134,8 @@ public class CliTrigger implements AutoCloseable {
             result = readOnlyTransaction.read(LogicalDatastoreType.CONFIGURATION, virtualNetworkIid).get();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            LOG.error("Exception:",e);
         }
         if (result.isPresent()) {
             LOG.info("getVirtualNetwork  OK");
@@ -161,7 +163,8 @@ public class CliTrigger implements AutoCloseable {
         try {
             result = readOnlyTransaction.read(LogicalDatastoreType.CONFIGURATION, userIntentVnMappingIid).get();
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            LOG.error("Exception:",e);
         }
         if (result.isPresent()) {
             LOG.info("getUserIntentVnMapping  OK");
@@ -187,7 +190,8 @@ public class CliTrigger implements AutoCloseable {
         try {
             result = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, physicalNetworkIid).get();
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            LOG.error("Exception:",e);
         }
         if (result.isPresent()) {
             LOG.info("getPhysicalNetwork  OK");

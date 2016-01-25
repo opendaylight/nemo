@@ -25,7 +25,8 @@ import org.opendaylight.nemo.user.vnspacemanager.structurestyle.updateintent.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.*;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.concurrent.Future;
 
 import static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.CommonRpcResult.ResultCode.Error;
@@ -35,7 +36,7 @@ import static org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.n
  * Created by z00293636 on 2015/9/7.
  */
 public class UserManager implements NemoIntentService {
-
+    private static final Logger LOG = LoggerFactory.getLogger(UserManager.class);
     private final DataBroker dataBroker;
 
     private RegisterUser registerUser;
@@ -129,15 +130,15 @@ public class UserManager implements NemoIntentService {
                         outputBuilder.setResultCode(Ok).setMessage("The transaction ends.");
                     }
                     catch (IntentResolutionException e){
-                        e.printStackTrace();
+                        LOG.error("Exception:",e);
                         outputBuilder.setResultCode(Error).setMessage(e.getMessage());
                     }
                     catch (VNMappingException e){
-                        e.printStackTrace();
+                        LOG.error("Exception:",e);
                         outputBuilder.setResultCode(Error).setMessage(e.getMessage());
                     }
                     catch (Exception e){
-                        e.printStackTrace();
+                        LOG.error("Exception:",e);
                     }
                 }
                 else{
@@ -168,11 +169,11 @@ public class UserManager implements NemoIntentService {
             }
         }
         catch (ParseException e) {
-            e.printStackTrace();
+            LOG.error("Exception:",e);
             outputBuilder.setResultCode(Error).setMessage(e.getMessage());
         }
         catch (NumberFormatException e) {
-            e.printStackTrace();
+            LOG.error("Exception:",e);
             outputBuilder.setResultCode(Error).setMessage(e.getMessage());
         }
         return RpcResultBuilder.success(outputBuilder).buildFuture();
@@ -224,7 +225,7 @@ public class UserManager implements NemoIntentService {
             }
         }
         catch (NumberFormatException e){
-            e.printStackTrace();
+            LOG.error("Exception:",e);
             outputBuilder.setResultCode(Error).setMessage(e.getMessage());
         }
         return RpcResultBuilder.success(outputBuilder).buildFuture();

@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
  * Created by hj on 12/9/15.
  */
 public class CmdExecutor {
+    private static Logger log = LoggerFactory.getLogger(CmdExecutor.class);
     private static Connection sshConnection;
     private static String strHostName = Config.getHostName();
     private static String strUserName = Config.getHostUser();
@@ -37,7 +38,8 @@ public class CmdExecutor {
                 return true;
             }
         } catch (IOException objException) {
-            objException.printStackTrace();
+//            objException.printStackTrace();
+            log.error(objException);
             if (null != sshConnection) {
                 sshConnection.close();
                 sshConnection = null;
@@ -75,7 +77,8 @@ public class CmdExecutor {
             return result;
 
         } catch (IOException objException) {
-            objException.printStackTrace();
+//            objException.printStackTrace();
+            log.error(objException);
         } finally {
             if (null != session) {
                 session.close();
