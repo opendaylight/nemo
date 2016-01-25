@@ -14,6 +14,7 @@ import java.io.*;
  * Created by hj on 12/11/15.
  */
 public class FileUtils {
+    private static Logger log = LoggerFactory.getLogger(FileUtils.class);
     public static void write(String path, String content) {
         try {
             File f = new File(path);
@@ -26,7 +27,7 @@ public class FileUtils {
             output.write(content);
             output.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 }

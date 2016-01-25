@@ -38,10 +38,14 @@ public class ParseException extends Exception {
                         String[] tokenImageVal
                        )
   {
-    super(initialise(currentTokenVal, expectedTokenSequencesVal, tokenImageVal));
-    currentToken = currentTokenVal;
-    expectedTokenSequences = expectedTokenSequencesVal;
-    tokenImage = tokenImageVal;
+
+      super(initialise(currentTokenVal, expectedTokenSequencesVal, tokenImageVal));
+      this.currentToken = currentTokenVal;
+      this.tokenImage = Arrays.copyOf(tokenImageVal,tokenImageVal.length);
+      this.expectedTokenSequences = Arrays.copyOf(expectedTokenSequencesVal,expectedTokenSequencesVal.length);
+//    currentToken = currentTokenVal;
+//    expectedTokenSequences = expectedTokenSequencesVal;
+//    tokenImage = tokenImageVal;
   }
 
   /**
