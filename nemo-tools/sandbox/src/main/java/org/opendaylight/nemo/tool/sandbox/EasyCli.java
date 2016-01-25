@@ -17,6 +17,7 @@ import java.io.IOException;
  * Created by hj on 12/9/15.
  */
 public class EasyCli {
+    private static Logger log = LoggerFactory.getLogger(EasyCli.class);
     private Shell shell;
 
     public EasyCli(String prompt,String hint,Object handler){
@@ -31,7 +32,7 @@ public class EasyCli {
         try {
             shell.commandLoop();
         } catch (IOException e) {
-            e.printStackTrace();
+           log.error(e);
         }
     }
 }

@@ -15,12 +15,13 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Created by hj on 11/5/15.
  */
 public class Utils {
-
+    private static final Logger log = LoggerFactory.getLogger(Utils.class);
     protected static PhysicalNodeInstance.NodeType getNodeType(String strType){
         switch (strType){
             case "switch":
@@ -54,13 +55,15 @@ public class Utils {
             }
             reader.close();
         }catch(IOException e){
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error("Exception:",e);
         }finally{
             if(reader != null){
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    // TODO Auto-generated catch block
+                    log.error("Exception:",e);
                 }
             }
         }

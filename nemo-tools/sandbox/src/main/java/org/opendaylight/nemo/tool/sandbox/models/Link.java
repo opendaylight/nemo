@@ -14,6 +14,7 @@ import org.opendaylight.nemo.tool.sandbox.CmdExecutor;
  * Created by hj on 12/8/15.
  */
 public class Link {
+    private static Logger log = LoggerFactory.getLogger(Link.class);
     private final Connector srcInterface;
     private final Connector dstInterface;
 
@@ -35,7 +36,8 @@ public class Link {
         try {
             CmdExecutor.sshExecute(linkAddCmd);
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error(e);
         }
     }
 
@@ -44,7 +46,8 @@ public class Link {
         try {
             CmdExecutor.sshExecute(linkDelCmd);
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO Auto-generated catch block
+            log.error(e);
         }
     }
 
