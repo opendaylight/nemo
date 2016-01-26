@@ -229,9 +229,17 @@ getIntentInfos();
 		return group_node;
 	}
 
-	function draw_flow_data(src_ip, dest_ip, flow_name) {
-		var src_group = flow_get_group(src_ip, dest_ip)[0];
+	function draw_flow_data(src_ip, dest_ip, flow_name,src_node,dest_node) {
+		if(!src_ip && !dest_ip){
+		var src_group = intentNodesArray[src_node];
+		var dest_group = intentNodesArray[dest_node];
+		}
+		else{
+	    var src_group = flow_get_group(src_ip, dest_ip)[0];
 		var dest_group = flow_get_group(src_ip, dest_ip)[1];
+		}
+
+		
 		console.log(src_group);
 		console.log(dest_group);
 		//get flow count
@@ -247,7 +255,6 @@ getIntentInfos();
 						flow_count_temp++;
 						break;
 					}
-
 				}
 			}
 			if (end_flag != 1)
@@ -414,6 +421,8 @@ getIntentInfos();
 			var deg = res[i];
 			var x = 550 + Math.cos(deg) * r;
 			var y = 450 - Math.sin(deg) * r;
+			if(node_count%2==1)
+				var y = 500 - Math.sin(deg) * r;
 			dis_x = x - parseInt(jQuery("#service_svg2 g:eq(" + i + ") circle:eq(0)").attr("cx"));
 			dis_y = y - parseInt(jQuery("#service_svg2 g:eq(" + i + ") circle:eq(0)").attr("cy"));
 			jQuery("#service_svg2 g:eq(" + i + ") circle:eq(0)").attr("cx", x);
@@ -865,6 +874,13 @@ getIntentInfos();
 		}
 	}
 
+    var intentNodesArray=[];//node id--->node name
+	function getUserNodes(data){
+	var nodes=data["node"];
+    for(var item in nodes){
+    	intentNodesArray[nodes[item]["node-id"]]=nodes[item]["node-name"];
+     }
+	}
 	function analyjson_topo(user_data) {
 	    //jQuery("#service_svg2").show();
 		//jQuery("#service_svg").hide();
@@ -904,7 +920,8 @@ getIntentInfos();
 		var user_json_data = user_data['objects'];
 		if (user_json_data == null)
 			return;
-
+		getUserNodes(user_json_data);
+		console.log("intentNodesArray",intentNodesArray);
 		//host
 		var host_list = [];
 		for (var host_cursor in user_json_data["node"]) {
@@ -1010,7 +1027,20 @@ getIntentInfos();
 						src_ip = user_json_data["flow"][flow_cursor]["match-item"][match_cursor]["match-item-value"]["string-value"];
 					}
 				}
+				if(!user_json_data["flow"][flow_cursor]["property"]){
 				draw_flow_data(src_ip, dst_ip, user_json_data["flow"][flow_cursor]["flow-name"]);
+			    }
+			    else{
+			    	var src_node,dest_node;
+			    	var property=user_json_data["flow"][flow_cursor]["property"];
+			    	for(var item in property){
+			    	if(property[item]["property-name"]=="src-node")
+			    		src_node=property[item]["property-values"]["string-value"][0]["value"];
+			    	if(property[item]["property-name"]=="dst-node")
+			    		dest_node=property[item]["property-values"]["string-value"][0]["value"];
+			       }
+			       draw_flow_data(null, null, user_json_data["flow"][flow_cursor]["flow-name"],src_node,dest_node);
+			    }
 				flow_list[user_json_data["flow"][flow_cursor]["flow-id"]] = user_json_data["flow"][flow_cursor]["flow-name"]
 			}
 
@@ -1046,7 +1076,7 @@ getIntentInfos();
 						}
 					}
 				}
-				if (c2_flag == 0 || c2_flag == 0) {
+				if (c1_flag == 0 && c2_flag == 0) {
 					alert("No connection!");
 					return;
 				}
@@ -1104,9 +1134,9 @@ getIntentInfos();
 				for (var j in node) {
 					var nemo_str='';
 					if(node[j]['node-type']=='host'){
-						 nemo_str += "Import Node  " + node[j]['node-name'] + " Type " + node[j]['node-type'];
+						 nemo_str += "IMPORT Node  " + node[j]['node-name'] + " Type " + node[j]['node-type'];
 					}else{
-						 nemo_str += "Create Node  " + node[j]['node-name'] + " Type " + node[j]['node-type'];
+						 nemo_str += "CREATE Node  " + node[j]['node-name'] + " Type " + node[j]['node-type'];
 					}					
 					var sub_node = node[j]['sub-node'];
 					if (sub_node && sub_node.length > 0) {
@@ -1128,7 +1158,7 @@ getIntentInfos();
 				}
 				for (var item in nodeNemo) {
 					// alert(jQuery("#nemo_str_show").html);
-					jQuery("#nemo_str_show").append('<p>'+nodeNemo[item]+'&nbsp;&nbsp;'+'</p>');
+					jQuery("#nemo_str_show").append('<p>'+nodeNemo[item]+';&nbsp;&nbsp;'+'</p>');
 				}
 				console.log(nodeNemo);
 			} 
@@ -1137,7 +1167,7 @@ getIntentInfos();
 				var connectionNemo = [];
 				var conn = user_data["objects"]['connection'];
 				for (var j in conn) {
-					var nemo_str = "Create Connection " + conn[j]['connection-name'] + ' Type ' + conn[j]['connection-type'];
+					var nemo_str = "CREATE Connection " + conn[j]['connection-name'] + ' Type ' + conn[j]['connection-type'];
 					nemo_str += " Endnodes " + nodes[conn[j]['end-node'][0]['node-id']] + ',' + nodes[conn[j]['end-node'][1]['node-id']];
 				    var property = conn[j]['property'];
 				    if(property&&property.length>0){
@@ -1158,7 +1188,7 @@ getIntentInfos();
 				}
 				for (var item in connectionNemo) {
 					// alert(jQuery("#nemo_str_show").html);
-					jQuery("#nemo_str_show").append('<p>'+connectionNemo[item]+'&nbsp;&nbsp;'+'</p>');
+					jQuery("#nemo_str_show").append('<p>'+connectionNemo[item]+';&nbsp;&nbsp;'+'</p>');
 				}
 				console.log(connectionNemo);
 			} 
@@ -1167,7 +1197,7 @@ getIntentInfos();
 				var flowNemo = [];
 				var fl = user_data["objects"]['flow'];
 				for (var j in fl) {
-					var nemo_str = 'Create Flow ' + fl[j]['flow-name'];
+					var nemo_str = 'CREATE Flow ' + fl[j]['flow-name'];
 					var match = fl[j]["match-item"];
 					if (match && match.length > 0) {
 						nemo_str += " Match ";
@@ -1179,12 +1209,21 @@ getIntentInfos();
 						}
 						nemo_str = nemo_str.substring(0, nemo_str.length - 1);
 					}
+					var property=fl[j]["property"];
+						if(property && property.length > 0){
+							nemo_str += " Property ";
+							for (var k in property) {
+							if(property[k]["property-name"])
+							nemo_str += property[k]['property-name'] + ':"' + intentNodesArray[property[k]["property-values"]['string-value'][0]["value"]] + '",';
+						}
+						nemo_str = nemo_str.substring(0, nemo_str.length - 1);
+						}
 					flowNemo.push(nemo_str);
 				}
 
 				for (var item in flowNemo) {
 					// alert(jQuery("#nemo_str_show").html);
-					jQuery("#nemo_str_show").append('<p>'+flowNemo[item]+'&nbsp;&nbsp;'+'</p>');
+					jQuery("#nemo_str_show").append('<p>'+flowNemo[item]+';&nbsp;&nbsp;'+'</p>');
 				}
 				console.log(flowNemo);
 			}
@@ -1195,25 +1234,47 @@ getIntentInfos();
 			var opNemo = [];
 			var operation = user_data["operations"]['operation'];
 			for (var j in operation) {
-				var nemo_str = 'Create Operation ' + operation[j]["operation-name"];
+				var nemo_str = 'CREATE Operation ' + operation[j]["operation-name"];
 				// console.log(flow[operation[j]['target-object']]);
-				nemo_str += ' Target ' + flow[operation[j]['target-object']];
+				if(flow[operation[j]['target-object']])
+					nemo_str += ' Target ' + flow[operation[j]['target-object']];
+				else
+					nemo_str += ' Target ' + connection[operation[j]['target-object']];
+				var condition = operation[j]['condition-segment'];
+				if (condition && condition.length > 0) {
+					nemo_str += " Condition ";
+					condition = condition.sort(function(a,b){return a.order-b.order});
+					console.log(condition);
+					for (var k in condition) {
+						nemo_str+=relChars[condition[k]["precursor-relation-operator"]];
+						nemo_str+="(";
+						nemo_str+=condition[k]["condition-parameter-name"];
+						nemo_str+=opChars[condition[k]["condition-parameter-match-pattern"]];
+						nemo_str+=condition[k]["condition-parameter-target-value"]["string-value"];
+						nemo_str+=")";
+					   
+					}
+				}
 				var action = operation[j]['action'];
 				if (action && action.length > 0) {
 					nemo_str += " Action "
 					for (var k in action) {
 						if(action[k]['action-name']=='go-through')
-						nemo_str += action[k]['action-name'] + ":" + nodes[action[k]['parameter-values']["string-value"][0]['value']] + ',';
+					    nemo_str += action[k]['action-name'] + ":" + nodes[action[k]['parameter-values']["string-value"][0]['value']] + ',';
 					   if(action[k]['action-name']=='deny')
 					   	nemo_str+= action[k]['action-name']+',';
+					   if(action[k]['action-name']=='qos-bandwidth'){
+					   	nemo_str+= action[k]['action-name']+':'+action[k]["parameter-values"]["int-value"][0]["value"]+'kbps,';
+					   }
 					}
 					nemo_str = nemo_str.substring(0, nemo_str.length - 1);
 				}
+				
 				opNemo.push(nemo_str);
 			}
 				for (var item in opNemo) {
 					// alert(jQuery("#nemo_str_show").html);
-					jQuery("#nemo_str_show").append('<p>'+opNemo[item]+'&nbsp;&nbsp;'+'</p>');
+					jQuery("#nemo_str_show").append('<p>'+opNemo[item]+';&nbsp;&nbsp;'+'</p>');
 				}
 			console.log(opNemo);
 		}
