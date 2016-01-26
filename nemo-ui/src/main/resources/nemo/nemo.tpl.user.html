@@ -5,8 +5,8 @@
     <link href="src/app/nemo/css/jquery-ui.min.css" rel="stylesheet" />
     <link href="src/app/nemo/css/nemo_user_main.css" rel="stylesheet" />
 
-    <!-- // <script src="src/app/nemo/module/migrate.js"></script> -->
-    <!-- // <script src="src/app/nemo/module/migrate_js.js"></script> -->
+     <script src="src/app/nemo/module/migrate.js"></script>
+     <!-- // <script src="src/app/nemo/module/migrate_js.js"></script> -->
 
     <script src="src/app/nemo/module/keyWords.js"></script>
     <!-- // <script src="src/app/nemo/module/test/bod_userJson.js"></script> -->
@@ -29,7 +29,7 @@
             if(!userName) return true;
             $('.header p').html($('.header p').html().replace('xxx',userName));
             var user_data=getIntentInfoByName(userName,IntentInfos);
-            // var user_data=getIntentInfoByName(userName,userinfo);
+             // var user_data=getIntentInfoByName("user2",userinfo);
             console.log(user_data);
             analyjson_topo(user_data);
             parseNemoLan(user_data);
@@ -51,7 +51,6 @@
         $("#pageContent").load('src/app/nemo/register.html');
        });   
 
-      
         });
     </script>
 </head>
