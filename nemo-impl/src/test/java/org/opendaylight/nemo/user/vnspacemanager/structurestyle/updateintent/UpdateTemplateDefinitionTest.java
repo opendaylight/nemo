@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Huawei, Inc. and others. All rights reserved.
+ * Copyright (c) 2016 Huawei, Inc. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -44,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.tem
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.ConditionParameterName;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.operation.rev151010.condition.instance.condition.segment.ConditionParameterTargetValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.TemplateName;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.template.rev151201.template.definition.grouping._abstract.intents.AbstractOperations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.template.rev151201.template.definition.grouping._abstract.intents.AbstractObjects;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -76,71 +77,140 @@ public class UpdateTemplateDefinitionTest extends TestCase {
         field = class1.getDeclaredField("getDefinitions");
         field.setAccessible(true);
 
-        GetDefinitions getDefinitions = mock(GetDefinitions.class);
         UserId userId = mock(UserId.class);
         NodeId nodeId = mock(NodeId.class);
         SubNode subNode = mock(SubNode.class);
         EndNode endNode = mock(EndNode.class);
-        TemplateDefinition templateDefinition = mock(TemplateDefinition.class);
+        MatchItem matchItem = mock(MatchItem.class);
+        ObjectId objectId = mock(ObjectId.class);
+        AbstractFlow abstractFlow = mock(AbstractFlow.class);
         TemplateName templateName = mock(TemplateName.class);
         ParameterName parameterName = mock(ParameterName.class);
-        AbstractIntents abstractIntents = mock(AbstractIntents.class);
-        TemplateParameter.ParameterValueType parameterValueType = TemplateParameter.ParameterValueType.Int;
+        AbstractOperation abstractOperation = mock(AbstractOperation.class);
         TemplateParameter templateParameter = mock(TemplateParameter.class);
+        TemplateDefinition templateDefinition = mock(TemplateDefinition.class);
+        AbstractNode abstractNode = mock(AbstractNode.class);
+        AbstractIntents abstractIntents = mock(AbstractIntents.class);
         AbstractObjects abstractObjects = mock(AbstractObjects.class);
-        AbstractNode node = mock(AbstractNode.class);
-        AbstractNode node1 = mock(AbstractNode.class);
-        NodeType nodeType = mock(NodeType.class);
-        NodeDefinition nodeDefinition = mock(NodeDefinition.class);
-        AbstractConnection connection = mock(AbstractConnection.class);
-        List<PropertyDefinition> propertyDefinitions = new ArrayList<PropertyDefinition>();
+        AbstractOperations abstractOperations = mock(AbstractOperations.class);
+        AbstractConnection abstractConnection = mock(AbstractConnection.class);
+        GetDefinitions getDefinitions = mock(GetDefinitions.class);
         List<TemplateParameter> list = new ArrayList<TemplateParameter>();
         List<AbstractNode> nodeList = new ArrayList<AbstractNode>();
         List<SubNode> subNodeList = new ArrayList<SubNode>();
-        List<EndNode> endNodeList = new ArrayList<EndNode>();
-        List<AbstractNode> nodeList1 = new ArrayList<AbstractNode>();
         List<AbstractConnection> connectionList = new ArrayList<AbstractConnection>();
+        List<EndNode> endNodeList = new ArrayList<EndNode>();
+        List<AbstractFlow> flowList = new ArrayList<AbstractFlow>();
+        List<MatchItem> matchItemList =  new ArrayList<MatchItem>();
+        List<AbstractOperation> operationList = new ArrayList<AbstractOperation>();
         Map<TemplateName, TemplateDefinition> map = mock(Map.class);
         Map<NodeType, NodeDefinition> nodeDefinitions = mock(Map.class);
-        Map<ConnectionType, ConnectionDefinition> connDefinitions =mock(Map.class);
-        field.set(updateTemplateDefinition, getDefinitions);
-//        nodeDefinitions.put(nodeType, nodeDefinition);
-        list.add(templateParameter);
-        endNodeList.add(endNode);
-        nodeList.add(node);
-        nodeList1.add(node1);
-        subNodeList.add(subNode);
-        connectionList.add(connection);
+        Map<MatchItemName, MatchItemDefinition> matchItemDefinitionMap = mock(Map.class);
 
-        when(getDefinitions.getNodeDefinition()).thenReturn(nodeDefinitions);
+        list.add(templateParameter);
+        nodeList.add(abstractNode);
+        subNodeList.add(subNode);
+        endNodeList.add(endNode);
+        connectionList.add(abstractConnection);
+        flowList.add(abstractFlow);
+        matchItemList.add(matchItem);
+        operationList.add(abstractOperation);
+
         when(tenantManage.getTempalteDefinition(userId))
                 .thenReturn(map)
                 .thenReturn(map)
                 .thenReturn(null);
         when(templateDefinition.getTemplateName()).thenReturn(templateName);
-        when(templateName.getValue()).thenReturn("test");
         when(map.containsKey(templateDefinition.getTemplateName())).thenReturn(true);
         Assert.assertTrue(updateTemplateDefinition.checkTemplateDefinition(userId, templateDefinition).equals("The template " + templateDefinition.getTemplateName().getValue() + " has been defined."));
         verify(tenantManage, times(2)).getTempalteDefinition(userId);
+
         when(templateDefinition.getTemplateParameter()).thenReturn(list);
         when(templateParameter.getParameterName()).thenReturn(parameterName);
-        when(templateParameter.getParameterValueType()).thenReturn(parameterValueType);
+        when(templateParameter.getParameterValueType()).thenReturn(TemplateParameter.ParameterValueType.Int);
         when(templateDefinition.getAbstractIntents()).thenReturn(abstractIntents);
+//        when(abstractIntents.getAbstractOperations())
+//                .thenReturn(null);
         when(abstractIntents.getAbstractObjects()).thenReturn(abstractObjects);
-        when(abstractObjects.getAbstractNode()).thenReturn(nodeList);
-        when(node.getNodeId()).thenReturn(nodeId);
-        when(node.getSubNode()).thenReturn(subNodeList);
-        when(subNode.getNodeId())
-                .thenReturn(mock(NodeId.class))
-                .thenReturn(nodeId);
+        when(abstractObjects.getAbstractNode())
+                .thenReturn(nodeList) //1
+                .thenReturn(nodeList) //1
+                .thenReturn(nodeList) //1
+                .thenReturn(nodeList) //1
+                .thenReturn(null) //1
+                .thenReturn(nodeList)//2
+                .thenReturn(nodeList)//2
+                .thenReturn(null)//1
+                .thenReturn(null)//2
+                .thenReturn(null)//1
+                .thenReturn(null)//1
+                .thenReturn(nodeList)//3
+                .thenReturn(nodeList);//3
+        when(abstractNode.getNodeId()).thenReturn(nodeId);
+        when(abstractNode.getSubNode())
+                .thenReturn(subNodeList)
+                .thenReturn(subNodeList)
+                .thenReturn(null);
+        when(subNode.getNodeId()).thenReturn(null);
         Assert.assertTrue(updateTemplateDefinition.checkTemplateDefinition(userId, templateDefinition).equals("The sub node is not defined."));
-        //get into method "checkNodeTemplate" args(node,map) map(parameterName,parameterValueType)
-        when(node.getNodeType()).thenReturn(nodeType);
-        when(nodeDefinitions.containsKey(node.getNodeType())).thenReturn(true);
-        when(nodeDefinitions.get(node.getNodeType())).thenReturn(nodeDefinition);
-        when(nodeDefinition.getPropertyDefinition()).thenReturn(null);
-        when(node.getProperty()).thenReturn(null);
-        //return
+        verify(abstractNode,times(2)).getSubNode();
+        verify(abstractObjects,times(2)).getAbstractNode();
+        //get into method "checkNodeTemplate" args(abstractNode,map)
+        field.set(updateTemplateDefinition, getDefinitions);
+        when(abstractNode.getNodeType()).thenReturn(mock(NodeType.class));
+        when(getDefinitions.getNodeDefinition()).thenReturn(nodeDefinitions);
+        when(nodeDefinitions.containsKey(any(NodeType.class))).thenReturn(false);
+        Assert.assertTrue(updateTemplateDefinition.checkTemplateDefinition(userId, templateDefinition).equals("The node type " + abstractNode.getNodeType().getValue() + " is not defined."));
+        verify(abstractNode,times(3)).getSubNode();
+        verify(abstractObjects, times(4)).getAbstractNode();
+
+        when(abstractObjects.getAbstractConnection())
+                .thenReturn(connectionList)//1
+                .thenReturn(connectionList)//1
+                .thenReturn(connectionList)//1
+                .thenReturn(connectionList)//1
+                .thenReturn(null)//1
+                .thenReturn(null)//1
+                .thenReturn(connectionList)//2
+                .thenReturn(connectionList);//2
+        when(abstractConnection.getEndNode()).thenReturn(endNodeList);
+        when(endNode.getNodeId()).thenReturn(null);
+        Assert.assertTrue(updateTemplateDefinition.checkTemplateDefinition(userId, templateDefinition).equals("The end node is not exist."));
+        verify(abstractObjects,times(7)).getAbstractNode();
+        verify(abstractObjects,times(2)).getAbstractConnection();
+//        Assert.assertTrue(updateTemplateDefinition.checkTemplateDefinition(userId, templateDefinition).equals("The end node is not exist."));
+        Assert.assertTrue(updateTemplateDefinition.checkTemplateDefinition(userId, templateDefinition).equals("There are no end nodes exist."));
+        verify(abstractObjects, times(9)).getAbstractNode();
+        verify(abstractObjects, times(4)).getAbstractConnection();
+
+        when(abstractObjects.getAbstractFlow())
+                .thenReturn(flowList)//1
+                .thenReturn(flowList)//1
+                .thenReturn(null)//1
+                .thenReturn(flowList)//2
+                .thenReturn(flowList);//2
+        //get into method "checkFlowTemplate" args(abstractFlow,map)
+        when(getDefinitions.getMatchItemDefinition()).thenReturn(matchItemDefinitionMap);
+        when(abstractFlow.getMatchItem()).thenReturn(matchItemList);
+        when(matchItem.getMatchItemName()).thenReturn(mock(MatchItemName.class));
+        when(matchItemDefinitionMap.containsKey(any(MatchItemName.class))).thenReturn(false);
+        Assert.assertTrue(updateTemplateDefinition.checkTemplateDefinition(userId, templateDefinition).equals("The match item " + matchItem.getMatchItemName().getValue() + " is not defined."));
+        verify(abstractObjects, times(10)).getAbstractNode();
+        verify(abstractObjects, times(5)).getAbstractConnection();
+        verify(abstractObjects, times(2)).getAbstractFlow();
+
+        when(abstractIntents.getAbstractOperations()).thenReturn(abstractOperations);
+        when(abstractOperations.getAbstractOperation())
+                .thenReturn(operationList)
+                .thenReturn(operationList)
+                .thenReturn(null);
+        when(abstractOperation.getTargetObject()).thenReturn(objectId);
+        Assert.assertTrue(updateTemplateDefinition.checkTemplateDefinition(userId, templateDefinition).equals("The target is not exist."));
+//        System.out.println(updateTemplateDefinition.checkTemplateDefinition(userId, templateDefinition) + "dfsfsdfsfds");
+        verify(abstractObjects, times(13)).getAbstractNode();
+        verify(abstractObjects, times(8)).getAbstractConnection();
+        verify(abstractObjects, times(5)).getAbstractFlow();
+
 
     }
 
