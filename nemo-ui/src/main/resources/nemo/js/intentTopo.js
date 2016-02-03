@@ -934,8 +934,8 @@ getIntentInfos();
 		//vas
 		var vas_list = [];
 		for (var vas_cursor in user_json_data["node"]) {
-			if (user_json_data["node"][vas_cursor]["node-type"] != "cache" && user_json_data["node"][vas_cursor]["node-type"] != "fw" && user_json_data["node"][vas_cursor]["node-type"] != "lb")
-				continue;
+			// if (user_json_data["node"][vas_cursor]["node-type"] != "cache" && user_json_data["node"][vas_cursor]["node-type"] != "fw" && user_json_data["node"][vas_cursor]["node-type"] != "lb" )
+				// continue;
 
 			vas_list[user_json_data["node"][vas_cursor]["node-id"]] = user_json_data["node"][vas_cursor]["node-name"];
 
@@ -1131,9 +1131,31 @@ getIntentInfos();
 			if (i == "node") {
 				var nodeNemo = [];
 				var node = user_data["objects"]['node'];
+				for(var j in node){
+					if(node[j]["node-type"]=="fw"||node[j]["node-type"]=="firewall"){
+ 						node[j].order=1;
+					}
+					else if(node[j]["node-type"]=="cache"){
+ 						node[j].order=1;
+					}
+					else if(node[j]["node-type"]=="lb"||node[j]["node-type"]=="loadblance"){
+ 						node[j].order=1;
+					}
+					else if(node[j]["node-type"]=="host"||(node[j]["node-type"].indexOf("host")>=0)||node[j]["node-type"]=="dpi"){
+						node[j].order=2;
+					}
+					else if(node[j]["node-type"]=="ext-group"){
+						node[j].order=4;
+					}
+					else{
+						node[j].order=3;
+					}
+				}
+				console.log(node);
+				node.sort(function(a,b){return a.order-b.order;});
 				for (var j in node) {
 					var nemo_str='';
-					if(node[j]['node-type']=='host'){
+					if(node[j]['node-type']=='host'||node[j]['node-type'].indexOf('host')>=0){
 						 nemo_str += "IMPORT Node  " + node[j]['node-name'] + " Type " + node[j]['node-type'];
 					}else{
 						 nemo_str += "CREATE Node  " + node[j]['node-name'] + " Type " + node[j]['node-type'];

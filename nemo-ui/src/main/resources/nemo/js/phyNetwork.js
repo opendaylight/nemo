@@ -54,7 +54,7 @@ if(!physicalData) return;
  if(!physicalData) physicalData=physicalJson;
  if(!physicalData) return;
  }
-// getPhysicalData();
+ // getPhysicalData();
 
 function createPhysicalTopo(Data){
 	nodes_phy.clear();
@@ -268,7 +268,9 @@ function analy_topo(topo_data)
 			host_count++;
 			host_id[json_temp["host-name"]] = json_temp["host-id"];
 			host_name[json_temp["host-id"]] = json_temp["host-name"];
+			if(json_temp['ip-addresses'])
 			phy_host_ip[json_temp["ip-addresses"]["ip-address"][0]] = json_temp["host-name"];
+		    if(json_temp['mac-address'])
 			phy_host_mac[json_temp["mac-address"]] = json_temp["host-name"];
 		}
 	}
@@ -455,6 +457,7 @@ createPhyicalLinkTable:function (id,Data){
 	if(!Data) Data=physicalData;
 	if(!Data) return;
 	var physaicallinks=[];
+	if(!Data['physical-network']['physical-links']) return;
  	var mylink=Data['physical-network']['physical-links']['physical-link'];
  	for(var i in mylink){
  		if(!mylink[i]['metric'])
