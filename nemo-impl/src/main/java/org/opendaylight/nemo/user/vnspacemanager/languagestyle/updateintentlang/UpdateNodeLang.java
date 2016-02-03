@@ -170,6 +170,7 @@ public class UpdateNodeLang {
         if (!subnodes.isEmpty())
         {
             List<SubNode> subNodeList = new ArrayList<SubNode>();
+            Long order = 0L;
             for (String subnodeName : subnodes)
             {
                 String nodeId = tenantManage.getObjectId(userId,subnodeName);
@@ -177,7 +178,6 @@ public class UpdateNodeLang {
                     return "The subnode " +subnodeName+ " is not exist.";
                 }
                 else {
-                    Long order = 0L;
                     SubNodeBuilder subNodeBuilder = new SubNodeBuilder();
                     subNodeBuilder.setKey(new SubNodeKey(new NodeId(nodeId)))
                                   .setNodeId(new NodeId(nodeId))
