@@ -9,7 +9,8 @@
 package org.opendaylight.nemo.tool.sandbox.utils;
 
 import java.io.*;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Created by hj on 12/11/15.
  */
@@ -27,7 +28,7 @@ public class FileUtils {
             output.write(content);
             output.close();
         } catch (Exception e) {
-            log.error(e);
+            log.error("Exception:",e);
         }
     }
 }

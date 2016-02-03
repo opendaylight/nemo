@@ -58,7 +58,7 @@ abstract public class Node {
             } catch (Exception e) {
                 log.error("Error while execute [{}].", command, name, nodeType);
                 // TODO Auto-generated catch block
-                log.error(e);
+                log.error("Exception:",e);
             }
         }
     }
