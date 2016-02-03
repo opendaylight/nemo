@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 /**
  * Created by hj on 12/9/15.
  */
@@ -169,7 +168,7 @@ public class Network {
             return root;
         } catch (JSONException e) {
             // TODO Auto-generated catch block
-            log.error(e);
+            log.error("Exception:",e);
         }
         return null;
     }
@@ -201,7 +200,7 @@ public class Network {
             return nodeJson;
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            log.error(e);
+            log.error("Exception:",e);
         }
         return null;
     }
@@ -249,7 +248,7 @@ public class Network {
             return root;
         } catch (JSONException e) {
             // TODO Auto-generated catch block
-            log.error(e);
+            log.error("Exception:",e);
         }
         return null;
     }
@@ -288,7 +287,7 @@ public class Network {
             return root;
         } catch (JSONException e) {
             // TODO Auto-generated catch block
-            log.error(e);
+            log.error("Exception:",e);
         }
         return null;
     }
@@ -330,7 +329,7 @@ public class Network {
             root.put("link", linkArray);
         } catch (JSONException e) {
             // TODO Auto-generated catch block
-            log.error(e);
+            log.error("Exception:",e);
             return null;
         }
         return root;
@@ -350,7 +349,7 @@ public class Network {
                 return linkNode;
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
-                log.error(e);
+                log.error("Exception:",e);
             }
         }
         return null;

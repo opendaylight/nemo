@@ -17,6 +17,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by hj on 12/9/15.
@@ -38,8 +40,7 @@ public class CmdExecutor {
                 return true;
             }
         } catch (IOException objException) {
-//            objException.printStackTrace();
-            log.error(objException);
+            log.error("Exceptions:",objException);
             if (null != sshConnection) {
                 sshConnection.close();
                 sshConnection = null;
@@ -77,8 +78,7 @@ public class CmdExecutor {
             return result;
 
         } catch (IOException objException) {
-//            objException.printStackTrace();
-            log.error(objException);
+            log.error("Exceptions:",objException);
         } finally {
             if (null != session) {
                 session.close();
