@@ -142,8 +142,8 @@ public class PhysicalNetworkAdapter {
     private void registerListeners() {
         InstanceIdentifier<Node> nodeInsId = getOFNodeInstanceIdentifier();
         InstanceIdentifier<Link> linkInsId = getOFLinkInstanceIdentifier();
-        ofNodesListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, nodeInsId, new OFNodeListener(this), DataChangeScope.BASE);
-        ofLinksListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, linkInsId, new OFLinkListener(this), DataChangeScope.BASE);
+        ofNodesListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, nodeInsId, new OFNodeListener(this), DataChangeScope.SUBTREE);
+        ofLinksListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, linkInsId, new OFLinkListener(this), DataChangeScope.SUBTREE);
         ofPacketInListenerReg = notificationProviderService.registerNotificationListener(new OFPacketInListener(ofFlowUtils));
     }
 
