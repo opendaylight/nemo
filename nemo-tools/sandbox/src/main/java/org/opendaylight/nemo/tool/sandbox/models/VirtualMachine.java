@@ -12,7 +12,8 @@ import org.opendaylight.nemo.tool.sandbox.CmdExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Created by hj on 12/8/15.
  */
@@ -41,7 +42,7 @@ public class VirtualMachine extends Host {
             CmdExecutor.sshExecute("ip netns del " + getName());
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            log.error(e);
+            log.error("Exception:",e);
         }
     }
 }

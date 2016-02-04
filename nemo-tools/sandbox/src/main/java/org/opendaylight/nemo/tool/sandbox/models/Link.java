@@ -9,7 +9,8 @@
 package org.opendaylight.nemo.tool.sandbox.models;
 
 import org.opendaylight.nemo.tool.sandbox.CmdExecutor;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Created by hj on 12/8/15.
  */
@@ -37,7 +38,7 @@ public class Link {
             CmdExecutor.sshExecute(linkAddCmd);
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            log.error(e);
+            log.error("Exception:",e);
         }
     }
 
@@ -47,7 +48,7 @@ public class Link {
             CmdExecutor.sshExecute(linkDelCmd);
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            log.error(e);
+            log.error("Exception:",e);
         }
     }
 
