@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_a813e864",
+        "filename": "nemo-tools/sandbox/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 2759
+      },
+      "writtenOn": "2016-02-04T17:16:28Z",
+      "side": 1,
+      "message": "Should remove this property too since it\u0027s no longer used.",
+      "revId": "531e306efab525f89160d5b44579a93cc0697137",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
