@@ -24,7 +24,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 
   <properties>
     <powermock.version>1.5.2</powermock.version>
-    <jacoco.version>0.7.2.201409121644</jacoco.version>
     <sonar.jacoco.reportPath>target/code-coverage/jacoco.exec</sonar.jacoco.reportPath>
     <sonar.jacoco.itReportPath>target/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
   </properties>
@@ -103,15 +102,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   </dependencies>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>${jacoco.version}</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.opendaylight.yangtools</groupId>
