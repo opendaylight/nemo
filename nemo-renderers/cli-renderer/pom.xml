@@ -12,13 +12,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <parent>
     <groupId>org.opendaylight.controller</groupId>
     <artifactId>config-parent</artifactId>
-    <version>0.4.1-SNAPSHOT</version>
+    <version>0.4.1-Beryllium-SR1</version>
     <relativePath />
   </parent>
 
   <groupId>org.opendaylight.nemo</groupId>
   <artifactId>cli-renderer</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1-Beryllium-SR1</version>
   <packaging>bundle</packaging>
   <name>${project.artifactId}</name>
 
