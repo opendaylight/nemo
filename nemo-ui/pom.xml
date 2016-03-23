@@ -12,18 +12,18 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <parent>
     <groupId>org.opendaylight.mdsal</groupId>
     <artifactId>binding-parent</artifactId>
-    <version>0.8.1-Beryllium-SR1</version>
+    <version>0.8.2-SNAPSHOT</version>
     <relativePath />
   </parent>
 
   <groupId>org.opendaylight.nemo</groupId>
   <artifactId>nemo-ui</artifactId>
-  <version>1.0.1-Beryllium-SR1</version>
+  <version>1.0.2-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>${project.artifactId}</name>
 
   <properties>
-    <dlux.version>0.3.1-Beryllium-SR1</dlux.version>
+    <dlux.version>0.3.2-SNAPSHOT</dlux.version>
   </properties>
 
   <dependencies>
