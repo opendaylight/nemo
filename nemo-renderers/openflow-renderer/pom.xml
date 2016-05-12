@@ -12,19 +12,19 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <parent>
     <groupId>org.opendaylight.controller</groupId>
     <artifactId>config-parent</artifactId>
-    <version>0.4.2-SNAPSHOT</version>
+    <version>0.4.2-Beryllium-SR2</version>
     <relativePath />
   </parent>
 
   <groupId>org.opendaylight.nemo</groupId>
   <artifactId>openflow-renderer</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.2-Beryllium-SR2</version>
   <packaging>bundle</packaging>
   <name>${project.artifactId}</name>
 
   <properties>
-    <liblldp.version>0.10.2-SNAPSHOT</liblldp.version>
-    <openflowplugin.version>0.2.2-SNAPSHOT</openflowplugin.version>
+    <liblldp.version>0.10.2-Beryllium-SR2</liblldp.version>
+    <openflowplugin.version>0.2.2-Beryllium-SR2</openflowplugin.version>
     <sonar.jacoco.reportPath>target/code-coverage/jacoco.exec</sonar.jacoco.reportPath>
     <sonar.jacoco.itReportPath>target/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
   </properties>
