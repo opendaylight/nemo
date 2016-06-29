@@ -17,11 +17,11 @@ module generic-virtual-network {
     import nemo-common {prefix nemo-common;}
     import ietf-inet-types {
         prefix inet;
-        revision-date 2010-09-24;
+        revision-date 2013-07-15;
     }
     import ietf-yang-types {
         prefix yang;
-        revision-date 2010-09-24;
+        revision-date 2013-07-15;
     }
 
     revision "2015-10-10" {
