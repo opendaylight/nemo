@@ -12,12 +12,12 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <parent>
     <groupId>org.opendaylight.nemo</groupId>
     <artifactId>nemo-tools</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.3-Beryllium-SR3</version>
   </parent>
 
   <groupId>org.opendaylight.nemo</groupId>
   <artifactId>sandbox</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.0.3-Beryllium-SR3</version>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
 
