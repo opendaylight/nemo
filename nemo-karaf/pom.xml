@@ -12,13 +12,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <parent>
     <groupId>org.opendaylight.controller</groupId>
     <artifactId>karaf-parent</artifactId>
-    <version>1.7.1-SNAPSHOT</version>
+    <version>1.7.1-Boron-SR1</version>
     <relativePath />
   </parent>
 
   <groupId>org.opendaylight.nemo</groupId>
   <artifactId>nemo-karaf</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.1.1-Boron-SR1</version>
   <name>${project.artifactId}</name>
 
   <prerequisites>
@@ -26,8 +26,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   </prerequisites>
 
   <properties>
-    <feature.mdsal.version>1.4.1-SNAPSHOT</feature.mdsal.version>
-    <feature.dlux.version>0.4.1-SNAPSHOT</feature.dlux.version>
+    <feature.mdsal.version>1.4.1-Boron-SR1</feature.mdsal.version>
+    <feature.dlux.version>0.4.1-Boron-SR1</feature.dlux.version>
   </properties>
 
   <dependencyManagement>
