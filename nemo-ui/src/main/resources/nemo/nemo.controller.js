@@ -8,6 +8,9 @@
 
 define(['app/nemo/nemo.module','app/nemo/nemo.services'], function(topology) {
   topology.register.controller('NemoController', ['$scope', '$rootScope', 'NemoService' ,  function ($scope, $rootScope, NemoService) {
+
+    $rootScope.section_logo = 'src/app/nemo/images/logo_nemo.png';
+
     $scope.updateChannels = function() {
       NemoService.updateChannels();
     };

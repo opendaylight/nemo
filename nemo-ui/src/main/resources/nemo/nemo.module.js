@@ -10,7 +10,8 @@ define(['angularAMD', 'app/routingConfig', 'app/core/core.services','Restangular
   var nemo = angular.module('app.nemo', ['ui.router.state','app.core','restangular', 'config']);
 
 
-  nemo.config(function($stateProvider, $controllerProvider, $compileProvider, $provide, $translateProvider, NavHelperProvider) {
+  nemo.config(function($stateProvider, $controllerProvider, $compileProvider, $provide, $translateProvider,
+                       $urlRouterProvider, NavHelperProvider) {
 
   nemo.register = {
       controller : $controllerProvider.register,
@@ -23,6 +24,8 @@ define(['angularAMD', 'app/routingConfig', 'app/core/core.services','Restangular
       prefix: 'assets/data/locale-',
       suffix: '.json'
     });
+
+    $urlRouterProvider.otherwise('/nemo');
 
     NavHelperProvider.addControllerUrl('app/nemo/nemo.controller');
     NavHelperProvider.addToMenu('nemo', {
