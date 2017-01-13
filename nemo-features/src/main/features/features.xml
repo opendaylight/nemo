@@ -27,7 +27,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <feature name='odl-nemo-engine-rest' version='${project.version}' description='OpenDaylight :: NEMO :: Engine :: REST'>
     <feature version='${restconf.version}'>odl-restconf</feature>
     <feature version='${mdsal.version}'>odl-mdsal-apidocs</feature>
-    <feature version='${mdsal.version}'>odl-mdsal-xsql</feature>
     <feature version='${project.version}'>odl-nemo-engine</feature>
   </feature>
   <feature name='odl-nemo-openflow-renderer' version='${project.version}' description='OpenDaylight :: NEMO :: OpenFlow Renderer'>
