@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright © 2017 Red Hat, Inc. and others.
+
+ This program and the accompanying materials are made available under the
+ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ and is available at http://www.eclipse.org/legal/epl-v10.html
+ -->
+<features name="odl-nemo-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+    <feature name="odl-nemo-cli-renderer" version="${project.version}">
+        <configfile finalname="etc/opendaylight/karaf/02-nemo-cli-renderer.xml">
+            mvn:org.opendaylight.nemo/cli-renderer/${project.version}/xml/config
+        </configfile>
+        <configfile finalname="etc/opendaylight/karaf/nemo-cli-renderer-node-resource.json">
+            mvn:org.opendaylight.nemo/cli-renderer/${project.version}/json/node-resource
+        </configfile>
+        <configfile finalname="etc/opendaylight/karaf/nemo-cli-renderer-link-resource.json">
+            mvn:org.opendaylight.nemo/cli-renderer/${project.version}/json/link-resource
+        </configfile>
+        <configfile finalname="etc/opendaylight/karaf/nemo-cli-renderer-host-resource.json">
+            mvn:org.opendaylight.nemo/cli-renderer/${project.version}/json/host-resource
+        </configfile>
+        <configfile finalname="etc/opendaylight/karaf/nemo-cli-renderer-external-resource.json">
+            mvn:org.opendaylight.nemo/cli-renderer/${project.version}/json/external-resource
+        </configfile>
+    </feature>
+</features>

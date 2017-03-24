@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (c) 2015 Huawei, Inc and others. All rights reserved.
+This program and the accompanying materials are made available under the
+terms of the Eclipse Public License v1.0 which accompanies this distribution,
+and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<features name="odl-nemo-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+  <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/${mdsal.model.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.dlux/features-dlux/${dlux.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/${openflowplugin.version}/xml/features</repository>
+  <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension/${openflowplugin.version}/xml/features</repository>
+  <feature name='odl-nemo-api' version='${project.version}' description='OpenDaylight :: NEMO :: API'>
+    <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
+    <bundle>mvn:org.opendaylight.nemo/nemo-api/${project.version}</bundle>
+  </feature>
+  <feature name='odl-nemo-engine' version='${project.version}' description='OpenDaylight :: NEMO :: Engine'>
+    <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+    <feature version='${project.version}'>odl-nemo-api</feature>
+    <bundle>mvn:org.opendaylight.nemo/nemo-impl/${project.version}</bundle>
+    <configfile finalname='etc/opendaylight/karaf/00-nemo-engine.xml'>mvn:org.opendaylight.nemo/nemo-impl/${project.version}/xml/config</configfile>
+  </feature>
+  <feature name='odl-nemo-engine-rest' version='${project.version}' description='OpenDaylight :: NEMO :: Engine :: REST'>
+    <feature version='${restconf.version}'>odl-restconf</feature>
+    <feature version='${mdsal.version}'>odl-mdsal-apidocs</feature>
+    <feature version='${project.version}'>odl-nemo-engine</feature>
+  </feature>
+  <feature name='odl-nemo-openflow-renderer' version='${project.version}' description='OpenDaylight :: NEMO :: OpenFlow Renderer'>
+    <feature version='${openflowplugin.version}'>odl-openflowplugin-flow-services</feature>
+    <feature version='${openflowplugin.version}'>odl-openflowplugin-nxm-extensions</feature>
+    <feature version='${project.version}'>odl-nemo-engine-rest</feature>
+    <bundle>mvn:org.opendaylight.nemo/openflow-renderer/${project.version}</bundle>
+    <configfile finalname='etc/opendaylight/karaf/01-nemo-openflow-renderer.xml'>mvn:org.opendaylight.nemo/openflow-renderer/${project.version}/xml/config</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-openflow-renderer-node-resource.json'>mvn:org.opendaylight.nemo/openflow-renderer/${project.version}/json/node-resource</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-openflow-renderer-link-resource.json'>mvn:org.opendaylight.nemo/openflow-renderer/${project.version}/json/link-resource</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-openflow-renderer-host-resource.json'>mvn:org.opendaylight.nemo/openflow-renderer/${project.version}/json/host-resource</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-openflow-renderer-external-resource.json'>mvn:org.opendaylight.nemo/openflow-renderer/${project.version}/json/external-resource</configfile>
+  </feature>
+  <feature name='odl-nemo-cli-renderer' version='${project.version}' description='OpenDaylight :: NEMO :: CLI Renderer'>
+    <feature version='${project.version}'>odl-nemo-engine-rest</feature>
+    <bundle>mvn:org.opendaylight.nemo/cli-renderer/${project.version}</bundle>
+    <configfile finalname='etc/opendaylight/karaf/02-nemo-cli-renderer.xml'>mvn:org.opendaylight.nemo/cli-renderer/${project.version}/xml/config</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-cli-renderer-node-resource.json'>mvn:org.opendaylight.nemo/cli-renderer/${project.version}/json/node-resource</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-cli-renderer-link-resource.json'>mvn:org.opendaylight.nemo/cli-renderer/${project.version}/json/link-resource</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-cli-renderer-host-resource.json'>mvn:org.opendaylight.nemo/cli-renderer/${project.version}/json/host-resource</configfile>
+    <configfile finalname='etc/opendaylight/karaf/nemo-cli-renderer-external-resource.json'>mvn:org.opendaylight.nemo/cli-renderer/${project.version}/json/external-resource</configfile>
+  </feature>
+  <feature name='odl-nemo-engine-ui' version='${project.version}' description='OpenDaylight :: NEMO :: Engine :: UI'>
+    <feature version='${dlux.version}'>odl-dlux-core</feature>
+    <feature version='${project.version}'>odl-nemo-engine-rest</feature>
+    <bundle>mvn:org.opendaylight.nemo/nemo-ui/${project.version}</bundle>
+  </feature>
+</features>
