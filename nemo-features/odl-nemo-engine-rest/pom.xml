@@ -14,13 +14,13 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>1.8.1-SNAPSHOT</version>
+        <version>1.8.1-Carbon</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.nemo</groupId>
     <artifactId>odl-nemo-engine-rest</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.1-Carbon</version>
     <packaging>feature</packaging>
 
     <name>OpenDaylight :: NEMO :: Engine :: REST</name>
@@ -29,14 +29,14 @@
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>odl-restconf</artifactId>
-            <version>1.5.1-SNAPSHOT</version>
+            <version>1.5.1-Carbon</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>odl-mdsal-apidocs</artifactId>
-            <version>1.5.1-SNAPSHOT</version>
+            <version>1.5.1-Carbon</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>

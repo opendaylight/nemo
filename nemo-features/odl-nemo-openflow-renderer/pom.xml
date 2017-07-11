@@ -14,13 +14,13 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>1.8.1-SNAPSHOT</version>
+        <version>1.8.1-Carbon</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.nemo</groupId>
     <artifactId>odl-nemo-openflow-renderer</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.1-Carbon</version>
     <packaging>feature</packaging>
 
     <name>OpenDaylight :: NEMO :: OpenFlow Renderer</name>
@@ -29,14 +29,14 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>odl-openflowplugin-flow-services</artifactId>
-            <version>0.4.1-SNAPSHOT</version>
+            <version>0.4.1-Carbon</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>odl-openflowplugin-nxm-extensions</artifactId>
-            <version>0.4.1-SNAPSHOT</version>
+            <version>0.4.1-Carbon</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
