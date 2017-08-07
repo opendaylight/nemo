@@ -8,9 +8,6 @@
  -->
 <features name="odl-nemo-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
     <feature name="odl-nemo-openflow-renderer" version="${project.version}">
-        <configfile finalname="etc/opendaylight/karaf/01-nemo-openflow-renderer.xml">
-            mvn:org.opendaylight.nemo/openflow-renderer/${project.version}/xml/config
-        </configfile>
         <configfile finalname="etc/opendaylight/karaf/nemo-openflow-renderer-node-resource.json">
             mvn:org.opendaylight.nemo/openflow-renderer/${project.version}/json/node-resource
         </configfile>

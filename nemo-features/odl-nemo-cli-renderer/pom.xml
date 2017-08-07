@@ -39,14 +39,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <!-- finalname="etc/opendaylight/karaf/02-nemo-cli-renderer.xml" -->
-            <groupId>${project.groupId}</groupId>
-            <artifactId>cli-renderer</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
-        <dependency>
             <!-- finalname="etc/opendaylight/karaf/nemo-cli-renderer-node-resource.json" -->
             <groupId>${project.groupId}</groupId>
             <artifactId>cli-renderer</artifactId>
