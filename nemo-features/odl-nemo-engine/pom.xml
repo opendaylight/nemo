@@ -45,13 +45,5 @@
             <artifactId>nemo-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <!-- finalname="etc/opendaylight/karaf/00-nemo-engine.xml" -->
-            <groupId>${project.groupId}</groupId>
-            <artifactId>nemo-impl</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
     </dependencies>
 </project>
