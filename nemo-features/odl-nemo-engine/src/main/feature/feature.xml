@@ -8,8 +8,5 @@
  -->
 <features name="odl-nemo-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
     <feature name="odl-nemo-engine" version="${project.version}">
-        <configfile finalname="etc/opendaylight/karaf/00-nemo-engine.xml">
-            mvn:org.opendaylight.nemo/nemo-impl/${project.version}/xml/config
-        </configfile>
     </feature>
 </features>

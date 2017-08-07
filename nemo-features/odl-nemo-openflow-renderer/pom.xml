@@ -53,14 +53,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <!-- finalname="etc/opendaylight/karaf/01-nemo-openflow-renderer.xml" -->
-            <groupId>${project.groupId}</groupId>
-            <artifactId>openflow-renderer</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
-        <dependency>
             <!-- finalname="etc/opendaylight/karaf/nemo-openflow-renderer-node-resource.json" -->
             <groupId>${project.groupId}</groupId>
             <artifactId>openflow-renderer</artifactId>
