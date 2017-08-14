@@ -12,20 +12,20 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <parent>
     <groupId>org.opendaylight.mdsal</groupId>
     <artifactId>binding-parent</artifactId>
-    <version>0.11.0-SNAPSHOT</version>
+    <version>0.12.0-SNAPSHOT</version>
     <relativePath />
   </parent>
 
   <groupId>org.opendaylight.nemo</groupId>
   <artifactId>nemo-ui</artifactId>
-  <version>1.3.0-SNAPSHOT</version>
+  <version>1.4.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <!-- <name> formatting is used by autorelease to parse and notify projects on
        build failure. Please do not modify this unless you have a good reason. -->
   <name>ODL :: nemo :: ${project.artifactId}</name>
 
   <properties>
-    <dlux.version>0.6.0-SNAPSHOT</dlux.version>
+    <dlux.version>0.7.0-SNAPSHOT</dlux.version>
   </properties>
 
   <dependencies>
