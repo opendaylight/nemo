@@ -9,11 +9,14 @@
 package org.opendaylight.nemo.renderer.openflow;
 
 import com.google.common.base.Optional;
+import java.util.Collection;
+import java.util.List;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.nemo.renderer.openflow.physicalnetwork.PhyConfigLoader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
@@ -34,14 +37,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.int
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.User;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.intent.rev151010.users.UserKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class FlowTableManager implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(FlowTableManager.class);
@@ -49,7 +47,7 @@ public class FlowTableManager implements AutoCloseable {
     private final DataBroker dataProvider;
     private final PacketProcessingService packetProcessingService;
 
-    private ListenerRegistration<DataChangeListener> userVnPnMappingChangeListenerReg;
+    private ListenerRegistration<?> userVnPnMappingChangeListenerReg;
 
     private FlowUtils flowUtils = null;
 
@@ -81,9 +79,8 @@ public class FlowTableManager implements AutoCloseable {
                 .child(UserVnPnMapping.class)
                 .build();
         //register
-        userVnPnMappingChangeListenerReg = dataProvider.registerDataChangeListener(
-                LogicalDatastoreType.CONFIGURATION, userVnPnMappingIid,
-                new UserVnPnMappingChangeListener(), DataChangeScope.BASE);
+        userVnPnMappingChangeListenerReg = dataProvider.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                LogicalDatastoreType.CONFIGURATION, userVnPnMappingIid), new UserVnPnMappingChangeListener());
     }
 
 
@@ -103,7 +100,7 @@ public class FlowTableManager implements AutoCloseable {
         }
         if (result.isPresent()){
             LOG.debug("getUser  OK");
-            return (result.get());
+            return result.get();
 
         }else{
             LOG.debug("getUser  ERROR");
@@ -133,7 +130,7 @@ public class FlowTableManager implements AutoCloseable {
         }
         if (result.isPresent()) {
             LOG.debug("getVirtualNetwork  OK");
-            return (result.get());
+            return result.get();
 
         }else{
             LOG.debug("getVirtualNetwork  ERROR");
@@ -157,7 +154,7 @@ public class FlowTableManager implements AutoCloseable {
         }
         if (result.isPresent()) {
             LOG.debug("getUserIntentVnMapping  OK");
-            return (result.get());
+            return result.get();
 
         }else{
             LOG.debug("getUserIntentVnMapping  ERROR");
@@ -180,7 +177,7 @@ public class FlowTableManager implements AutoCloseable {
         }
         if (result.isPresent()) {
             LOG.debug("getPhysicalNetwork  OK");
-            return (result.get());
+            return result.get();
 
         }else{
             LOG.debug("getPhysicalNetwork  ERROR");
@@ -190,79 +187,45 @@ public class FlowTableManager implements AutoCloseable {
 
 
     //A listener implementation
-    private class UserVnPnMappingChangeListener implements DataChangeListener {
-
+    private class UserVnPnMappingChangeListener implements DataTreeChangeListener<UserVnPnMapping> {
         @Override
-        public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-            if ( null == change ) {
-                return;
-            }
-
-            Map<InstanceIdentifier<?>, DataObject> createdData = change.getCreatedData();
-            if ( null != createdData && !createdData.isEmpty() ) {
-                for ( DataObject dataObject : createdData.values() ) {
-                    if ( dataObject instanceof UserVnPnMapping ) {
+        public void onDataTreeChanged(Collection<DataTreeModification<UserVnPnMapping>> changes) {
+            for (DataTreeModification<UserVnPnMapping> change: changes) {
+                DataObjectModification<UserVnPnMapping> rootNode = change.getRootNode();
+                switch (rootNode.getModificationType()) {
+                    case WRITE:
                         LOG.debug("Ready to update flow table.");
-                        UserVnPnMapping userVnPnMapping = (UserVnPnMapping)dataObject;
+
+                        UserVnPnMapping userVnPnMapping = rootNode.getDataAfter();
                         UserId userId = userVnPnMapping.getUserId();
 
                         User user = getUser(userId);
                         VirtualNetwork virtualNetwork = getVirtualNetwork(userId);
                         UserIntentVnMapping userIntentVnMapping = getUserIntentVnMapping(userId);
                         PhysicalNetwork physicalNetwork = getPhysicalNetwork();
-                        if(physicalNetwork == null)
-                        {
-                            LOG.debug("Physical Network data are not present.");
-                            return;
+                        if (null == physicalNetwork) {
+                            LOG.info("Physical Network data are not present.");
+                            continue;
                         }
-                        PhysicalNodes physicalNodes= physicalNetwork.getPhysicalNodes();
-                        List<PhysicalNode> physicalNodeList = physicalNodes.getPhysicalNode();
-                        flowUtils.init(physicalNodeList);
 
-                        flowUtils.updateFlowTable(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
+                        if (rootNode.getDataBefore() != null) {
+                            PhysicalNodes physicalNodes= physicalNetwork.getPhysicalNodes();
+                            List<PhysicalNode> physicalNodeList = physicalNodes.getPhysicalNode();
+                            flowUtils.init(physicalNodeList);
+                        }
+
+                        flowUtils.updateFlowTable(user, virtualNetwork, userIntentVnMapping, userVnPnMapping,
+                                physicalNetwork);
                         LOG.debug("Already call flowUtils.updateFlowTable().");
-                    }
+                        break;
+                    case DELETE:
+                        UserVnPnMapping deletedUserVnPnMapping = rootNode.getDataBefore();
+                        flowUtils.deleteFlowEntries(deletedUserVnPnMapping.getUserId());
+                        break;
+                    default:
+                        break;
                 }
             }
-
-            Map<InstanceIdentifier<?>, DataObject> updatedData = change.getUpdatedData();
-            if ( null != updatedData && !updatedData.isEmpty() ) {
-                for ( DataObject dataObject : updatedData.values() ) {
-                    if ( dataObject instanceof UserVnPnMapping ) {
-                        UserVnPnMapping userVnPnMapping = (UserVnPnMapping)dataObject;
-                        UserId userId = userVnPnMapping.getUserId();
-
-                        flowUtils.deleteFlowEntries(userId);
-
-                        User user = getUser(userId);
-                        VirtualNetwork virtualNetwork = getVirtualNetwork(userId);
-                        UserIntentVnMapping userIntentVnMapping = getUserIntentVnMapping(userId);
-                        PhysicalNetwork physicalNetwork = getPhysicalNetwork();
-                        if(physicalNetwork == null)
-                        {
-                            LOG.debug("Physical Network data are not present.");
-                            return;
-                        }
-
-                        flowUtils.updateFlowTable(user, virtualNetwork, userIntentVnMapping, userVnPnMapping, physicalNetwork);
-                    }
-                }
-            }
-
-            Map<InstanceIdentifier<?>, DataObject> originalData = change.getOriginalData();
-            Set<InstanceIdentifier<?>> removedPaths = change.getRemovedPaths();
-            if ( null != removedPaths && !removedPaths.isEmpty() ) {
-                DataObject dataObject;
-
-                for ( InstanceIdentifier<?> instanceId : removedPaths ) {
-                    dataObject = originalData.get(instanceId);
-                    if ( null != dataObject && dataObject instanceof UserVnPnMapping ) {
-                        UserVnPnMapping userVnPnMapping = (UserVnPnMapping)dataObject;
-                        flowUtils.deleteFlowEntries(userVnPnMapping.getUserId());
-                    }
-                }
-            }
-            return;
         }
     }
 

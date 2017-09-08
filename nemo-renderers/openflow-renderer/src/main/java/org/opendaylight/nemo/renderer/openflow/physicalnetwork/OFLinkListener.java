@@ -8,21 +8,18 @@
 
 package org.opendaylight.nemo.renderer.openflow.physicalnetwork;
 
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import java.util.Collection;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by hj on 11/5/15.
  */
-public class OFLinkListener implements DataChangeListener {
+public class OFLinkListener implements DataTreeChangeListener<Link> {
     private static final Logger log = LoggerFactory.getLogger(OFLinkListener.class);
     final private PhysicalNetworkAdapter pnConverter;
 
@@ -31,52 +28,24 @@ public class OFLinkListener implements DataChangeListener {
     }
 
     @Override
-    public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-        if (null == change) {
-            return;
-        }
-        Link tmpOfLink = null;
-
-        Map<InstanceIdentifier<?>, DataObject> createdData = change.getCreatedData();
-        if (null != createdData && !createdData.isEmpty()) {
-            for (DataObject data : createdData.values()) {
-                if (!(data instanceof Link)) {
-                    log.warn("PFNodeListener accept an [{}] created event.", data);
+    public void onDataTreeChanged(Collection<DataTreeModification<Link>> changes) {
+        for (DataTreeModification<Link> change: changes) {
+            DataObjectModification<Link> rootNode = change.getRootNode();
+            switch (rootNode.getModificationType()) {
+                case WRITE:
+                case SUBTREE_MODIFIED:
+                    final Link updatedLink = rootNode.getDataAfter();
+                    log.debug("OF link updated:{}", updatedLink.getKey());
+                    pnConverter.ofLinkAdded(updatedLink);
                     break;
-                }
-                tmpOfLink = (Link)data;
-                log.debug("OF link created:{}",tmpOfLink.getKey());
-                pnConverter.ofLinkAdded(tmpOfLink);
-            }
-        }
-
-        Map<InstanceIdentifier<?>, DataObject> updateData = change.getUpdatedData();
-        if (null != updateData && !updateData.isEmpty()) {
-            for (DataObject data : updateData.values()) {
-                if (!(data instanceof Link)) {
-                    log.warn("PFNodeListener accept an [{}] created event.", data);
+                case DELETE:
+                    final Link deletedLink = rootNode.getDataBefore();
+                    log.debug("OF link removed:{}", deletedLink.getKey());
+                    pnConverter.ofLinkRemoved(deletedLink);
                     break;
-                }
-                tmpOfLink = (Link)data;
-                log.debug("OF link updated:{}",tmpOfLink.getKey());
-                pnConverter.ofLinkAdded(tmpOfLink);
+                default:
+                    break;
             }
         }
-
-        Map<InstanceIdentifier<?>, DataObject> originalData = change.getOriginalData();
-        Set<InstanceIdentifier<?>> removedPaths = change.getRemovedPaths();
-
-        if ( null != removedPaths && !removedPaths.isEmpty() ) {
-            DataObject dataObject ;
-            for ( InstanceIdentifier<?> instanceId : removedPaths ) {
-                dataObject = originalData.get(instanceId);
-
-                if ( null != dataObject && dataObject instanceof Link) {
-                    log.debug("OF link removed:{}",((Link)dataObject).getKey());
-                    pnConverter.ofLinkRemoved((Link) dataObject);
-                }
-            }
-        }
-
     }
 }

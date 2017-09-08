@@ -12,9 +12,14 @@ import com.google.common.base.Optional;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.CountDownLatch;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.nemo.renderer.openflow.FlowUtils;
@@ -48,32 +53,25 @@ import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.CountDownLatch;
-
 public class PhysicalNetworkAdapter {
     private static final Logger log = LoggerFactory.getLogger(PhysicalNetworkAdapter.class);
     private static final String DEFAULT_TOPOLOGY_ID = "flow:1";
 
     final private DataBroker dataBroker;
-    private PhyConfigLoader phyConfigLoader;
-    private DataBrokerAdapter dataBrokerAdapter;
-    private PhysicalFlowUtils physicalFlowUtils;
-    private FlowUtils ofFlowUtils;
-    private NotificationProviderService notificationProviderService;
+    private final PhyConfigLoader phyConfigLoader;
+    private final DataBrokerAdapter dataBrokerAdapter;
+    private final PhysicalFlowUtils physicalFlowUtils;
+    private final FlowUtils ofFlowUtils;
+    private final NotificationProviderService notificationProviderService;
 
-    private CopyOnWriteArraySet<String> nodeIdSet;
-    private CopyOnWriteArraySet<PhysicalLink> physicalLinkSet;
-    private Timer phyTimer;
+    private final CopyOnWriteArraySet<String> nodeIdSet;
+    private final CopyOnWriteArraySet<PhysicalLink> physicalLinkSet;
+    private final Timer phyTimer;
     private boolean running = false;
-    private Integer mutex = 0;
+    private final Integer mutex = 0;
     private ListenerRegistration<NotificationListener> ofPacketInListenerReg;
-    private ListenerRegistration<DataChangeListener> ofNodesListenerReg;
-    private ListenerRegistration<DataChangeListener> ofLinksListenerReg;
+    private ListenerRegistration<?> ofNodesListenerReg;
+    private ListenerRegistration<?> ofLinksListenerReg;
 
     public PhysicalNetworkAdapter(DataBroker dataBroker
             , NotificationProviderService notificationProviderService
@@ -85,8 +83,8 @@ public class PhysicalNetworkAdapter {
         this.phyConfigLoader = phyConfigLoader;
         this.dataBrokerAdapter = new DataBrokerAdapter(dataBroker);
         physicalFlowUtils = new PhysicalFlowUtils(dataBroker);
-        nodeIdSet = new CopyOnWriteArraySet<String>();
-        physicalLinkSet = new CopyOnWriteArraySet<PhysicalLink>();
+        nodeIdSet = new CopyOnWriteArraySet<>();
+        physicalLinkSet = new CopyOnWriteArraySet<>();
 
         phyTimer = new Timer();
 
@@ -97,14 +95,18 @@ public class PhysicalNetworkAdapter {
     }
 
     public void close() {
-        if (ofPacketInListenerReg != null)
+        if (ofPacketInListenerReg != null) {
             ofPacketInListenerReg.close();
-        if (ofLinksListenerReg != null)
+        }
+        if (ofLinksListenerReg != null) {
             ofLinksListenerReg.close();
-        if (ofNodesListenerReg != null)
+        }
+        if (ofNodesListenerReg != null) {
             ofNodesListenerReg.close();
-        if (phyConfigLoader != null)
+        }
+        if (phyConfigLoader != null) {
             phyConfigLoader.close();
+        }
         log.debug("Clear....\r\n{}", nodeIdSet);
         nodeIdSet.clear();
         physicalLinkSet.clear();
@@ -142,8 +144,10 @@ public class PhysicalNetworkAdapter {
     private void registerListeners() {
         InstanceIdentifier<Node> nodeInsId = getOFNodeInstanceIdentifier();
         InstanceIdentifier<Link> linkInsId = getOFLinkInstanceIdentifier();
-        ofNodesListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, nodeInsId, new OFNodeListener(this), DataChangeScope.SUBTREE);
-        ofLinksListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, linkInsId, new OFLinkListener(this), DataChangeScope.SUBTREE);
+        ofNodesListenerReg = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                LogicalDatastoreType.OPERATIONAL, nodeInsId),  new OFNodeListener(this));
+        ofLinksListenerReg = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                LogicalDatastoreType.OPERATIONAL, linkInsId), new OFLinkListener(this));
         ofPacketInListenerReg = notificationProviderService.registerNotificationListener(new OFPacketInListener(ofFlowUtils));
     }
 
@@ -155,10 +159,11 @@ public class PhysicalNetworkAdapter {
             public void onSuccess(Optional<Topology> result) {
                 if (result.isPresent() && result.get() instanceof Topology) {
                     Topology topology = result.get();
-                    if (topology != null && topology.getLink() != null)
+                    if (topology != null && topology.getLink() != null) {
                         for (Link link : topology.getLink()) {
                             ofLinkAdded(link);
                         }
+                    }
                 }
 
                 return;
@@ -180,10 +185,11 @@ public class PhysicalNetworkAdapter {
             public void onSuccess(Optional<Nodes> result) {
                 if (result.isPresent() && result.get() instanceof Nodes) {
                     Nodes nodes = result.get();
-                    if (nodes != null && nodes.getNode() != null)
+                    if (nodes != null && nodes.getNode() != null) {
                         for (Node node : nodes.getNode()) {
                             ofNodeAdded(node);
                         }
+                    }
                 }
                 return;
             }
@@ -211,7 +217,7 @@ public class PhysicalNetworkAdapter {
         PhysicalNodeBuilder nodeBuilder = new PhysicalNodeBuilder();
         nodeBuilder.setNodeId(nodeId);
         nodeBuilder.setKey(new PhysicalNodeKey(nodeId));
-        List<PhysicalPort> physicalPortList = new ArrayList<PhysicalPort>();
+        List<PhysicalPort> physicalPortList = new ArrayList<>();
         List<NodeConnector> nodeConnectors = node.getNodeConnector();
         if (nodeConnectors == null || nodeConnectors.size() == 0) {
             log.error("Node : {}, without port.", strNodeId);
@@ -257,8 +263,9 @@ public class PhysicalNetworkAdapter {
 
     private PhysicalPort getPhysicalPort(NodeKey nodeKey, NodeConnector nodeConnector) {
         String strConnectorId = nodeConnector.getId().getValue();
-        if (strConnectorId.contains("LOCAL"))
+        if (strConnectorId.contains("LOCAL")) {
             return null;
+        }
         PhysicalPortId physicalPortId = new PhysicalPortId(strConnectorId);
         log.debug("Get port {} : {}.", nodeKey, nodeConnector.getId().getValue());
         FlowCapableNodeConnector flowCapableNodeConnector = getOFPort(nodeKey, nodeConnector.getKey());

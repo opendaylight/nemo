@@ -8,20 +8,23 @@
 
 package org.opendaylight.nemo.intent.computation;
 
+import com.google.common.base.Optional;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.nemo.intent.algorithm.Edge;
 import org.opendaylight.nemo.intent.algorithm.RoutingAlgorithm;
@@ -48,12 +51,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.eng
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.VirtualNodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.VirtualPathId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 /**
  * The virtual network computation unit implements the following functions:
@@ -85,17 +85,17 @@ public class VNComputationUnit implements AutoCloseable {
     /**
      * The virtual routers in the virtual network.
      */
-    private Set<VirtualNodeId> virtualRouters;
+    private Set<VirtualNodeId> virtualRouters = ConcurrentHashMap.newKeySet();
 
     /**
      * The registration for the virtual node change listener.
      */
-    private ListenerRegistration<DataChangeListener> virtualNodeChangeListenerReg;
+    private ListenerRegistration<?> virtualNodeChangeListenerReg;
 
     /**
      * The registration for the virtual link change listener.
      */
-    private ListenerRegistration<DataChangeListener> virtualLinkChangeListenerReg;
+    private ListenerRegistration<?> virtualLinkChangeListenerReg;
 
     public VNComputationUnit(DataBroker dataBroker, UserId userId) {
         super();
@@ -103,7 +103,6 @@ public class VNComputationUnit implements AutoCloseable {
         this.dataBroker = dataBroker;
         this.userId = userId;
         routingAlgorithm = new RoutingAlgorithm();
-        virtualRouters = new HashSet<VirtualNodeId>();
 
         VirtualNetworkKey virtualNetworkKey = new VirtualNetworkKey(new VirtualNetworkId(userId.getValue()));
         InstanceIdentifier<VirtualNode> virtualNodeIid = InstanceIdentifier
@@ -119,10 +118,10 @@ public class VNComputationUnit implements AutoCloseable {
                 .child(VirtualLink.class)
                 .build();
 
-        virtualNodeChangeListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                virtualNodeIid, new VirtualNodeChangeListener(), DataChangeScope.BASE);
-        virtualLinkChangeListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                virtualLinkIid, new VirtualLinkChangeListener(), DataChangeScope.BASE);
+        virtualNodeChangeListenerReg = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                LogicalDatastoreType.CONFIGURATION, virtualNodeIid), new VirtualNodeChangeListener());
+        virtualLinkChangeListenerReg = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                LogicalDatastoreType.CONFIGURATION, virtualLinkIid), new VirtualLinkChangeListener());
 
         LOG.debug("Initialized the virtual network computation unit for the user {}.", userId.getValue());
 
@@ -135,7 +134,7 @@ public class VNComputationUnit implements AutoCloseable {
         this.dataBroker = dataBroker;
         userId = virtualNetwork.getUserId();
         routingAlgorithm = new RoutingAlgorithm();
-        virtualRouters = new HashSet<VirtualNodeId>();
+        virtualRouters = new HashSet<>();
 
         List<VirtualNode> virtualNodes = virtualNetwork.getVirtualNodes().getVirtualNode();
         Vertex vertex;
@@ -177,7 +176,7 @@ public class VNComputationUnit implements AutoCloseable {
         }
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.path.instance.VirtualLink> virtualLinks =
-                new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.path.instance.VirtualLink>(edges.size());
+                new ArrayList<>(edges.size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.path.instance.VirtualLink virtualLink;
         long metric = 0;
         long delay = 0;
@@ -222,7 +221,7 @@ public class VNComputationUnit implements AutoCloseable {
         }
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.path.instance.VirtualLink> virtualLinks =
-                new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.path.instance.VirtualLink>(edges.size());
+                new ArrayList<>(edges.size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.virtual.network.rev151010.virtual.path.instance.VirtualLink virtualLink;
         long metric = 0;
         long delay = 0;
@@ -270,7 +269,7 @@ public class VNComputationUnit implements AutoCloseable {
      * network, and store or update them into the data store.
      */
     private void computeRoute() {
-        Map<VirtualRouteKey, VirtualPath> routes = new HashMap<VirtualRouteKey, VirtualPath>();
+        Map<VirtualRouteKey, VirtualPath> routes = new HashMap<>();
         VirtualPath virtualPath;
 
         for ( VirtualNodeId source : virtualRouters ) {
@@ -399,34 +398,28 @@ public class VNComputationUnit implements AutoCloseable {
      *
      * @author Zhigang Ji
      */
-    private class VirtualNodeChangeListener implements DataChangeListener {
+    private class VirtualNodeChangeListener implements DataTreeChangeListener<VirtualNode> {
         @Override
-        public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-            if ( null == change ) {
-                return;
-            }
+        public void onDataTreeChanged(Collection<DataTreeModification<VirtualNode>> changes) {
+            for (DataTreeModification<VirtualNode> change: changes) {
+                DataObjectModification<VirtualNode> rootNode = change.getRootNode();
+                switch (rootNode.getModificationType()) {
+                    case WRITE:
+                        if (rootNode.getDataBefore() == null) {
+                            VirtualNode virtualNode = rootNode.getDataAfter();
+                            Vertex vertex = new Vertex(virtualNode.getNodeId().getValue());
 
-            Map<InstanceIdentifier<?>, DataObject> createdData = change.getCreatedData();
+                            routingAlgorithm.addVertex(vertex);
 
-            if ( null != createdData && !createdData.isEmpty() ) {
-                VirtualNode virtualNode;
-                Vertex vertex;
-
-                for ( DataObject dataObject : createdData.values() ) {
-                    if ( dataObject instanceof VirtualNode ) {
-                        virtualNode = (VirtualNode)dataObject;
-                        vertex = new Vertex(virtualNode.getNodeId().getValue());
-
-                        routingAlgorithm.addVertex(vertex);
-
-                        if ( VirtualNode.NodeType.Vrouter == virtualNode.getNodeType() ) {
-                            virtualRouters.add(virtualNode.getNodeId());
+                            if (VirtualNode.NodeType.Vrouter == virtualNode.getNodeType()) {
+                                virtualRouters.add(virtualNode.getNodeId());
+                            }
                         }
-                    }
+                        break;
+                    default:
+                        break;
                 }
             }
-
-            return;
         }
     }
 
@@ -436,38 +429,34 @@ public class VNComputationUnit implements AutoCloseable {
      *
      * @author Zhigang Ji
      */
-    private class VirtualLinkChangeListener implements DataChangeListener {
+    private class VirtualLinkChangeListener implements DataTreeChangeListener<VirtualLink> {
         @Override
-        public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-            if ( null == change ) {
-                return;
-            }
+        public void onDataTreeChanged(Collection<DataTreeModification<VirtualLink>> changes) {
+            boolean needRerouting = false;
+            for (DataTreeModification<VirtualLink> change: changes) {
+                DataObjectModification<VirtualLink> rootNode = change.getRootNode();
+                switch (rootNode.getModificationType()) {
+                    case WRITE:
+                        if (rootNode.getDataBefore() == null) {
+                            VirtualLink virtualLink = rootNode.getDataAfter();
+                            Edge edge = new Edge(virtualLink);
 
-            Map<InstanceIdentifier<?>, DataObject> createdData = change.getCreatedData();
+                            routingAlgorithm.addEdge(edge);
 
-            if ( null != createdData && !createdData.isEmpty() ) {
-                boolean needRerouting = false;
-
-                for ( DataObject dataObject : createdData.values() ) {
-                    if ( dataObject instanceof VirtualLink ) {
-                        VirtualLink virtualLink = (VirtualLink)dataObject;
-                        Edge edge = new Edge(virtualLink);
-
-                        routingAlgorithm.addEdge(edge);
-
-                        if ( virtualRouters.contains(virtualLink.getSrcNodeId())
-                                && virtualRouters.contains(virtualLink.getDestNodeId()) ) {
-                            needRerouting = true;
+                            if (virtualRouters.contains(virtualLink.getSrcNodeId())
+                                    && virtualRouters.contains(virtualLink.getDestNodeId())) {
+                                needRerouting = true;
+                            }
                         }
-                    }
+                        break;
+                    default:
+                        break;
                 }
 
                 if ( needRerouting ) {
                     computeRoute();
                 }
             }
-
-            return;
         }
     }
 }

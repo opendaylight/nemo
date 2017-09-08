@@ -8,10 +8,19 @@
 
 package org.opendaylight.nemo.intent.computation;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.nemo.intent.IntentResolver;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.PhysicalNetwork;
@@ -23,14 +32,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.node.instance.PhysicalPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.common.rev151010.UserId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * The virtual network mapping unit implements the following functions:
@@ -53,19 +57,19 @@ public class PNResourcesTracker {
     /**
      * The registration for the physical node change listener.
      */
-    private ListenerRegistration<DataChangeListener> physicalNodeChangeListenerReg;
+    private ListenerRegistration<?> physicalNodeChangeListenerReg;
 
     /**
      * The registration for the physical link change listener.
      */
-    private ListenerRegistration<DataChangeListener> physicalLinkChangeListenerReg;
+    private ListenerRegistration<?> physicalLinkChangeListenerReg;
 
     public PNResourcesTracker(DataBroker dataBroker, IntentResolver intentResolver) {
         super();
 
         this.dataBroker = dataBroker;
         this.intentResolver = intentResolver;
-        physicalResourceMap = new ConcurrentHashMap<UserId, CopyOnWriteArraySet<String>>();
+        physicalResourceMap = new ConcurrentHashMap<>();
 
         InstanceIdentifier<PhysicalNode> nodeInstanceIdentifier = InstanceIdentifier
                 .builder(PhysicalNetwork.class)
@@ -78,10 +82,10 @@ public class PNResourcesTracker {
                 .child(PhysicalLink.class)
                 .build();
 
-        physicalNodeChangeListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                nodeInstanceIdentifier, new PhysicalNodeChangeListener(), DataChangeScope.BASE);
-        physicalLinkChangeListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                linkInstanceIdentifier, new PhysicalLinkChangeListener(), DataChangeScope.BASE);
+        physicalNodeChangeListenerReg = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                LogicalDatastoreType.OPERATIONAL, nodeInstanceIdentifier), new PhysicalNodeChangeListener());
+        physicalLinkChangeListenerReg = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                LogicalDatastoreType.OPERATIONAL, linkInstanceIdentifier), new PhysicalLinkChangeListener());
 
         return;
     }
@@ -123,7 +127,7 @@ public class PNResourcesTracker {
     }
 
     private synchronized void physicalResourceDown(String resourceId) {
-        Map<UserId, CopyOnWriteArraySet<String>> tmpMap = new HashMap<UserId, CopyOnWriteArraySet<String>>(physicalResourceMap);
+        Map<UserId, CopyOnWriteArraySet<String>> tmpMap = new HashMap<>(physicalResourceMap);
         for (UserId userId : tmpMap.keySet()) {
             Set<String> physicalResources = tmpMap.get(userId);
             if (physicalResources.contains(resourceId)) {
@@ -147,53 +151,41 @@ public class PNResourcesTracker {
      *
      * @author Zhigang Ji
      */
-    private class PhysicalNodeChangeListener implements DataChangeListener {
-        @Override
-        public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-            if (null == change) {
-                return;
-            }
-
-            Map<InstanceIdentifier<?>, DataObject> originalData = change.getOriginalData();
-            Map<InstanceIdentifier<?>, DataObject> updatedData = change.getUpdatedData();
-
-            if (null != updatedData && !updatedData.isEmpty()) {
-                for (InstanceIdentifier<?> identifier : updatedData.keySet()) {
-                    DataObject originData = originalData.get(identifier);
-                    DataObject currentData = updatedData.get(identifier);
-                    if (originData != null && originData instanceof PhysicalNode) {
-                        handleNodeUpdate((PhysicalNode) originData, (PhysicalNode) currentData);
-                    }
-                }
-            }
-
-            Set<InstanceIdentifier<?>> removedPaths = change.getRemovedPaths();
-
-            if (null != removedPaths && !removedPaths.isEmpty()) {
-                DataObject dataObject;
-                for (InstanceIdentifier<?> instanceId : removedPaths) {
-                    dataObject = originalData.get(instanceId);
-                    if (dataObject != null && dataObject instanceof PhysicalNode) {
-                        String resourceId = ((PhysicalNode) dataObject).getKey().toString();
-                        log.debug("Physical node {} removed.", resourceId);
-                        physicalResourceDown(resourceId);
-                    }
-
-                }
-            }
-        }
-
+    private class PhysicalNodeChangeListener implements DataTreeChangeListener<PhysicalNode> {
         private void handleNodeUpdate(PhysicalNode originNode, PhysicalNode currentNode) {
             log.debug("Handle node {} update.", originNode.getNodeId().getValue());
             List<PhysicalPort> originPorts = originNode.getPhysicalPort();
-            List<PhysicalPort> currentPorts = currentNode.getPhysicalPort() == null ? new ArrayList<PhysicalPort>() : currentNode.getPhysicalPort();
-            if (originPorts != null)
+            List<PhysicalPort> currentPorts = currentNode.getPhysicalPort() == null ? new ArrayList<>() : currentNode.getPhysicalPort();
+            if (originPorts != null) {
                 for (PhysicalPort physicalPort : originPorts) {
                     if (!currentPorts.contains(physicalPort)) {
                         log.debug("Physical port {} removed.", physicalPort.getPortId().getValue());
                         physicalResourceDown(physicalPort.getKey().toString());
                     }
                 }
+            }
+        }
+
+        @Override
+        public void onDataTreeChanged(Collection<DataTreeModification<PhysicalNode>> changes) {
+            for (DataTreeModification<PhysicalNode> change: changes) {
+                DataObjectModification<PhysicalNode> rootNode = change.getRootNode();
+                PhysicalNode originalNode = rootNode.getDataBefore();
+                switch (rootNode.getModificationType()) {
+                    case WRITE:
+                        if (originalNode != null) {
+                            handleNodeUpdate(originalNode, rootNode.getDataAfter());
+                        }
+                        break;
+                    case DELETE:
+                        String resourceId = originalNode.getKey().toString();
+                        log.debug("Physical node {} removed.", resourceId);
+                        physicalResourceDown(resourceId);
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 
@@ -203,47 +195,32 @@ public class PNResourcesTracker {
      *
      * @author Zhigang Ji
      */
-    private class PhysicalLinkChangeListener implements DataChangeListener {
-        @Override
-        public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-            if (null == change) {
-                return;
-            }
-
-            Map<InstanceIdentifier<?>, DataObject> originalData = change.getOriginalData();
-            Map<InstanceIdentifier<?>, DataObject> updatedData = change.getUpdatedData();
-
-            if (null != updatedData && !updatedData.isEmpty()) {
-                for (InstanceIdentifier<?> identifier : updatedData.keySet()) {
-                    DataObject originData = originalData.get(identifier);
-                    DataObject currentDate = updatedData.get(identifier);
-                    if (originData != null && originData instanceof PhysicalLink) {
-                        handleLinkUpdate((PhysicalLink) originalData, (PhysicalLink) currentDate);
-                    }
-                }
-            }
-
-            Set<InstanceIdentifier<?>> removedPaths = change.getRemovedPaths();
-
-            if (null != removedPaths && !removedPaths.isEmpty()) {
-                DataObject dataObject;
-
-                for (InstanceIdentifier<?> instanceId : removedPaths) {
-                    dataObject = originalData.get(instanceId);
-                    if (dataObject != null && dataObject instanceof PhysicalLink) {
-                        String resourceId = ((PhysicalLink) dataObject).getKey().toString();
-                        log.debug("Physical link {} removed.", resourceId);
-                        physicalResourceDown(resourceId);
-                    }
-                }
-            }
-        }
-
+    private class PhysicalLinkChangeListener implements DataTreeChangeListener<PhysicalLink> {
         private void handleLinkUpdate(PhysicalLink originLink, PhysicalLink currentLink) {
             log.debug("Handle physical link {} update.", originLink.getLinkId().getValue());
             //TODO
         }
+
+        @Override
+        public void onDataTreeChanged(Collection<DataTreeModification<PhysicalLink>> changes) {
+            for (DataTreeModification<PhysicalLink> change: changes) {
+                DataObjectModification<PhysicalLink> rootNode = change.getRootNode();
+                PhysicalLink originalLink = rootNode.getDataBefore();
+                switch (rootNode.getModificationType()) {
+                    case WRITE:
+                        if (originalLink != null) {
+                            handleLinkUpdate(originalLink, rootNode.getDataAfter());
+                        }
+                        break;
+                    case DELETE:
+                        String resourceId = originalLink.getKey().toString();
+                        log.debug("Physical link {} removed.", resourceId);
+                        physicalResourceDown(resourceId);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
     }
-
-
 }

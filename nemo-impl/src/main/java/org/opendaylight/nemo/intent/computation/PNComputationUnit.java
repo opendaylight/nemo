@@ -8,18 +8,18 @@
 
 package org.opendaylight.nemo.intent.computation;
 
+import com.google.common.base.Optional;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.nemo.intent.algorithm.Edge;
 import org.opendaylight.nemo.intent.algorithm.RoutingAlgorithm;
@@ -37,12 +37,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.eng
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.PhysicalNodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.nemo.engine.common.rev151010.PhysicalPathId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 /**
  * The physical network computation unit implements the following functions:
@@ -56,8 +53,6 @@ import com.google.common.base.Optional;
 public class PNComputationUnit implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(PNComputationUnit.class);
 
-    private final DataBroker dataBroker;
-
     /**
      * The routing algorithm instance.
      */
@@ -66,22 +61,21 @@ public class PNComputationUnit implements AutoCloseable {
     /**
      * The registration for the physical node change listener.
      */
-    private ListenerRegistration<DataChangeListener> physicalNodeChangeListenerReg;
+    private ListenerRegistration<?> physicalNodeChangeListenerReg;
 
     /**
      * The registration for the physical link change listener.
      */
-    private ListenerRegistration<DataChangeListener> physicalLinkChangeListenerReg;
+    private ListenerRegistration<?> physicalLinkChangeListenerReg;
 
     /**
      * The registration for the physical path change listener.
      */
-    private ListenerRegistration<DataChangeListener> physicalPathChangeListenerReg;
+    private ListenerRegistration<?> physicalPathChangeListenerReg;
 
     public PNComputationUnit(DataBroker dataBroker) {
         super();
 
-        this.dataBroker = dataBroker;
         routingAlgorithm = new RoutingAlgorithm();
 
         InstanceIdentifier<PhysicalNode> physicalNodeIid = InstanceIdentifier
@@ -100,12 +94,12 @@ public class PNComputationUnit implements AutoCloseable {
                 .child(PhysicalPath.class)
                 .build();
 
-        physicalNodeChangeListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                physicalNodeIid, new PhysicalNodeChangeListener(), DataChangeScope.BASE);
-        physicalLinkChangeListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                physicalLinkIid, new PhysicalLinkChangeListener(), DataChangeScope.BASE);
-        physicalPathChangeListenerReg = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                physicalPathIid, new PhysicalPathChangeListener(), DataChangeScope.BASE);
+        physicalNodeChangeListenerReg = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                LogicalDatastoreType.OPERATIONAL, physicalNodeIid), new PhysicalNodeChangeListener());
+        physicalLinkChangeListenerReg = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                LogicalDatastoreType.OPERATIONAL, physicalLinkIid), new PhysicalLinkChangeListener());
+        physicalPathChangeListenerReg = dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(
+                LogicalDatastoreType.OPERATIONAL, physicalPathIid), new PhysicalPathChangeListener());
 
         ReadOnlyTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction();
 
@@ -179,7 +173,7 @@ public class PNComputationUnit implements AutoCloseable {
         }
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink> physicalLinks =
-                new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink>(edges.size());
+                new ArrayList<>(edges.size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink physicalLink;
         long metric = 0;
         long delay = 0;
@@ -224,7 +218,7 @@ public class PNComputationUnit implements AutoCloseable {
         }
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink> physicalLinks =
-                new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink>(edges.size());
+                new ArrayList<>(edges.size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink physicalLink;
         long metric = 0;
         long delay = 0;
@@ -277,45 +271,27 @@ public class PNComputationUnit implements AutoCloseable {
      *
      * @author Zhigang Ji
      */
-    private class PhysicalNodeChangeListener implements DataChangeListener {
+    private class PhysicalNodeChangeListener implements DataTreeChangeListener<PhysicalNode> {
         @Override
-        public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-            if ( null == change ) {
-                return;
-            }
+        public void onDataTreeChanged(Collection<DataTreeModification<PhysicalNode>> changes) {
+            for (DataTreeModification<PhysicalNode> change: changes) {
+                DataObjectModification<PhysicalNode> rootNode = change.getRootNode();
+                switch (rootNode.getModificationType()) {
+                    case WRITE:
+                        if (rootNode.getDataBefore() == null) {
+                            PhysicalNode physicalNode = rootNode.getDataAfter();
+                            Vertex vertex = new Vertex(physicalNode.getNodeId().getValue());
 
-            Map<InstanceIdentifier<?>, DataObject> createdData = change.getCreatedData();
-
-            if ( null != createdData && !createdData.isEmpty() ) {
-                PhysicalNode physicalNode;
-                Vertex vertex;
-
-                for ( DataObject dataObject : createdData.values() ) {
-                    if ( dataObject instanceof PhysicalNode ) {
-                        physicalNode = (PhysicalNode)dataObject;
-                        vertex = new Vertex(physicalNode.getNodeId().getValue());
-
-                        routingAlgorithm.addVertex(vertex);
-                    }
+                            routingAlgorithm.addVertex(vertex);
+                        }
+                        break;
+                    case DELETE:
+                        routingAlgorithm.removeVertex(rootNode.getDataBefore().getNodeId().getValue());
+                        break;
+                    default:
+                        break;
                 }
             }
-
-            Map<InstanceIdentifier<?>, DataObject> originalData = change.getOriginalData();
-            Set<InstanceIdentifier<?>> removedPaths = change.getRemovedPaths();
-
-            if ( null != removedPaths && !removedPaths.isEmpty() ) {
-                DataObject dataObject;
-
-                for ( InstanceIdentifier<?> instanceId : removedPaths ) {
-                    dataObject = originalData.get(instanceId);
-
-                    if ( null != dataObject && dataObject instanceof PhysicalNode ) {
-                        routingAlgorithm.removeVertex(((PhysicalNode)dataObject).getNodeId().getValue());
-                    }
-                }
-            }
-
-            return;
         }
     }
 
@@ -325,51 +301,26 @@ public class PNComputationUnit implements AutoCloseable {
      *
      * @author Zhigang Ji
      */
-    private class PhysicalLinkChangeListener implements DataChangeListener {
+    private class PhysicalLinkChangeListener implements DataTreeChangeListener<PhysicalLink> {
         @Override
-        public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-            if ( null == change ) {
-                return;
-            }
-
-            Map<InstanceIdentifier<?>, DataObject> createdData = change.getCreatedData();
-
-            if ( null != createdData && !createdData.isEmpty() ) {
-                for ( DataObject dataObject : createdData.values() ) {
-                    if ( dataObject instanceof PhysicalLink ) {
-                        PhysicalLink physicalLink = (PhysicalLink)dataObject;
-                        routingAlgorithm.addEdge(new Edge(physicalLink));
-                    }
+        public void onDataTreeChanged(Collection<DataTreeModification<PhysicalLink>> changes) {
+            for (DataTreeModification<PhysicalLink> change: changes) {
+                DataObjectModification<PhysicalLink> rootNode = change.getRootNode();
+                switch (rootNode.getModificationType()) {
+                    case WRITE:
+                        if (rootNode.getDataBefore() == null) {
+                            routingAlgorithm.addEdge(new Edge(rootNode.getDataAfter()));
+                        } else {
+                            routingAlgorithm.updateEdge(new Edge(rootNode.getDataAfter()));
+                        }
+                        break;
+                    case DELETE:
+                        routingAlgorithm.removeEdge(rootNode.getDataBefore().getLinkId().getValue());
+                        break;
+                    default:
+                        break;
                 }
             }
-
-            Map<InstanceIdentifier<?>, DataObject> updatedData = change.getUpdatedData();
-
-            if ( null != updatedData && !updatedData.isEmpty() ) {
-                for ( DataObject dataObject : updatedData.values() ) {
-                    if ( dataObject instanceof PhysicalLink ) {
-                        PhysicalLink physicalLink = (PhysicalLink)dataObject;
-                        routingAlgorithm.updateEdge(new Edge(physicalLink));
-                    }
-                }
-            }
-
-            Map<InstanceIdentifier<?>, DataObject> originalData = change.getOriginalData();
-            Set<InstanceIdentifier<?>> removedPaths = change.getRemovedPaths();
-
-            if ( null != removedPaths && !removedPaths.isEmpty() ) {
-                DataObject dataObject;
-
-                for ( InstanceIdentifier<?> instanceId : removedPaths ) {
-                    dataObject = originalData.get(instanceId);
-
-                    if ( null != dataObject && dataObject instanceof PhysicalLink ) {
-                        routingAlgorithm.removeEdge(((PhysicalLink)dataObject).getLinkId().getValue());
-                    }
-                }
-            }
-
-            return;
         }
     }
 
@@ -379,50 +330,37 @@ public class PNComputationUnit implements AutoCloseable {
      *
      * @author Zhigang Ji
      */
-    private class PhysicalPathChangeListener implements DataChangeListener {
+    private class PhysicalPathChangeListener implements DataTreeChangeListener<PhysicalPath> {
         @Override
-        public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-            if ( null == change ) {
-                return;
-            }
-
-            Map<InstanceIdentifier<?>, DataObject> originalData = change.getOriginalData();
-            Set<InstanceIdentifier<?>> removedPaths = change.getRemovedPaths();
-
-            if ( null != removedPaths && !removedPaths.isEmpty() ) {
-                DataObject dataObject;
+        public void onDataTreeChanged(Collection<DataTreeModification<PhysicalPath>> changes) {
+            for (DataTreeModification<PhysicalPath> change: changes) {
+                DataObjectModification<PhysicalPath> rootNode = change.getRootNode();
                 PhysicalPath physicalPath;
-                long bandwidth;
-                List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink> physicalLinks;
-                Edge edge;
+                switch (rootNode.getModificationType()) {
+                    case DELETE:
+                        physicalPath = rootNode.getDataBefore();
+                        long bandwidth = physicalPath.getBandwidth();
 
-                for ( InstanceIdentifier<?> instanceId : removedPaths ) {
-                    dataObject = originalData.get(instanceId);
+                        if (0 < bandwidth) {
+                            List<org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink> physicalLinks = physicalPath
+                                    .getPhysicalLink();
 
-                    if ( null != dataObject && dataObject instanceof PhysicalPath ) {
-                        physicalPath = (PhysicalPath)dataObject;
-                        bandwidth = physicalPath.getBandwidth();
+                            if (null != physicalLinks && !physicalLinks.isEmpty()) {
+                                for (org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink physicalLink : physicalLinks) {
+                                    Edge edge = routingAlgorithm.getEdge(physicalLink.getLinkId().getValue());
 
-                        if ( 0 < bandwidth ) {
-                            physicalLinks = physicalPath.getPhysicalLink();
-
-                            if ( null != physicalLinks && !physicalLinks.isEmpty() ) {
-                                for ( org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.generic.physical.network.rev151010.physical.path.instance.PhysicalLink
-                                        physicalLink : physicalLinks ) {
-                                    edge = routingAlgorithm.getEdge(physicalLink.getLinkId().getValue());
-
-                                    if ( null != edge ) {
+                                    if (null != edge) {
                                         edge.setBandwidth(edge.getBandwidth() + bandwidth);
                                         routingAlgorithm.updateEdge(edge);
                                     }
                                 }
                             }
                         }
-                    }
+                        break;
+                    default:
+                        break;
                 }
             }
-
-            return;
         }
     }
 }

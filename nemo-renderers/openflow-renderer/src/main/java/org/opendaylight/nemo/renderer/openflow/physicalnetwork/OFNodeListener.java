@@ -8,21 +8,18 @@
 
 package org.opendaylight.nemo.renderer.openflow.physicalnetwork;
 
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import java.util.Collection;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by hj on 11/5/15.
  */
-public class OFNodeListener implements DataChangeListener {
+public class OFNodeListener implements DataTreeChangeListener<Node> {
     private static final Logger log = LoggerFactory.getLogger(OFNodeListener.class);
     final private PhysicalNetworkAdapter pnConverter;
 
@@ -31,52 +28,24 @@ public class OFNodeListener implements DataChangeListener {
     }
 
     @Override
-    public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-        if (null == change) {
-            return;
-        }
-        Node tmpOfNode = null;
-
-        Map<InstanceIdentifier<?>, DataObject> createdData = change.getCreatedData();
-        if (null != createdData && !createdData.isEmpty()) {
-            for (DataObject data : createdData.values()) {
-                if (!(data instanceof Node)) {
-                    log.warn("PFNodeListener accept an [{}] created event.", data);
+    public void onDataTreeChanged(Collection<DataTreeModification<Node>> changes) {
+        for (DataTreeModification<Node> change: changes) {
+            DataObjectModification<Node> rootNode = change.getRootNode();
+            switch (rootNode.getModificationType()) {
+                case WRITE:
+                case SUBTREE_MODIFIED:
+                    final Node updatedNode = rootNode.getDataAfter();
+                    log.debug("OF node updated:{}", updatedNode.getKey());
+                    pnConverter.ofNodeAdded(updatedNode);
                     break;
-                }
-                tmpOfNode = (Node)data;
-                log.debug("OF node added:{}",tmpOfNode.getKey());
-                pnConverter.ofNodeAdded(tmpOfNode);
-            }
-        }
-
-        Map<InstanceIdentifier<?>, DataObject> updateData = change.getUpdatedData();
-        if (null != updateData && !updateData.isEmpty()) {
-            for (DataObject data : updateData.values()) {
-                if (!(data instanceof Node)) {
-                    log.warn("PFNodeListener accept an [{}] update event.", data);
+                case DELETE:
+                    final Node deletedNode = rootNode.getDataBefore();
+                    log.debug("OF node removed:{}", deletedNode.getKey());
+                    pnConverter.ofNodeRemoved(deletedNode);
                     break;
-                }
-                tmpOfNode = (Node)data;
-                log.debug("OF node updated:{}",tmpOfNode.getKey());
-                pnConverter.ofNodeAdded(tmpOfNode);
+                default:
+                    break;
             }
         }
-
-        Map<InstanceIdentifier<?>, DataObject> originalData = change.getOriginalData();
-        Set<InstanceIdentifier<?>> removedPaths = change.getRemovedPaths();
-
-        if ( null != removedPaths && !removedPaths.isEmpty() ) {
-            DataObject dataObject ;
-            for ( InstanceIdentifier<?> instanceId : removedPaths ) {
-                dataObject = originalData.get(instanceId);
-
-                if ( null != dataObject && dataObject instanceof Node) {
-                    log.debug("OF node removed:{}",((Node)dataObject).getKey());
-                    pnConverter.ofNodeRemoved((Node)dataObject);
-                }
-            }
-        }
-
     }
 }
