@@ -12,13 +12,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <parent>
     <groupId>org.opendaylight.controller</groupId>
     <artifactId>config-parent</artifactId>
-    <version>0.6.2-SNAPSHOT</version>
+    <version>0.6.2-Carbon</version>
     <relativePath />
   </parent>
 
   <groupId>org.opendaylight.nemo</groupId>
   <artifactId>cli-renderer</artifactId>
-  <version>1.2.2-SNAPSHOT</version>
+  <version>1.2.2-Carbon</version>
   <packaging>bundle</packaging>
   <!-- <name> formatting is used by autorelease to parse and notify projects on
        build failure. Please do not modify this unless you have a good reason. -->
@@ -122,7 +122,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
           <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
             <artifactId>maven-sal-api-gen-plugin</artifactId>
-            <version>0.10.2-SNAPSHOT</version>
+            <version>0.10.2-Carbon</version>
             <type>jar</type>
           </dependency>
         </dependencies>
