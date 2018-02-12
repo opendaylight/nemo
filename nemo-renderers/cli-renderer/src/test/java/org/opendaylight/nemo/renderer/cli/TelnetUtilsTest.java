@@ -8,36 +8,21 @@
 
 package org.opendaylight.nemo.renderer.cli;
 
+import static org.mockito.Mockito.mock;
+
+import java.lang.reflect.Method;
 import junit.framework.TestCase;
+import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.handler.codec.string.StringDecoder;
-import org.jboss.netty.handler.codec.string.StringEncoder;
-import org.jboss.netty.channel.*;
 
-import java.lang.reflect.Method;
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sun.java2d.pipe.AAShapePipe;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 /**
  * Created by zhangmeng on 2015/12/8.
  */
 public class TelnetUtilsTest extends TestCase {
     private TelnetUtils telnetUtils;
+    @Override
     @Before
     public void setUp() throws Exception {
         telnetUtils = new TelnetUtils();

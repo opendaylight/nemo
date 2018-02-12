@@ -8,16 +8,22 @@
 
 package org.opendaylight.nemo.renderer.cli;
 
+import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
 import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.handler.codec.string.StringDecoder;
 import org.jboss.netty.handler.codec.string.StringEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
 
 /**
  *
@@ -43,6 +49,7 @@ public class TelnetUtils implements AutoCloseable {
      *
      * @throws Exception
      */
+    @Override
     public void close() throws Exception {
         // TODO
 
@@ -138,14 +145,12 @@ public class TelnetUtils implements AutoCloseable {
                 Executors.newCachedThreadPool(),
                 Executors.newCachedThreadPool());
         ClientBootstrap bootstrap = new ClientBootstrap(factory);
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-            public ChannelPipeline getPipeline() {
-                ChannelPipeline p = Channels.pipeline();
-                p.addLast("encode", new StringEncoder());
-                p.addLast("decode", new StringDecoder());
-                p.addLast("handler", new ClientHandlerForClearOldConfig());
-                return p;
-            }
+        bootstrap.setPipelineFactory(() -> {
+            ChannelPipeline p = Channels.pipeline();
+            p.addLast("encode", new StringEncoder());
+            p.addLast("decode", new StringDecoder());
+            p.addLast("handler", new ClientHandlerForClearOldConfig());
+            return p;
         });
         bootstrap.setOption("tcpNoDelay" , true);
         bootstrap.setOption("keepAlive", true);
@@ -174,14 +179,12 @@ public class TelnetUtils implements AutoCloseable {
                 Executors.newCachedThreadPool(),
                 Executors.newCachedThreadPool());
         ClientBootstrap bootstrap = new ClientBootstrap(factory);
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-            public ChannelPipeline getPipeline() {
-                ChannelPipeline p = Channels.pipeline();
-                p.addLast("encode", new StringEncoder());
-                p.addLast("decode", new StringDecoder());
-                p.addLast("handler", new ClientHandlerForClearOldConfig());
-                return p;
-            }
+        bootstrap.setPipelineFactory(() -> {
+            ChannelPipeline p = Channels.pipeline();
+            p.addLast("encode", new StringEncoder());
+            p.addLast("decode", new StringDecoder());
+            p.addLast("handler", new ClientHandlerForClearOldConfig());
+            return p;
         });
         bootstrap.setOption("tcpNoDelay" , true);
         bootstrap.setOption("keepAlive", true);
@@ -210,7 +213,7 @@ public class TelnetUtils implements AutoCloseable {
 
         @Override
         public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)throws Exception {
-            String str = (String)(e.getMessage());
+            String str = (String)e.getMessage();
             System.out.println(e.getMessage());
             if(str.contains("Username")){
                 e.getChannel().write("lfk\n");
@@ -235,9 +238,9 @@ public class TelnetUtils implements AutoCloseable {
                 //System.out.println("------------b3----------");
                 e.getChannel().write("undo ip vpn-instance vpn1\n");
             }
-            else if((isClearOver() == Boolean.FALSE)
-                    &&(!str.contains("Error: The VPN instance does not exist."))
-                    &&(!str.contains("Error: The VPN instance is in stale state."))){
+            else if(isClearOver() == Boolean.FALSE
+                    &&!str.contains("Error: The VPN instance does not exist.")
+                    &&!str.contains("Error: The VPN instance is in stale state.")){
                 //System.out.println("------------b4----------");
                 e.getChannel().write("undo ip vpn-instance vpn1\n");
             }
@@ -261,14 +264,12 @@ public class TelnetUtils implements AutoCloseable {
                 Executors.newCachedThreadPool(),
                 Executors.newCachedThreadPool());
         ClientBootstrap bootstrap = new ClientBootstrap(factory);
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-            public ChannelPipeline getPipeline() {
-                ChannelPipeline p = Channels.pipeline();
-                p.addLast("encode",new StringEncoder());
-                p.addLast("decode",new StringDecoder());
-                p.addLast("handler",new ClientHandlerForSendNewConfig());
-                return p;
-            }
+        bootstrap.setPipelineFactory(() -> {
+            ChannelPipeline p = Channels.pipeline();
+            p.addLast("encode",new StringEncoder());
+            p.addLast("decode",new StringDecoder());
+            p.addLast("handler",new ClientHandlerForSendNewConfig());
+            return p;
         });
         bootstrap.setOption("connectTimeoutMillis", 6000);
         bootstrap.setOption("tcpNoDelay" , true);
@@ -314,7 +315,7 @@ public class TelnetUtils implements AutoCloseable {
 
         @Override
         public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-            String str = (String)(e.getMessage());
+            String str = (String)e.getMessage();
             System.out.println(e.getMessage());
             if(str.contains("Username")){
                 e.getChannel().write("lfk\n");
