@@ -16,8 +16,8 @@ import static org.junit.Assert.*;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.opendaylight.controller.liblldp.BitBufferHelper;
-import org.opendaylight.controller.liblldp.Packet;
+import org.opendaylight.openflowplugin.libraries.liblldp.BitBufferHelper;
+import org.opendaylight.openflowplugin.libraries.liblldp.Packet;
 import org.opendaylight.nemo.renderer.openflow.utils.ARP;
 
 import java.util.HashMap;
@@ -32,6 +32,7 @@ public class ARPTest extends TestCase {
     private ARP arp1;
     private ARP arp2;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         arp = new ARP();

@@ -11,10 +11,10 @@ import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.controller.liblldp.EtherTypes;
-import org.opendaylight.controller.liblldp.Ethernet;
-import org.opendaylight.controller.liblldp.NetUtils;
-import org.opendaylight.controller.liblldp.PacketException;
+import org.opendaylight.openflowplugin.libraries.liblldp.EtherTypes;
+import org.opendaylight.openflowplugin.libraries.liblldp.Ethernet;
+import org.opendaylight.openflowplugin.libraries.liblldp.NetUtils;
+import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.nemo.renderer.openflow.FlowUtils;
 import org.opendaylight.nemo.renderer.openflow.physicalnetwork.OFPacketInListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
@@ -33,6 +33,7 @@ import static org.mockito.Mockito.*;
 public class OFPacketInListenerTest extends TestCase {
     private OFPacketInListener ofPacketInListener;
     private FlowUtils flowUtils;
+    @Override
     @Before
     public void setUp() throws Exception {
         flowUtils = mock(FlowUtils.class);

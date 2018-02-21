@@ -8,17 +8,17 @@
 
 package org.opendaylight.nemo.renderer.openflow.utils;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.opendaylight.controller.liblldp.BitBufferHelper;
-import org.opendaylight.controller.liblldp.Packet;
-
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.opendaylight.openflowplugin.libraries.liblldp.BitBufferHelper;
+import org.opendaylight.openflowplugin.libraries.liblldp.Packet;
+
 /**
- * Class that represents the ARP packet objects
+ * Class that represents the ARP packet objects.
  */
 public class ARP extends Packet {
     private static final String HWTYPE = "HardwareType";
@@ -37,7 +37,7 @@ public class ARP extends Packet {
 
     public static short PROTO_TYPE_IP = 0x800;
 
-    private static Map<String, Pair<Integer, Integer>> fieldCoordinates = new LinkedHashMap<String, Pair<Integer, Integer>>() {
+    private static final Map<String, Pair<Integer, Integer>> FIELD_COORDINATES = new LinkedHashMap<String, Pair<Integer, Integer>>() {
         private static final long serialVersionUID = 1L;
         {
             put(HWTYPE, new ImmutablePair<Integer, Integer>(0, 16));
@@ -52,7 +52,7 @@ public class ARP extends Packet {
 
         }
     };
-    private Map<String, byte[]> fieldValues;
+    private final Map<String, byte[]> fieldValues;
 
     /**
      * Default constructor that creates and sets the HashMap
@@ -60,7 +60,7 @@ public class ARP extends Packet {
     public ARP() {
         super();
         fieldValues = new HashMap<String, byte[]>();
-        hdrFieldCoordMap = fieldCoordinates;
+        hdrFieldCoordMap = FIELD_COORDINATES;
         hdrFieldsMap = fieldValues;
     }
 
@@ -71,7 +71,7 @@ public class ARP extends Packet {
     public ARP(boolean writeAccess) {
         super(writeAccess);
         fieldValues = new HashMap<String, byte[]>();
-        hdrFieldCoordMap = fieldCoordinates;
+        hdrFieldCoordMap = FIELD_COORDINATES;
         hdrFieldsMap = fieldValues;
     }
 

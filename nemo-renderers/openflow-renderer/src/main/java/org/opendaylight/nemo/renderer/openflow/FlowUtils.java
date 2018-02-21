@@ -9,10 +9,10 @@
 package org.opendaylight.nemo.renderer.openflow;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.opendaylight.controller.liblldp.Ethernet;
-import org.opendaylight.controller.liblldp.HexEncode;
-import org.opendaylight.controller.liblldp.NetUtils;
-import org.opendaylight.controller.liblldp.PacketException;
+import org.opendaylight.openflowplugin.libraries.liblldp.Ethernet;
+import org.opendaylight.openflowplugin.libraries.liblldp.HexEncode;
+import org.opendaylight.openflowplugin.libraries.liblldp.NetUtils;
+import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -147,25 +147,25 @@ public class FlowUtils implements AutoCloseable {
     private final DataBroker dataBroker;
     private final PacketProcessingService packetProcessingService;
 
-    private Map<PhysicalNodeId, MplsLabelGenerator> mplsGenerators;
-    private Map<PhysicalNodeId, MeterIdGenerator> meterIdGenerators;
-    private Map<PhysicalPathId, List<Integer>> mplsLabelsOfPhysicalPaths;
-    private Map<PhysicalPathId, Long> meterIdsOfPhysicalPaths;
-	private Map<UserId, Long> metadatas;
+    private final Map<PhysicalNodeId, MplsLabelGenerator> mplsGenerators;
+    private final Map<PhysicalNodeId, MeterIdGenerator> meterIdGenerators;
+    private final Map<PhysicalPathId, List<Integer>> mplsLabelsOfPhysicalPaths;
+    private final Map<PhysicalPathId, Long> meterIdsOfPhysicalPaths;
+	private final Map<UserId, Long> metadatas;
     private long currentMetadata = 0;
 
-    private Map<UserId, User> users;
-    private Map<UserId, UserIntentVnMapping> userIntentVnMappings;
-    private Map<UserId, UserVnPnMapping> userVnPnMappings;
+    private final Map<UserId, User> users;
+    private final Map<UserId, UserIntentVnMapping> userIntentVnMappings;
+    private final Map<UserId, UserVnPnMapping> userVnPnMappings;
 
     private PhysicalNetworkHelper physicalNetworkHelper;
-    private Map<VirtualNetworkId, VirtualNetworkHelper> virtualNetworkHelpers;
-    private ArpHandlerHelper arpHandlerHelper;
+    private final Map<VirtualNetworkId, VirtualNetworkHelper> virtualNetworkHelpers;
+    private final ArpHandlerHelper arpHandlerHelper;
 
     // liushixing
-    private Map<UserId, List<InstanceIdentifier<Flow>>> flowIdsOfUsers;
-    private Map<UserId, List<InstanceIdentifier<Meter>>> meterIdIdsOfUsers;
-    private PhyConfigLoader phyConfigLoader;
+    private final Map<UserId, List<InstanceIdentifier<Flow>>> flowIdsOfUsers;
+    private final Map<UserId, List<InstanceIdentifier<Meter>>> meterIdIdsOfUsers;
+    private final PhyConfigLoader phyConfigLoader;
 
     public FlowUtils(DataBroker dataBroker,
                      PacketProcessingService packetProcessingService,
@@ -333,7 +333,7 @@ public class FlowUtils implements AutoCloseable {
         Ethernet ethernet = new Ethernet();
 
         try {
-            ethernet.deserialize(payload, 0, NetUtils.NumBitsInAByte * payload.length);
+            ethernet.deserialize(payload, 0, NetUtils.NUM_BITS_IN_A_BYTE * payload.length);
         } catch ( PacketException exception ) {
             LOG.error("Failed to decode the received packet to ethernet packet.");
 
@@ -344,7 +344,7 @@ public class FlowUtils implements AutoCloseable {
 
         try {
             arp.deserialize(ethernet.getRawPayload(),
-                    0, NetUtils.NumBitsInAByte * ethernet.getRawPayload().length);
+                    0, NetUtils.NUM_BITS_IN_A_BYTE * ethernet.getRawPayload().length);
         } catch ( PacketException exception ) {
             LOG.error("Failed to decode the raw payload of ethernet packet to arp packet.");
 
@@ -3626,10 +3626,10 @@ public class FlowUtils implements AutoCloseable {
      * @author Zhigang Ji
      */
     private class PhysicalNetworkHelper {
-        private Map<PhysicalNodeId, PhysicalNode> physicalNodeMap;
-        private Map<PhysicalLinkId, PhysicalLink> physicalLinkMap;
-        private Map<PhysicalPathId, PhysicalPath> physicalPathMap;
-        private Map<PhysicalNodeId, Map<PhysicalPortId, PhysicalPort>> physicalPortMap;
+        private final Map<PhysicalNodeId, PhysicalNode> physicalNodeMap;
+        private final Map<PhysicalLinkId, PhysicalLink> physicalLinkMap;
+        private final Map<PhysicalPathId, PhysicalPath> physicalPathMap;
+        private final Map<PhysicalNodeId, Map<PhysicalPortId, PhysicalPort>> physicalPortMap;
 
         public PhysicalNetworkHelper(PhysicalNetwork physicalNetwork) {
             physicalNodeMap = new HashMap<PhysicalNodeId, PhysicalNode>();
@@ -3754,17 +3754,17 @@ public class FlowUtils implements AutoCloseable {
      * @author Zhigang Ji
      */
     private class VirtualNetworkHelper {
-        private Map<VirtualNodeId, VirtualNode> virtualNodeMap;
-        private Map<VirtualLinkId, VirtualLink> virtualLinkMap;
-        private Map<VirtualPathId, VirtualPath> virtualPathMap;
-        private Map<VirtualNodeId, VirtualNode> virtualRouterMap;
-        private Map<VirtualNodeId, Map<VirtualPortId, VirtualPort>> virtualPortMap;
-        private Map<VirtualNodeId, VirtualPort> layer2ExternalVirtualPortMap;
-        private Map<VirtualNodeId, VirtualPort> layer3ExternalVirtualPortMap;
-        private Map<VirtualNodeId, Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>>> virtualSwitchConnectedInternalVirtualPortMap;
-        private Map<VirtualNodeId, Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>>> virtualRouterConnectedInternalVirtualPortMap;
-        private Map<IpAddress, VirtualArp> ipAddressKeyVirtualArpMap;
-        private Map<MacAddress, VirtualArp> macAddressKeyVirtualArpMap;
+        private final Map<VirtualNodeId, VirtualNode> virtualNodeMap;
+        private final Map<VirtualLinkId, VirtualLink> virtualLinkMap;
+        private final Map<VirtualPathId, VirtualPath> virtualPathMap;
+        private final Map<VirtualNodeId, VirtualNode> virtualRouterMap;
+        private final Map<VirtualNodeId, Map<VirtualPortId, VirtualPort>> virtualPortMap;
+        private final Map<VirtualNodeId, VirtualPort> layer2ExternalVirtualPortMap;
+        private final Map<VirtualNodeId, VirtualPort> layer3ExternalVirtualPortMap;
+        private final Map<VirtualNodeId, Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>>> virtualSwitchConnectedInternalVirtualPortMap;
+        private final Map<VirtualNodeId, Map<VirtualNodeId, Map.Entry<VirtualPort, VirtualLink>>> virtualRouterConnectedInternalVirtualPortMap;
+        private final Map<IpAddress, VirtualArp> ipAddressKeyVirtualArpMap;
+        private final Map<MacAddress, VirtualArp> macAddressKeyVirtualArpMap;
 
         public VirtualNetworkHelper(VirtualNetwork virtualNetwork) {
             virtualNodeMap = new HashMap<VirtualNodeId, VirtualNode>();

@@ -22,10 +22,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.nemo.renderer.openflow.FlowUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.opendaylight.controller.liblldp.Ethernet;
-import org.opendaylight.controller.liblldp.HexEncode;
-import org.opendaylight.controller.liblldp.NetUtils;
-import org.opendaylight.controller.liblldp.PacketException;
+import org.opendaylight.openflowplugin.libraries.liblldp.Ethernet;
+import org.opendaylight.openflowplugin.libraries.liblldp.HexEncode;
+import org.opendaylight.openflowplugin.libraries.liblldp.NetUtils;
+import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -148,6 +148,7 @@ public class FlowUtilsTest extends TestCase {
     private DataBroker dataBroker;
     private PacketProcessingService packetProcessingService;
     private PhyConfigLoader phyConfigLoader;
+    @Override
     @Before
     public void setUp() throws Exception {
         dataBroker = mock(DataBroker.class);
