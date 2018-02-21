@@ -25,7 +25,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <name>ODL :: nemo :: ${project.artifactId}</name>
 
   <properties>
-    <liblldp.version>0.14.0-SNAPSHOT</liblldp.version>
     <openflowplugin.version>0.6.0-SNAPSHOT</openflowplugin.version>
     <sonar.jacoco.reportPath>target/code-coverage/jacoco.exec</sonar.jacoco.reportPath>
     <sonar.jacoco.itReportPath>target/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
@@ -53,9 +52,9 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <artifactId>model-topology</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.controller</groupId>
+      <groupId>org.opendaylight.openflowplugin.libraries</groupId>
       <artifactId>liblldp</artifactId>
-      <version>${liblldp.version}</version>
+      <version>${openflowplugin.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-net</groupId>

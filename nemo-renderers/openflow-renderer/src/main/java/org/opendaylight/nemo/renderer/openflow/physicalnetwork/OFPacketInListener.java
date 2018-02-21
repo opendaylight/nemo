@@ -8,11 +8,11 @@
 
 package org.opendaylight.nemo.renderer.openflow.physicalnetwork;
 
-import org.opendaylight.controller.liblldp.EtherTypes;
-import org.opendaylight.controller.liblldp.Ethernet;
-import org.opendaylight.controller.liblldp.NetUtils;
-import org.opendaylight.controller.liblldp.PacketException;
 import org.opendaylight.nemo.renderer.openflow.FlowUtils;
+import org.opendaylight.openflowplugin.libraries.liblldp.EtherTypes;
+import org.opendaylight.openflowplugin.libraries.liblldp.Ethernet;
+import org.opendaylight.openflowplugin.libraries.liblldp.NetUtils;
+import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
  * Created by hj on 11/10/15.
  */
 public class OFPacketInListener implements PacketProcessingListener {
-    private static final Logger log = LoggerFactory.getLogger(OFPacketInListener.class);
-    private FlowUtils ofFlowUtils;
+    private static final Logger LOG = LoggerFactory.getLogger(OFPacketInListener.class);
+    private final FlowUtils ofFlowUtils;
     public OFPacketInListener(FlowUtils ofFlowUtils) {
         this.ofFlowUtils = ofFlowUtils;
     }
@@ -37,9 +37,9 @@ public class OFPacketInListener implements PacketProcessingListener {
         byte[] payload = packetReceived.getPayload();
         Ethernet ethernet = new Ethernet();
         try {
-            ethernet.deserialize(payload, 0, NetUtils.NumBitsInAByte * payload.length);
+            ethernet.deserialize(payload, 0, NetUtils.NUM_BITS_IN_A_BYTE * payload.length);
         } catch (PacketException e) {
-            log.warn("Failed to decode packet in message: {}", packetReceived);
+            LOG.warn("Failed to decode packet in message: {}", packetReceived);
         }
         if (EtherTypes.ARP.shortValue() == ethernet.getEtherType()) {
             NodeConnectorRef ingressNodeConnectorRef = packetReceived.getIngress();
@@ -55,7 +55,7 @@ public class OFPacketInListener implements PacketProcessingListener {
 //                    .firstKeyOf(NodeConnector.class)
 //                    .getId()
 //                    .getValue();
-            log.debug("Receive one arp packet in message:\r\n {}.", packetReceived);
+            LOG.debug("Receive one arp packet in message:\r\n {}.", packetReceived);
             ofFlowUtils.handleArp(packetReceived,ingressNodeConnectorRef);
         }
     }
