@@ -20,7 +20,7 @@
 
     <groupId>org.opendaylight.nemo</groupId>
     <artifactId>odl-nemo-engine-rest</artifactId>
-    <version>1.3.2-SNAPSHOT</version>
+    <version>1.3.3-SNAPSHOT</version>
     <packaging>feature</packaging>
 
     <name>OpenDaylight :: NEMO :: Engine :: REST</name>
@@ -29,14 +29,14 @@
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>odl-restconf</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.6.3-SNAPSHOT</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.netconf</groupId>
             <artifactId>odl-mdsal-apidocs</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.6.3-SNAPSHOT</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
