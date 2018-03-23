@@ -27,6 +27,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.opendaylight.odlparent</groupId>
+            <artifactId>odl-jung-2.1</artifactId>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>odl-mdsal-broker</artifactId>
             <version>1.8.0-SNAPSHOT</version>

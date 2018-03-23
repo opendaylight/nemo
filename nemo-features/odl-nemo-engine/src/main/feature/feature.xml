@@ -6,7 +6,8 @@
  terms of the Eclipse Public License v1.0 which accompanies this distribution,
  and is available at http://www.eclipse.org/legal/epl-v10.html
  -->
-<features name="odl-nemo-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+<features name="odl-nemo-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
     <feature name="odl-nemo-engine" version="${project.version}">
+        <feature version="[3.0.0,4)">odl-jung-2.1</feature>
     </feature>
 </features>
