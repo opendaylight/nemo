@@ -13,8 +13,6 @@ import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.EdgeType;
-import org.apache.commons.collections15.Predicate;
-import org.apache.commons.collections15.Transformer;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,26 +26,13 @@ public class RoutingAlgorithm {
     /**
      * The current network topology graph.
      */
-    private Graph<Vertex, Edge> graph;
+    private final Graph<Vertex, Edge> graph = new DirectedSparseGraph<>();
 
     /**
      * The Dijkstra shortest path algorithm instance.
      */
-    private DijkstraShortestPath<Vertex, Edge> dijkstraShortestPath;
-
-    public RoutingAlgorithm() {
-        super();
-
-        graph = new DirectedSparseGraph<Vertex, Edge>();
-        dijkstraShortestPath = new DijkstraShortestPath<Vertex, Edge>(graph, new Transformer<Edge, Number>() {
-            @Override
-            public Number transform(Edge edge) {
-                return edge.getMetric();
-            }
-        }, false);
-
-        return;
-    }
+    private final DijkstraShortestPath<Vertex, Edge> dijkstraShortestPath =
+            new DijkstraShortestPath<>(graph, Edge::getMetric, false);
 
     /**
      * Get the vertex with the given id from the network topology graph.
@@ -97,8 +82,6 @@ public class RoutingAlgorithm {
      */
     public void addVertex(Vertex vertex) {
         graph.addVertex(vertex);
-
-        return;
     }
 
     /**
@@ -108,8 +91,6 @@ public class RoutingAlgorithm {
      */
     public void addEdge(Edge edge) {
         graph.addEdge(edge, getVertex(edge.getSrc()), getVertex(edge.getDest()), EdgeType.DIRECTED);
-
-        return;
     }
 
     /**
@@ -122,8 +103,6 @@ public class RoutingAlgorithm {
 
         edge.setMetric(newEdge.getMetric());
         edge.setBandwidth(newEdge.getBandwidth());
-
-        return;
     }
 
     /**
@@ -137,8 +116,6 @@ public class RoutingAlgorithm {
         if ( null != vertex ) {
             graph.removeVertex(vertex);
         }
-
-        return;
     }
 
     /**
@@ -152,8 +129,6 @@ public class RoutingAlgorithm {
         if ( null != edge ) {
             graph.removeEdge(edge);
         }
-
-        return;
     }
 
     /**
@@ -180,20 +155,12 @@ public class RoutingAlgorithm {
      * their occurrence on this path.
      */
     public List<Edge> computePath(Vertex source, Vertex target, final long bandwidth) {
-        EdgePredicateFilter<Vertex, Edge> edgeEdgePredicateFilter = new EdgePredicateFilter<Vertex, Edge>(new Predicate<Edge>() {
-            @Override
-            public boolean evaluate(Edge edge) {
-                return edge.getBandwidth() >= bandwidth;
-            }
-        });
+        EdgePredicateFilter<Vertex, Edge> edgeEdgePredicateFilter = new EdgePredicateFilter<>(
+                edge -> edge.getBandwidth() >= bandwidth);
 
-        Graph<Vertex, Edge> filteredGraph = edgeEdgePredicateFilter.transform(graph);
-        DijkstraShortestPath<Vertex, Edge> tempDijkstraShortestPath = new DijkstraShortestPath<Vertex, Edge>(filteredGraph, new Transformer<Edge, Number>() {
-            @Override
-            public Number transform(Edge edge) {
-                return edge.getMetric();
-            }
-        }, false);
+        Graph<Vertex, Edge> filteredGraph = edgeEdgePredicateFilter.apply(graph);
+        DijkstraShortestPath<Vertex, Edge> tempDijkstraShortestPath =
+                new DijkstraShortestPath<>(filteredGraph, Edge::getMetric, false);
 
         return tempDijkstraShortestPath.getPath(source, target);
     }
