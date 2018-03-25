@@ -7,27 +7,13 @@
  */
 package org.opendaylight.nemo.intent.algorithm;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-import edu.uci.ics.jung.algorithms.filters.EdgePredicateFilter;
-import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.util.EdgeType;
-import org.apache.commons.collections15.Predicate;
-import org.apache.commons.collections15.Transformer;
-import org.opendaylight.nemo.intent.algorithm.Edge;
-import org.opendaylight.nemo.intent.algorithm.RoutingAlgorithm;
-import org.opendaylight.nemo.intent.algorithm.Vertex;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import static org.mockito.Mockito.*;
 /**
  * Created by zhangmeng on 2015/11/25.
  */
@@ -39,7 +25,7 @@ public class RoutingAlgorithmTest extends TestCase {
     }
 
     @Test
-    public void testVertexAndEdge() throws Exception {
+    public void testVertexAndEdge() {
         //test get Vertices
         Collection<Vertex> collection ;
         collection = routingAlgorithm.getVertices();
@@ -59,7 +45,7 @@ public class RoutingAlgorithmTest extends TestCase {
         Vertex vertex_test = routingAlgorithm.getVertex("null");
         Assert.assertNull(vertex_test);
         vertex_test = routingAlgorithm.getVertex("test");
-        Assert.assertNotNull(vertex1);
+        Assert.assertNotNull(vertex_test);
 
         //add edge
         Edge edge = new Edge("edge","test","test1",1,1);
@@ -115,7 +101,7 @@ public class RoutingAlgorithmTest extends TestCase {
         Assert.assertNull(vertex_test);
 
         //test toString
-        String s = new String();
+        String s = "";
         Assert.assertEquals(0,s.length());
         s = routingAlgorithm.toString();
         Assert.assertTrue(s.length() > 1);
