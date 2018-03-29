@@ -32,7 +32,6 @@
         <module>odl-nemo-engine-rest</module>
         <module>odl-nemo-openflow-renderer</module>
         <module>odl-nemo-cli-renderer</module>
-        <module>odl-nemo-engine-ui</module>
     </modules>
 
     <scm>
