@@ -32,10 +32,21 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <module>nemo-impl</module>
     <module>nemo-ui</module>
     <module>nemo-features</module>
-    <module>nemo-karaf</module>
     <module>nemo-renderers</module>
     <module>nemo-tools</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>karaf</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>nemo-karaf</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <url>https://wiki.opendaylight.org/view/NEMO:Main</url>
 
