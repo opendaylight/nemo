@@ -18,7 +18,7 @@
 
     <groupId>org.opendaylight.nemo</groupId>
     <artifactId>odl-nemo-cli-renderer</artifactId>
-    <version>1.3.3-SNAPSHOT</version>
+    <version>1.3.4-SNAPSHOT</version>
     <packaging>feature</packaging>
 
     <name>OpenDaylight :: NEMO :: CLI Renderer</name>

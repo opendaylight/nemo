@@ -18,7 +18,7 @@
 
     <groupId>org.opendaylight.nemo</groupId>
     <artifactId>odl-nemo-openflow-renderer</artifactId>
-    <version>1.3.3-SNAPSHOT</version>
+    <version>1.3.4-SNAPSHOT</version>
     <packaging>feature</packaging>
 
     <name>OpenDaylight :: NEMO :: OpenFlow Renderer</name>
@@ -27,14 +27,14 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>odl-openflowplugin-flow-services</artifactId>
-            <version>0.5.3-SNAPSHOT</version>
+            <version>0.5.4-SNAPSHOT</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>odl-openflowplugin-nxm-extensions</artifactId>
-            <version>0.5.3-SNAPSHOT</version>
+            <version>0.5.4-SNAPSHOT</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>
