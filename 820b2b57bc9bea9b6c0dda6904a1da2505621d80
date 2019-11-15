@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fafc7978_6bacbd8c",
+        "filename": "nemo-renderers/openflow-renderer/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2017-03-08T10:35:10Z",
+      "side": 1,
+      "message": "I believe most of these are already defined in config-parent, so they should not be redefined here.",
+      "range": {
+        "startLine": 101,
+        "startChar": 4,
+        "endLine": 101,
+        "endChar": 13
+      },
+      "revId": "820b2b57bc9bea9b6c0dda6904a1da2505621d80",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
