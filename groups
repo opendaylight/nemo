@@ -1,4 +1,5 @@
 # UUID                                                              	Group Name
 #
+3dcee54f3d8590eccaa1b308561f73a196c6a154                            	saml/odl-gerrit-nemo-committers
 c9025ab9ddc1e3171919e085449f22c54f8f7b54                            	GitHub Replication
 ldap:cn=odl-gerrit-nemo-committers,ou=Groups,dc=freestandards,dc=org	ldap/odl-gerrit-nemo-committers
